@@ -2,7 +2,7 @@
 
 ## Bối cảnh
 
-Cập nhật gần nhất: 16/10/2026 16:51 (Asia/Saigon).
+Cập nhật gần nhất: 16/10/2026 16:56 (Asia/Saigon).
 
 Nguồn: [báo cáo](Bao_Cao_SE113_Final.md), [đặc tả tổng hợp](project-specification.md). Quy trình bắt buộc: [AGENTS.md](../AGENTS.md).
 
@@ -35,6 +35,7 @@ Trạng thái: `TODO` chưa làm; `IN_PROGRESS` đang làm hoặc còn thiếu k
 
 | Hạng mục | Trạng thái | Bằng chứng / phần còn thiếu |
 |---|---|---|
+| Đồng bộ GitHub | DONE | origin/main đã nhận ed9fe6d và 9cded06; không đưa môi trường local/node_modules lên Git |
 | Đặc tả tổng hợp | DONE | project-specification.md |
 | Quy tắc và sổ tiến độ | DONE | ../AGENTS.md và file này |
 | Khung workspace và cấu hình phát triển | DONE | package.json/lockfile, apps/api, apps/worker, apps/web, cấu hình công cụ; Docs/development-setup.md |
@@ -54,7 +55,7 @@ Trạng thái: `TODO` chưa làm; `IN_PROGRESS` đang làm hoặc còn thiếu k
 ## Công việc đang làm và trở ngại
 
 - Đợt tạo khung đã hoàn tất trong phạm vi chỉ setup, không viết code ứng dụng.
-- Chưa có blocker kỹ thuật; file bootstrap/logic để trống theo yêu cầu nên ứng dụng chưa chạy.
+- Không có blocker GitHub; đã push tài liệu và khung setup lên origin/main. API/worker vẫn chưa chạy vì bootstrap/logic để trống theo yêu cầu.
 - Đã khóa và cài dependency; Vite đã chạy, chưa có bootstrap API/worker hay giao diện.
 
 ## Bước tiếp theo
@@ -64,6 +65,15 @@ Trạng thái: `TODO` chưa làm; `IN_PROGRESS` đang làm hoặc còn thiếu k
 3. Triển khai từng UC cùng test, sau đó evidence gate/CI; cập nhật trạng thái bằng file và report thực tế.
 
 ## Nhật ký (mới nhất trước)
+
+### 16/10/2026 16:56 (Asia/Saigon) — Đưa tài liệu và khung setup lên GitHub
+
+- Hạng mục: hạ tầng Git; không đổi FR/BR/UC/UI/TC/EC hoặc hợp đồng API/database.
+- Đã làm: commit tài liệu ed9fe6d và khung setup 9cded06; push origin main thành công, remote nhận 71c8334..9cded06.
+- File sửa trong đợt này: sổ tiến độ và bỏ dòng trắng cuối thừa trong project-specification.md; không viết code ứng dụng.
+- Kiểm tra thực chạy: git fetch origin; git check-ignore .env apps/web/.env.local node_modules; kiểm staged diff và git diff --cached --check; quét mẫu secret, kiểm môi trường mẫu chỉ có giá trị local giả; git push origin main thành công.
+- Không đưa .env, apps/web/.env.local hoặc node_modules lên GitHub. Test ứng dụng chưa chạy vì chỉ xuất bản tài liệu/setup; coverage chưa đo, không kết luận CI đạt.
+- Trạng thái: xuất bản GitHub DONE; không có blocker; mọi UC giữ TODO. Bước tiếp theo: triển khai bootstrap/model/contract theo đặc tả khi được yêu cầu.
 
 ### 16/10/2026 16:51 (Asia/Saigon) — Chạy localhost frontend
 
