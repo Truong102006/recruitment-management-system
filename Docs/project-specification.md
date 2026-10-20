@@ -909,6 +909,8 @@ Không phải module nào cũng cần đủ tất cả thư mục; cấu trúc p
 | OutboxPort                     | eventId aggregateId type schemaVersion payload tx             | Chỉ ghi; worker gửi sau commit; payload tối thiểu       |
 | VideoPort StoragePort MailPort | DTO tích hợp không lộ model ORM                               | Timeout rõ; retry và idempotency theo khả năng provider |
 
+**Hợp đồng tích hợp BE2 phiên bản 1:** [be2-integration-contract.md](be2-integration-contract.md) chốt dữ liệu/port giữa BE1–BE2–BE3, ownership và thứ tự migration, chữ ký logic `ApplicationPort`/`ApplicationResultPort`/`InterviewLifecyclePort`, DTO/HTTP BE2 và tên event v1. Đây là chi tiết triển khai bổ sung cho mục 4.3, không thay đổi BR01–BR20, cạnh trạng thái ở mục 3.2 hay API đã liệt kê ở mục 7.1; chưa có port, event schema hoặc contract test chạy được. Khi triển khai hoặc đổi hợp đồng này, phải cập nhật đặc tả, OpenAPI/event schema và test liên quan trong cùng PR.
+
 ## 4.4 Transaction khóa và thao tác đồng thời
 
 Thứ tự khóa chung là user_account theo UUID tăng dần, company, job_post, application, interview và cv_version. Trong mỗi nhóm cũng sắp UUID tăng dần. Trước transaction phải thu thập toàn bộ ID liên quan; sau khóa kiểm lại danh sách và version. Nếu participant hoặc phạm vi đã đổi, rollback và đọc lại, không lấy thêm khóa user sau khi đã khóa interview. Membership mutation phải khóa user mục tiêu rồi company; xác nhận lịch phải khóa cùng company để không lọt qua việc thu hồi membership.

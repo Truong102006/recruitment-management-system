@@ -1,0 +1,116 @@
+# Hợp đồng tích hợp Backend BE2 phiên bản 1
+
+**Ngày chốt thiết kế:** 20/10/2026 (Asia/Saigon)
+**Chủ sở hữu:** BE2
+**Phạm vi:** UC02, UC06, UC07, UC12, UC14; điểm nối với UC01/04/05/10/11 của BE1 và UC08/09/13/15/16 của BE3.
+**Trạng thái:** hợp đồng thiết kế để triển khai; chưa có API, migration, port hoặc test chạy được.
+
+Tài liệu này cụ thể hóa [đặc tả tổng hợp](project-specification.md), nhất là BR01–BR20, mục 3.2, 4.3–4.5, 5 và 7.1. Nếu có xung đột, quy tắc nghiệp vụ và bất biến trong đặc tả tổng hợp được ưu tiên; sửa cả hai tài liệu trong cùng PR trước khi đổi code. BE1/BE3 dùng hợp đồng dưới đây làm đầu vào triển khai, không đọc hoặc ghi trực tiếp repository của BE2.
+
+## 1. Ranh giới sở hữu
+
+| Chủ sở hữu | Dữ liệu và quyền ghi | Cung cấp cho module khác |
+|---|---|---|
+| BE1 | `user_account`, `user_role`, `auth_session`, `auth_token`, `company`, `company_membership`, `job_post`, `skill`, `job_skill` | Actor từ session; quyền và trạng thái account/company; tin và danh mục kỹ năng qua port; cập nhật `user_account.name` trong transaction UC12 |
+| BE2 | `candidate_profile`, `candidate_skill`, `cv_version`, `application`, `application_history`, `cv_change_request`, `saved_job`; điều phối `UnitOfWork` và `IdempotencyStore` | `CvSelectionPort`, `ApplicationPort`/`ApplicationResultPort`, `ApplicationExitCoordinator` và DTO ứng viên/recruiter |
+| BE3 | `interview`, `interview_participant`, `interview_reservation`, `evaluation`, `outbox_event`, `notification`, `email_delivery`, `audit_log` | `InterviewLifecyclePort`, `OutboxPort`, worker và read model thông báo/thống kê |
+
+BE2 tạo và kiểm migration/constraint cho các bảng sở hữu; BE1 tạo khóa chính và chỉ mục được tham chiếu tại `user_account`, `company`, `job_post`, `skill`. Migration BE2 chỉ chạy sau các migration BE1 liên quan. BE3 tạo FK từ `interview.application_id` sang `application.id` sau migration application. Không sửa migration đã áp dụng ở môi trường chung.
+
+### Khóa ngoại và dữ liệu chung
+
+- `candidate_profile.user_id` tham chiếu `user_account.id`. BE1 tạo profile trong cùng transaction khi cấp role `CANDIDATE` qua facade BE2; không để role tồn tại mà thiếu profile.
+- `candidate_skill.skill_id` tham chiếu `skill.id`; BE2 kiểm skill còn active qua port BE1 trước khi ghi. BE1 sở hữu danh mục skill, BE2 không tự đổi trạng thái skill.
+- `application.job_id` và `saved_job.job_id` tham chiếu `job_post.id`. `application.candidate_id` và `saved_job.candidate_id` lấy từ actor, không nhận từ body.
+- `cv_version` có `UNIQUE(id,candidate_id)`; `application` có `UNIQUE(id,candidate_id)` và `UNIQUE(candidate_id,job_id)` vĩnh viễn. `original_cv_version_id`, `current_cv_version_id`, history và CV change request dùng FK ghép với `candidate_id` theo mục 5.3; không dùng mỗi FK ID đơn để chứng minh ownership.
+- FK mặc định `RESTRICT`; không cascade xóa lịch sử. `original_cv_version_id` và `candidate_snapshot` bất biến sau khi nộp; `current_cv_version_id` chỉ BE2 đổi qua UC06.
+
+## 2. Quy ước chung cho port
+
+Các chữ ký sau là **hợp đồng logic**, chưa phải file TypeScript đã triển khai. Mỗi bên có thể đặt tên class khác nhưng phải giữ dữ liệu, quyền và tác dụng phụ. `Tx` là transaction context mờ do `UnitOfWork` của BE2 cấp; mọi port tham gia một use case phải nhận đúng context đó. Không tạo transaction lồng, không dùng PrismaClient toàn cục bên trong transaction, không gọi storage/scanner/video/email trước commit.
+
+```ts
+type Actor = { userId: string; sessionId: string; roles: readonly string[] };
+type Tx = opaque; // cùng một PostgreSQL transaction, READ COMMITTED
+type Version = number; // expectedVersion bắt buộc với mutation của record đã có
+```
+
+Actor chỉ được BE1 xác thực từ session; client không được khai `candidateId`, `createdBy`, role hoặc company permission. Guard xác thực session/CSRF/Origin; service vẫn kiểm quyền và trạng thái hiện tại dưới khóa khi ghi. ID ngoài phạm vi đọc trả `404`; tài nguyên đã biết nhưng thiếu quyền hành động trả `403`; sai trạng thái/version hoặc trùng nghiệp vụ trả `409`.
+
+Thứ tự khóa chung: `user_account` theo UUID tăng dần → `company` → `job_post` → `application` → `interview` → `cv_version`. Trong mỗi nhóm khóa theo UUID tăng dần. Đọc trước toàn bộ ID liên quan, khóa theo thứ tự rồi kiểm lại quan hệ, quyền, trạng thái và version; nếu phạm vi thay đổi thì rollback và thử lại có giới hạn. Deadline ứng tuyển dùng `clock_timestamp()` của DB **sau khi có khóa**, nhận khi `< deadline`, từ chối tại đúng deadline. Không giữ transaction trong lúc upload, quét, gọi provider hoặc gửi email.
+
+## 3. BE1 cung cấp cho BE2
+
+| Port/đầu vào | Kết quả BE2 cần | Quy tắc bắt buộc |
+|---|---|---|
+| `IdentityCandidatePort.assertActiveCandidate(actor, tx)` | User ID, trạng thái `ACTIVE`, email verified, role `CANDIDATE`; thông tin tên/email hiện hành cho snapshot | Khóa và kiểm lại user khi mutation; không tin role trong request. UC12 cập nhật `user_account.name` qua port BE1 trong cùng tx với profile. |
+| `CompanyAccessPort.assertRecruiter(actor, companyId, tx)` | Company APPROVED, membership ACTIVE và permission OWNER/RECRUITER | Kiểm dưới khóa cho review, duyệt CV, đọc CV và dữ liệu ứng viên; companyId URL không chứng minh quyền. Company SUSPENDED chặn mutation/xem CV; ứng viên vẫn đọc/rút hồ sơ mình. |
+| `JobApplicationPort.lockForSubmission(jobId, candidateId, tx)` | `jobId`, `companyId`, job `PUBLISHED`, company `APPROVED`, deadline và eligibility đã kiểm | Thu thập companyId trước tx/khóa nếu cần, sau khóa kiểm lại job vẫn thuộc company đó; kiểm OWNER khả dụng, DB time, candidate không có membership ACTIVE của company. BE2 vẫn kiểm CV READY và UNIQUE application trong cùng tx. |
+| `JobVisibilityPort.getPublicOrPlaceholder(jobId, actor, tx?)` | Tin công khai tối thiểu hoặc placeholder không còn khả dụng | UC14 không lộ DRAFT/company SUSPENDED; tin CLOSED hoặc hết hạn có thể hiện nhãn ngừng nhận nếu company còn được phép hiển thị. BE2 không tự đọc bảng job ngoài port. |
+| `SkillCatalogPort.assertActiveSkills(skillIds, tx)` | Tập skill ID hợp lệ đã khử trùng | UC12: skill không tồn tại/ngừng dùng trả 400; account name + profile + candidate_skill ghi cùng tx. |
+
+BE1 khi thêm membership cho user vào company phải kiểm user không có hồ sơ ứng tuyển mở ở job của company đó theo BR05. BE2 cung cấp truy vấn kiểm xung đột chỉ đọc qua `ApplicationConflictPort`; BE1 gọi trong **cùng transaction và cùng thứ tự khóa**. BE1 khi đóng tin/đình chỉ company phải dùng khóa company/job giống UC02; hồ sơ cũ không bị xóa hoặc tự rút. Đình chỉ company phải chặn truy cập CV mới và thông báo BE3 thu hồi phòng theo workflow của UC10.
+
+### Điều kiện nộp hồ sơ và snapshot
+
+`POST /api/jobs/:id/applications` nhận `{ cvId, coverLetter? }` cùng `Idempotency-Key`; `candidateId` lấy từ actor. BE2 lưu snapshot allowlist `{ name, email, phone, headline }` tại thời điểm nộp, giữ nguyên sau UC12. `coverLetter` tối đa 3000 code point sau NFC/trim theo BR18. Chỉ CV `READY` thuộc actor được chọn; nộp CV của người khác trả 404. `UNIQUE(candidate_id,job_id)` áp dụng cả hồ sơ `REJECTED/WITHDRAWN`, kể cả sau khi idempotency hết hạn.
+
+## 4. BE2 cung cấp cho BE3
+
+BE3 chỉ gọi các port sau từ service/workflow, không import `ApplicationRepository`, không cập nhật trực tiếp `application`, `application_history` hoặc `cv_change_request`. Port nhận actor hoặc system principal đã xác thực, `Tx` và version; kết quả chỉ là context tối thiểu, không chứa CV object key, signed URL, điểm/ghi chú nội bộ.
+
+| Port/lệnh | Input và output tối thiểu | Trách nhiệm |
+|---|---|---|
+| `ApplicationPort.getSchedulingContext(applicationId, actor, tx)` | ID application/candidate/job/company, status, version; quyền recruiter đã kiểm theo BE1 | Chỉ lịch của hồ sơ trong phạm vi; candidate đúng hồ sơ, company hoạt động; BE3 tự kiểm participant, overlap và lịch. |
+| `ApplicationPort.onInterviewConfirmed(applicationId, expectedVersion, interviewId, actor, tx)` | Trả status/version mới | BE2 kiểm cạnh `SHORTLISTED → INTERVIEW_SCHEDULED`; BE3 ghi lịch/participant/reservation trong cùng tx. Nếu đã ở `INTERVIEW_SCHEDULED`, BE3 kiểm quy tắc nhiều vòng rồi BE2 chỉ ghi History khi có sự kiện nghiệp vụ mới, không tự lùi trạng thái. |
+| `ApplicationPort.markInterviewed(applicationId, expectedVersion, actor, completionEvidence, tx)` | Trả status/version mới | Chỉ `INTERVIEW_SCHEDULED → INTERVIEWED` khi BE3 xác nhận đủ lịch COMPLETED/phiếu, không còn PROPOSED/CONFIRMED. Không cho BE3 gọi lệnh đổi status tổng quát. |
+| `ApplicationResultPort.publish(applicationId, expectedVersion, actor, result, publicMessage, internalReason?, idempotencyKey, tx)` | Application ID, `HIRED/REJECTED`, version, thời điểm công bố | BE2 kiểm cạnh theo mục 3.2: HIRED chỉ từ INTERVIEWED; REJECTED theo từng giai đoạn và điều kiện lịch do BE3 cung cấp. BE2 ghi `result_message`, `result_published_at`, History, hủy CV request PENDING, Outbox và idempotency cùng tx. BE3 điều phối và chịu trách nhiệm điều kiện lịch/phiếu, hủy proposal còn mở trong cùng tx. |
+| `ApplicationPort.getReportingFacts(scope, period)` | Read model tối thiểu theo company/job/cohort; không có PII hoặc CV | BE3 làm UC16, chỉ đọc theo company đã được BE1 cấp quyền; không ghi bảng BE2 và không JOIN làm nhân bản application. |
+
+`ApplicationResultPort.publish` không tự gửi email. `publicMessage` dài 1–3000 code point và là nội dung ứng viên được thấy; `internalReason` chỉ trong history nội bộ, bắt buộc khi từ chối theo UC09. Candidate DTO/history/notification không có `internalReason`, điểm, note hoặc recommendation. BE3 worker lấy dữ liệu công khai sau commit qua read port có scope, không dùng payload event làm nguồn thông tin nhạy cảm.
+
+### Rút hồ sơ và vòng phỏng vấn
+
+BE2 sở hữu `ApplicationExitCoordinator.withdraw(applicationId, expectedVersion, actor, tx)` như một workflow. Nó thu thập toàn bộ user/company/job/application/interview liên quan trước khóa; khóa đúng thứ tự; gọi `InterviewLifecyclePort.cancelOpenForApplication(applicationId, reason=WITHDRAWN, tx)` do BE3 cung cấp; sau đó BE2 ghi `WITHDRAWN`, History, hủy CV request PENDING và Outbox **trong cùng tx**. Port BE3 hủy mọi lịch PROPOSED/CONFIRMED, giải phóng reservation, tăng generation/ghi trạng thái thu hồi quyền phòng và event cần thiết; giữ COMPLETED/NO_SHOW làm lịch sử. Provider video được gọi sau commit bằng worker; lỗi provider không làm application sống lại. Rút được phép khi company SUSPENDED nếu actor là chủ hồ sơ. `withdraw` và `publish` cạnh tranh cùng application version: đúng một lệnh commit.
+
+BE3 khi xác nhận/đổi lịch cũng dùng một `UnitOfWork` và thứ tự khóa chung; không ghi trạng thái hồ sơ bằng SQL riêng. Khi đề xuất lịch thay thế thất bại, lịch cũ CONFIRMED và reservation cũ vẫn còn. Nếu một mutation BE3 cần History của application, gọi `ApplicationPort` với cùng tx. Không tạo vòng import module: workflow điều phối ở lớp tích hợp, chỉ phụ thuộc interface/port.
+
+## 5. API và DTO mà BE1/BE3/FE cần dựa vào
+
+Base path `/api`, UUID và ISO8601 có offset, response thành công `{ data, meta? }`; lỗi `{ code, message, fieldErrors?, traceId }`. DTO đầu ra tách `CandidateApplicationDto` và `RecruiterApplicationDto`; không trả Prisma record trực tiếp. Danh sách lọc scope ngay trong query, kể cả `total`.
+
+| API BE2 | Chủ thể | Contract chính |
+|---|---|---|
+| `GET/PATCH /candidate/profile`, `GET /skills` | Candidate / danh mục công khai | Profile version; PATCH allowlist và expectedVersion; skill do BE1 sở hữu. |
+| `POST /cv/uploads`, `PUT /cv/:id/content`, `POST /cv/:id/complete`, `GET /cv`, `DELETE /cv/:id`, `GET /cv/:id/download` | Chủ CV hoặc recruiter đúng scope cho download | Chỉ PDF 1–10485760 byte; tối đa 20 bản chưa DELETED; READY mới được dùng; URL ký tối đa 5 phút và không cache trong idempotency. |
+| `POST /jobs/:id/applications` | Candidate | `cvId`, `coverLetter?`, `Idempotency-Key`; trả 201 application SUBMITTED version 0. |
+| `GET /applications`, `GET /applications/:id`, `GET /applications/:id/history` | Chủ hồ sơ hoặc recruiter cùng company | DTO theo actor; candidate không thấy reason/note nội bộ; recruiter không thấy hồ sơ company khác. |
+| `POST /applications/:id/cv-change`; `POST /cv-change/:id/approve` hoặc `/reject` | Candidate; recruiter | `newCvId`, expected application version; approve/reject có applicationVersion + requestVersion; SUBMITTED đổi trực tiếp, SCREENING tạo PENDING. |
+| `POST /applications/:id/review`; `POST /applications/:id/withdraw` | Recruiter; chủ hồ sơ | Review chỉ `SCREENING`/`SHORTLISTED` theo cạnh hợp lệ; withdraw có expectedVersion và hủy lịch nguyên tử. |
+| `PUT/DELETE /saved-jobs/:jobId`; `GET /saved-jobs` | Candidate | PUT/DELETE idempotent, trả 204; danh sách phân trang và không lộ tin bị hạn chế. |
+
+Đường dẫn và mã HTTP trên lấy từ mục 7.1 của đặc tả; khi triển khai phải xuất OpenAPI và khóa DTO bằng contract test. BE1/BE3/FE không suy `INTERVIEW_SCHEDULED` từ participant ACCEPTED trước khi lịch được CONFIRMED. Client không có endpoint PATCH status tự do.
+
+## 6. Idempotency, Outbox và lỗi tích hợp
+
+- BE2 điều phối `UnitOfWork` và `IdempotencyStore`. `UNIQUE(user_id,operation,key)` + `request_hash` của payload chuẩn hóa; cùng key/payload trả cùng resource sau **kiểm quyền hiện tại**, khác payload trả 409. Giữ record ít nhất 24 giờ. In-progress trả `409 REQUEST_IN_PROGRESS` với `Retry-After`; không tạo key mới để retry khi kết quả chưa rõ.
+- BE3 sở hữu bảng/adapter `OutboxPort`; BE2 gọi `append(eventType, aggregateId, aggregateVersion, schemaVersion=1, payload, tx)` trong cùng tx với mutation. Event v1 do BE2 phát gồm `candidate.profile_updated`, `cv.scan_requested`, `cv.delete_requested`, `application.submitted`, `application.status_changed`, `application.cv_replaced`, `application.withdrawn`, `application.result_published`, `saved_job.created`, `saved_job.deleted`. Payload chỉ chứa ID cần thiết, version và mốc thời gian; không có CV content/key/URL, email, token, điểm hoặc internal reason. Với mutation idempotent không đổi dữ liệu (PUT đã lưu/DELETE đã bỏ lưu), không phát event thành công mới.
+- BE3 định nghĩa JSON Schema cho các event v1 cùng BE2 trước khi worker tiêu thụ. Outbox ghi `schema_version` và `aggregate_version`; worker chỉ gọi mail/storage/provider sau commit. Email có thể lặp khi provider timeout, nhưng không tạo trùng notification/delivery row. Mọi lỗi History/Outbox trong tx rollback mutation BE2.
+- Lỗi chuẩn: input sai `400 VALIDATION_FAILED`; ngoài scope `404`; thiếu quyền hành động `403`; version/cạnh/trùng/quota/idempotency `409` với code riêng; tệp quá lớn `413`; loại tệp sai `415`; provider tạm lỗi `503`. Lỗi không ghi History/Outbox nghiệp vụ. Log không chứa CV, signed URL, cookie, token hoặc lý do nội bộ.
+
+## 7. Kiểm chứng bắt buộc khi triển khai
+
+| Biên tích hợp | Test cần có trước khi coi đạt |
+|---|---|
+| BE1 ↔ BE2 | Nộp đồng thời đóng tin/đình chỉ company; membership candidate thêm đồng thời submit; sửa profile không đổi snapshot; skill inactive; company khác không đọc CV/application; UC14 không lộ tin draft/suspended. |
+| BE2 nội bộ | UNIQUE `(candidate_id,job_id)` kể cả terminal; FK ghép CV đúng owner; original bất biến; upload 20 bản, attempt thắng, scanner lỗi kỹ thuật; đổi CV vs review; rollback khi History/Outbox lỗi; cùng idempotency key khác payload. |
+| BE2 ↔ BE3 | Withdraw vs confirm/result, hủy mọi lịch mở và reservation cùng tx; result vs withdraw chỉ một commit; lỗi event/history rollback; result event/DTO không lộ điểm và note; BE3 không ghi application trực tiếp. |
+
+Integration dùng PostgreSQL thật, kiểm constraint bằng insert sai và test cạnh tranh có barrier; API test dùng guard/pipe/filter như production. Test phù hợp TC05–TC13, TC19, TC21–TC23, TC37–TC43, TC52 và EC01–EC09, EC28–EC34, EC36, EC39–EC40. Hiện tất cả **chưa chạy**, coverage **chưa đo**; tài liệu này không phải bằng chứng nghiệm thu.
+
+## 8. Thứ tự triển khai và tiêu chí nhận PR
+
+1. BE1 xuất Actor/Company/Job/Skill ports với stub/contract fixture; BE2 xuất `ApplicationPort`, `ApplicationResultPort`, `ApplicationConflictPort`, `CvSelectionPort`, `UnitOfWork`; BE3 xuất `InterviewLifecyclePort`, `OutboxPort`. Khóa DTO/error/event schema v1 trước khi nối implementation.
+2. Merge migration theo thứ tự Identity/Company/Job/Skill → Candidate/CV → Application/History/Change/SavedJob/Idempotency → Interview/Evaluation/Outbox. BE2 kiểm chạy sạch và nâng cấp fixture trước khi BE3 thêm FK.
+3. Mỗi PR nghiệp vụ có migration, API/DTO/OpenAPI, policy/rules, test unit/integration/API/concurrency phù hợp và ví dụ request/response. PR liên module phải chạy test rollback và scope cùng commit.
+4. BE2 review migration/API BE1; BE3 review BE2; BE1 review BE3 theo chương 8. Chỉ coi contract đã **triển khai** khi port thực, contract test và luồng từ nộp đến kết quả chạy đạt; trạng thái tài liệu không thay cho kết quả đó.

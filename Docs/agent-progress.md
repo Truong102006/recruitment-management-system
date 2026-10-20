@@ -2,7 +2,7 @@
 
 ## Bối cảnh
 
-Cập nhật gần nhất: 16/10/2026 16:56 (Asia/Saigon).
+Cập nhật gần nhất: 20/10/2026 16:39 (Asia/Saigon).
 
 Nguồn: [báo cáo](Bao_Cao_SE113_Final.md), [đặc tả tổng hợp](project-specification.md). Quy trình bắt buộc: [AGENTS.md](../AGENTS.md).
 
@@ -39,6 +39,8 @@ Trạng thái: `TODO` chưa làm; `IN_PROGRESS` đang làm hoặc còn thiếu k
 | Đặc tả tổng hợp | DONE | project-specification.md |
 | Quy tắc và sổ tiến độ | DONE | ../AGENTS.md và file này |
 | Khung workspace và cấu hình phát triển | DONE | package.json/lockfile, apps/api, apps/worker, apps/web, cấu hình công cụ; Docs/development-setup.md |
+| Hợp đồng tích hợp BE2 phiên bản 1 | DONE | Docs/be2-integration-contract.md; đã đối chiếu đặc tả và kiểm tra liên kết/diff, mới là tài liệu thiết kế |
+| Hướng dẫn AI BE1/BE3 | DONE | Docs/BE1-BE3_note.md; đã kiểm tra phạm vi giao việc, liên kết tài liệu và diff; chưa phải code ứng dụng |
 | Backend NestJS/TypeScript | IN_PROGRESS | Có manifest và module/bootstrap trống; chưa cài dependency hoặc viết bootstrap |
 | PostgreSQL/Prisma, 25 bảng, migration, seed | IN_PROGRESS | Có Compose và datasource/generator; chưa có model/constraint/migration thực |
 | Storage CV và scanner | TODO | Chưa tích hợp |
@@ -46,7 +48,7 @@ Trạng thái: `TODO` chưa làm; `IN_PROGRESS` đang làm hoặc còn thiếu k
 | Jitsi và thu hồi quyền phòng | TODO | Chưa kiểm provider thật |
 | FE1: UI01–UI12, UI24, UI29 | TODO | Có folder chức năng và cấu hình React/Vite; chưa có giao diện |
 | FE2: UI13–UI23, UI25–UI28 | TODO | Có folder chức năng và cấu hình React/Vite; chưa có giao diện |
-| OpenAPI và contract test | TODO | Chỉ có hợp đồng thiết kế |
+| OpenAPI và contract test | IN_PROGRESS | Đã chốt tài liệu hợp đồng tích hợp BE2 với BE1/BE3; chưa có OpenAPI, event schema hoặc contract test thực thi |
 | Unit/integration/API/concurrency | TODO | TC01–TC60 và EC01–EC40 chưa thực thi |
 | Frontend/E2E/accessibility | TODO | Ma trận FE chưa thực thi |
 | CI/coverage/evidence gate | TODO | Chưa có pipeline và report |
@@ -54,17 +56,38 @@ Trạng thái: `TODO` chưa làm; `IN_PROGRESS` đang làm hoặc còn thiếu k
 
 ## Công việc đang làm và trở ngại
 
+- Đã chốt hợp đồng thiết kế BE2 cho UC02/UC06/UC07/UC12/UC14 và điểm nối UC08/UC09 tại Docs/be2-integration-contract.md; BE1/BE3 cần dùng khi triển khai port tương ứng. Chưa triển khai API, schema hay test.
+- Đã viết ghi chú giao việc riêng cho AI hỗ trợ BE1 và BE3 tại Docs/BE1-BE3_note.md; hai người cần đọc trước khi triển khai trên nhánh riêng.
 - Đợt tạo khung đã hoàn tất trong phạm vi chỉ setup, không viết code ứng dụng.
 - Không có blocker GitHub; đã push tài liệu và khung setup lên origin/main. API/worker vẫn chưa chạy vì bootstrap/logic để trống theo yêu cầu.
 - Đã khóa và cài dependency; Vite đã chạy, chưa có bootstrap API/worker hay giao diện.
 
 ## Bước tiếp theo
 
-1. Bổ sung môi trường backend và bật dịch vụ khi bắt đầu code; frontend đã có .env.local và dependency.
-2. Viết bootstrap API/worker/React, model/migration/constraints/fixture và nền auth/company/job; thống nhất OpenAPI.
-3. Triển khai từng UC cùng test, sau đó evidence gate/CI; cập nhật trạng thái bằng file và report thực tế.
+1. BE2 bắt đầu bước 2: hiện thực `UnitOfWork`/`Tx` và các interface/stub BE2 đã chốt, khóa contract fixture/DTO/event schema v1 để BE1 và BE3 có thể nối port; chưa viết thẳng luồng nghiệp vụ khi dependency chưa rõ.
+2. BE1/BE3 hiện thực port phía mình theo Docs/BE1-BE3_note.md; review chéo các contract fixture và gộp migration theo thứ tự phụ thuộc.
+3. BE2 triển khai migration Candidate/CV/Application và test constraint trên PostgreSQL thật sau migration BE1; sau đó từng UC cùng test, OpenAPI và evidence gate.
+4. Bổ sung môi trường backend và bật dịch vụ khi bắt đầu code; frontend đã có .env.local và dependency.
 
 ## Nhật ký (mới nhất trước)
+
+### 20/10/2026 16:39 (Asia/Saigon) — Hướng dẫn AI BE1/BE3 trước khi triển khai
+
+- Hạng mục: phối hợp BE1/BE3 với BE2 trên FR05–FR08, FR13; UC01/UC02/UC03/UC04/UC05/UC06/UC07/UC08/UC09/UC10/UC11/UC12/UC13/UC14/UC15/UC16; BR01–BR20. Không đổi nghiệp vụ, schema, API hoặc test contract so với tài liệu chốt trước đó.
+- Đã làm: mở rộng Docs/BE1-BE3_note.md thành hai phần giao việc riêng, thứ tự đọc AGENTS/đặc tả/contract/tiến độ, ranh giới port, migration, test, PR và review chéo; xác định bước 2 BE2 trong mục bước tiếp theo. File chưa có mã ứng dụng.
+- File sửa: Docs/BE1-BE3_note.md, Docs/agent-progress.md; các thay đổi tài liệu từ lượt trước tại Docs/be2-integration-contract.md và Docs/project-specification.md sẽ được xuất bản cùng đợt theo yêu cầu người dùng.
+- Kiểm tra thực chạy: `git fetch origin main` thành công; `git rev-list --left-right --count main...origin/main` trả `0 0`; kiểm file note có hai phần BE1/BE3, liên kết tương đối hợp lệ, không có khoảng trắng cuối dòng; `git diff --check` không báo lỗi.
+- Test ứng dụng chưa chạy vì chỉ sửa tài liệu và source nghiệp vụ còn trống; coverage chưa đo. Chưa có kết quả CI/API để công bố.
+- Trạng thái: hướng dẫn AI BE1/BE3 DONE ở mức tài liệu; mọi UC còn TODO; OpenAPI/contract test vẫn IN_PROGRESS. Bước tiếp theo: BE2 hiện thực `UnitOfWork`/port stub và contract fixture, sau đó migration/test phụ thuộc BE1.
+
+### 20/10/2026 16:27 (Asia/Saigon) — Chốt hợp đồng tích hợp BE2 phiên bản 1
+
+- Hạng mục: FR05–FR08, FR13; BR01–BR09, BR16–BR20; UC02/UC06/UC07/UC12/UC14 và giao điểm UC08/UC09; TC05–TC13, TC19, TC21–TC23, TC37–TC43, TC52; EC01–EC09, EC28–EC34, EC36, EC39–EC40.
+- Đã làm: xác định ownership BE1/BE2/BE3, FK và thứ tự migration, contract port/transaction/khóa, DTO/HTTP, idempotency/Outbox/event v1, lỗi và test tích hợp. Không đổi quy tắc nghiệp vụ gốc hoặc endpoint đã liệt kê; bổ sung chi tiết hợp đồng và tên event v1 để triển khai.
+- File sửa: Docs/be2-integration-contract.md (mới), Docs/project-specification.md (liên kết và ghi khác biệt với báo cáo), Docs/agent-progress.md. Không đổi database, API chạy được hoặc code ứng dụng.
+- Kiểm tra thực chạy: đối chiếu các mục 3.1/3.2/4.3–4.5/5/7.1 của đặc tả; kiểm 13 mục bắt buộc trong tài liệu đều có, 1 liên kết tương đối hợp lệ; `git diff --check` không báo lỗi; xem `git status --short` và diff tài liệu.
+- Test ứng dụng chưa chạy vì đây chỉ là thay đổi tài liệu và source nghiệp vụ còn trống; coverage chưa đo. Không có bằng chứng API/CI đạt.
+- Trạng thái: hợp đồng thiết kế BE2 DONE, OpenAPI/contract test IN_PROGRESS, các UC vẫn TODO. Bước tiếp theo: hiện thực port/stub, event schema/OpenAPI và migration/test theo thứ tự phụ thuộc.
 
 ### 16/10/2026 16:56 (Asia/Saigon) — Đưa tài liệu và khung setup lên GitHub
 
