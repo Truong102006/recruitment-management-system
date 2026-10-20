@@ -1,5 +1,7 @@
 # Tiến độ triển khai dành cho agent
 
+> **Lưu trữ từ 20/10/2026:** mọi báo cáo tiến độ mới của BE1/BE2/BE3/FE1/FE2 và AI hỗ trợ được ghi tại [progress/README.md](../progress/README.md). Nội dung bên dưới giữ nguyên làm lịch sử; trạng thái và bước tiếp theo trong sổ cũ có thể đã thay đổi. Dùng quy tắc và mẫu trong sổ chung, không cập nhật song song hai sổ.
+
 ## Bối cảnh
 
 Cập nhật gần nhất: 20/10/2026 16:39 (Asia/Saigon).

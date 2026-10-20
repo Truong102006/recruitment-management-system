@@ -7,7 +7,7 @@ Tài liệu này dành cho hai thành viên Backend và AI hỗ trợ của họ
 1. [`../AGENTS.md`](../AGENTS.md): quy tắc bắt buộc khi sửa repository và cập nhật tiến độ.
 2. [`project-specification.md`](project-specification.md): quy tắc BR, trạng thái, dữ liệu, API, test và tiêu chí nghiệm thu.
 3. [`be2-integration-contract.md`](be2-integration-contract.md): ranh giới BE1/BE2/BE3, port, transaction, migration, DTO và event v1 do BE2 chốt để cả nhóm làm theo.
-4. [`agent-progress.md`](agent-progress.md): trạng thái thực tế trước khi nhận việc. Đọc [`Bao_Cao_SE113_Final.md`](Bao_Cao_SE113_Final.md) khi cần bối cảnh từ báo cáo gốc.
+4. [`progress/README.md`](../progress/README.md): sổ tiến độ chung, quy tắc và mẫu báo cáo cho mọi thành viên/AI; cập nhật ở đây. `Docs/agent-progress.md` chỉ giữ lịch sử. Đọc [`Bao_Cao_SE113_Final.md`](Bao_Cao_SE113_Final.md) khi cần bối cảnh từ báo cáo gốc.
 5. Kiểm tra mã nguồn và Git hiện tại; file, tên module, SQL mẫu, bảng test trên giấy hoặc trạng thái `DONE` của tài liệu không chứng minh API đã chạy.
 
 Nếu phát hiện contract mâu thuẫn với BR/đặc tả chính, dừng phần phụ thuộc, ghi rõ xung đột và đề xuất sửa tài liệu trong PR trước khi đổi hành vi. Không tự tạo contract khác hoặc truy cập repository nội bộ của module người khác để né port.
@@ -23,7 +23,7 @@ Các giao điểm bắt buộc với BE2:
 - Khi thêm membership, kiểm xung đột ứng viên có hồ sơ mở qua `ApplicationConflictPort` của BE2. Đóng tin/đình chỉ công ty dùng khóa và kiểm trạng thái nhất quán với lệnh nộp hồ sơ; không tự xóa hoặc rút hồ sơ cũ. Phối hợp BE3 để thu hồi quyền phòng khi khóa user/đình chỉ công ty.
 - Kiểm test nộp hồ sơ đồng thời đóng tin/đình chỉ, quyền recruiter khác công ty, deadline tại DB và membership cạnh tranh. Không đánh dấu UC hoàn tất chỉ vì endpoint trả 200.
 
-**Đầu ra cần bàn giao:** PR trên nhánh BE1, danh sách port/DTO đã xuất, migration và thứ tự chạy, OpenAPI, test thực chạy với kết quả, phần còn thiếu và thay đổi trong `agent-progress.md`.
+**Đầu ra cần bàn giao:** PR trên nhánh BE1, danh sách port/DTO đã xuất, migration và thứ tự chạy, OpenAPI, test thực chạy với kết quả, phần còn thiếu và báo cáo đúng mẫu trong `progress/README.md`.
 
 ## Giao việc cho AI của BE3
 
@@ -36,11 +36,11 @@ Các giao điểm bắt buộc với BE2:
 - BE3 sở hữu điều kiện lịch/phiếu/attendance, event schema và worker. Công bố kết quả phải cạnh tranh đúng với rút hồ sơ bằng application version; chỉ một lệnh commit. Candidate DTO, event và email không chứa điểm, note, recommendation hoặc lý do nội bộ.
 - Migration BE3 tham chiếu `application.id` sau migration BE2. Test hủy lịch/rút hồ sơ, confirm cạnh tranh, rollback khi event/history lỗi, thu hồi quyền phòng, email retry và dữ liệu nội bộ không bị lộ.
 
-**Đầu ra cần bàn giao:** PR trên nhánh BE3, danh sách port/DTO và event schema v1, migration và thứ tự chạy, OpenAPI, test thực chạy với kết quả, phần còn thiếu và thay đổi trong `agent-progress.md`.
+**Đầu ra cần bàn giao:** PR trên nhánh BE3, danh sách port/DTO và event schema v1, migration và thứ tự chạy, OpenAPI, test thực chạy với kết quả, phần còn thiếu và báo cáo đúng mẫu trong `progress/README.md`.
 
 ## Quy tắc phối hợp chung
 
 - Chốt interface/fixture nhỏ trước khi viết phụ thuộc lớn. Dùng `UnitOfWork`/`Tx` chung, thứ tự khóa ở mục 4.4 của đặc tả; không tạo transaction lồng hoặc import vòng giữa Application và Interview.
 - Khi đổi schema, quyền, trạng thái, DTO, endpoint hoặc event, cập nhật `project-specification.md`, hợp đồng BE2 nếu liên quan, OpenAPI/event schema và test trong cùng PR. Ghi rõ khác biệt với báo cáo gốc.
-- Trước khi code, ghi hạng mục `IN_PROGRESS` vào `agent-progress.md`; sau mỗi đợt cập nhật bảng, việc đang làm, blocker, bước tiếp theo và nhật ký. Ghi “chưa chạy” hoặc “chưa đo” đúng thực tế; không ghi kết quả test/CI giả.
+- Trước khi code, ghi hạng mục `IN_PROGRESS` vào `progress/README.md`; sau mỗi đợt cập nhật bảng, việc đang làm, blocker, bước tiếp theo và nhật ký theo mẫu chung. Ghi “chưa chạy” hoặc “chưa đo” đúng thực tế; không ghi kết quả test/CI giả.
 - Mỗi PR có phạm vi một lát cắt nghiệp vụ, chỉ sửa file mình sở hữu trừ thay đổi chung đã được phối hợp. BE1 review BE3, BE3 review BE2, BE2 review BE1. Sau khi merge, mọi người cập nhật nhánh từ `main` mới nhất rồi tiếp tục.

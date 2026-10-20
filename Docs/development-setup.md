@@ -97,10 +97,10 @@ Test runner không bật `passWithNoTests`; chưa có test nên lệnh test sẽ
 2. Viết model/migration 25 bảng, SQL constraints thực và integration fixtures/test.
 3. Thống nhất DTO/OpenAPI/event contract; triển khai từng UC theo báo cáo.
 4. Tích hợp storage/scanner/mail/video, suite thực và evidence gate trước khi bật CI bắt buộc.
-5. Cập nhật [agent-progress.md](agent-progress.md) theo [AGENTS.md](../AGENTS.md).
+5. Cập nhật [tiến độ chung](../progress/README.md) theo mẫu đầu file và [AGENTS.md](../AGENTS.md); sổ agent-progress cũ chỉ giữ lịch sử.
 
 ## Tham chiếu
 
 - [Đặc tả](project-specification.md)
 - [Báo cáo gốc](Bao_Cao_SE113_Final.md)
-- [Tiến độ](agent-progress.md)
+- [Tiến độ chung](../progress/README.md)

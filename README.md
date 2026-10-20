@@ -2,7 +2,7 @@
 
 Khung dự án quản lý tuyển dụng theo báo cáo SE113. Chỉ có cấu trúc, cấu hình và file nguồn trống; chưa có bootstrap, giao diện, API hoặc logic nghiệp vụ.
 
-Đọc [hướng dẫn setup](Docs/development-setup.md), [đặc tả](Docs/project-specification.md) và [tiến độ](Docs/agent-progress.md). Agent tuân thủ [AGENTS.md](AGENTS.md).
+Đọc [hướng dẫn setup](Docs/development-setup.md), [đặc tả](Docs/project-specification.md) và [tiến độ chung](progress/README.md). Mọi thành viên và AI cập nhật tiến độ theo quy tắc/mẫu ở đầu sổ chung. Agent tuân thủ [AGENTS.md](AGENTS.md).
 
 ## Chuẩn bị local
 
@@ -29,5 +29,6 @@ tests/             Integration, API, concurrency, contract, E2E, performance
 contracts/         Chỗ lưu OpenAPI và event schema
 infra/             Chỗ bổ sung cấu hình scanner, Jitsi, backup
 scripts/           Chỗ bổ sung công cụ database và evidence
-Docs/              Báo cáo, đặc tả, setup và tiến độ
+Docs/              Báo cáo, đặc tả, setup và lịch sử tiến độ cũ
+progress/          Sổ tiến độ chung cho cả nhóm và AI hỗ trợ
 ```
