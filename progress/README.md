@@ -34,7 +34,7 @@
 
 ## Tổng quan hiện tại
 
-Cập nhật ngày **22/10/2026**: `main` trước đợt tích hợp này tại `f4fe282`; nền BE2 bước 2 đã được kiểm trên `feat/be2-contract-foundation`. Repository có khung, tài liệu, transaction/port và contract BE2, cùng unit/contract test; chưa có chức năng nghiệp vụ chạy được, model/migration thực hoặc pipeline CI. Việc cài dependency và mở Vite ngày 16/10 là ghi nhận lịch sử ở môi trường trước, không xác nhận máy của mọi thành viên đã setup thành công.
+Cập nhật ngày **22/10/2026**: nền BE2 bước 2 đã được kiểm trên `feat/be2-contract-foundation` và push lên `main` tại `62215fc`. Repository có khung, tài liệu, transaction/port và contract BE2, cùng unit/contract test; chưa có chức năng nghiệp vụ chạy được, model/migration thực hoặc pipeline CI. Việc cài dependency và mở Vite ngày 16/10 là ghi nhận lịch sử ở môi trường trước, không xác nhận máy của mọi thành viên đã setup thành công.
 
 Các công việc trên nhánh cá nhân chưa được báo cáo vào đây chưa được xác nhận. Mỗi thành viên cập nhật kết quả của mình kèm bằng chứng; không coi bảng TODO là kết luận người đó chưa làm gì ngoài main.
 
@@ -81,7 +81,7 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 | BE-FOUNDATION | Bootstrap NestJS / BE1 | IN_PROGRESS | Có cấu hình và file bootstrap trống; chưa có server chạy |
 | DB-01 | Prisma, 25 bảng, migration/seed / mỗi BE sở hữu phần mình, BE2 điều phối | IN_PROGRESS | Mới có datasource/generator và Compose; chưa có model/migration |
 | CONTRACT-01 | Port, DTO, OpenAPI, event schema và contract test / cả ba BE | IN_PROGRESS | Đã có phần BE2 và contract test; còn BE1/BE3, OpenAPI đầy đủ, adapter và nghiệm thu liên module |
-| BE2-STEP2 | Nền transaction và hợp đồng tích hợp / BE2 + Codex | DONE | Trên `feat/be2-contract-foundation` từ `f4fe282`; chưa gộp main tại thời điểm báo cáo; [bàn giao](../Docs/be2-step2-handoff.md), 23 unit + 11 contract test đạt. DONE chỉ cho phạm vi nền bước 2, không phải UC |
+| BE2-STEP2 | Nền transaction và hợp đồng tích hợp / BE2 + Codex | DONE | Đã gộp `main` tại `62215fc`; [bàn giao](../Docs/be2-step2-handoff.md), 23 unit + 11 contract test đạt. DONE chỉ cho phạm vi nền bước 2, không phải UC |
 | STORAGE-01 | Storage CV và scanner / BE2 | TODO | Chưa có adapter/worker scan/test |
 | WORKER-01 | Outbox/email/worker / BE3; idempotency/transaction do BE2 phối hợp | TODO | Chưa triển khai |
 | VIDEO-01 | Jitsi và thu hồi quyền phòng / BE3 | TODO | Chưa tích hợp/kiểm provider thật |
@@ -92,11 +92,26 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 ## Phối hợp và bước tiếp theo
 
 - BE2 đã bàn giao tài liệu contract và ghi chú cho hai AI ở `f0dd6e7`; BE1/BE3 đọc trước khi xây port phía mình.
-- BE2 hoàn thành phạm vi nền bước 2 trên `feat/be2-contract-foundation`: `UnitOfWork`/`Tx`, driver Prisma 6 dạng interface, thứ tự khóa, interface/stub, DTO/fixture, schema, OpenAPI UC02 một phần và contract test. Đã đối chiếu mục 4.3–4.5, 8.4 và 7.1 của báo cáo Word. Chưa có endpoint nghiệp vụ; migration application chờ nền BE1.
+- BE2 hoàn thành phạm vi nền bước 2 trên `feat/be2-contract-foundation` và đã đưa lên `main` tại `62215fc`: `UnitOfWork`/`Tx`, driver Prisma 6 dạng interface, thứ tự khóa, interface/stub, DTO/fixture, schema, OpenAPI UC02 một phần và contract test. Đã đối chiếu mục 4.3–4.5, 8.4 và 7.1 của báo cáo Word. Chưa có endpoint nghiệp vụ; migration application chờ nền BE1.
 - BE1 cần cung cấp nền Identity/Company/Job/Skill và migration được tham chiếu; BE3 cần cung cấp InterviewLifecycle/Outbox. Đây là phụ thuộc đã biết, chưa có báo cáo tiến độ triển khai từ hai người trong sổ chung.
 - Bước kế tiếp của BE2: nhận migration Identity/Company/Job/Skill và port BE1, viết migration/adapter BE2, triển khai lát cắt UC02 kèm PostgreSQL integration và concurrency test; sau đó ghép BE3 để kiểm withdraw/result. Các máy cần xác minh Node/npm/Docker và dependency khi bắt đầu chạy ứng dụng; không dùng kết quả setup của máy khác thay cho kiểm tra local.
 
 ## Nhật ký báo cáo
+
+### 2026-10-22 16:15 (Asia/Saigon) — BE2 — Tích hợp nền bước 2 lên main
+
+- Mã báo cáo: 20261022-1615-BE2-tich-hop-main
+- Người thực hiện / AI hỗ trợ: Người phụ trách BE2 (GitHub repository Truong102006) / Codex; chưa xác nhận tên thật.
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: BE2-STEP2, CONTRACT-01, QA-01; nền cho UC02/06/07/12/14; mục 4.3–4.5, 7.1 và 8.4 báo cáo Word.
+- Trạng thái: DONE — tích hợp phạm vi nền bước 2; các UC vẫn TODO.
+- Nhánh / commit / PR / tích hợp main: `feat/be2-contract-foundation` → `main` / [62215fc](https://github.com/Truong102006/recruitment-management-system/commit/62215fc) / không có PR theo yêu cầu push main / Đã gộp main và push origin/main thành công.
+- Đã hoàn thành: Fast forward từ `f4fe282` đến `62215fc`, push lên origin/main và cập nhật sổ/đặc tả trạng thái tích hợp; BE1/BE3/FE có thể đọc các contract chung trên main.
+- File / bằng chứng: Commit `62215fc`; `progress/README.md`, `Docs/be2-integration-contract.md`, `Docs/project-specification.md` trong commit chứa báo cáo cập nhật này.
+- Kiểm tra đã chạy: `git fetch origin --prune` trước gộp cho main local/remote 0/0; `git diff --cached --check` đạt; `git merge --ff-only feat/be2-contract-foundation` thành công; `git push origin main` trả `f4fe282..62215fc main -> main`. Unit/contract/typecheck/lint xem báo cáo 20261022-1612-BE2-nen-buoc-2.
+- Kiểm tra chưa chạy / coverage: Không chạy lại test cho đính chính tài liệu sau push; coverage nền đã đo 97,18% dòng, 100% nhánh ở báo cáo trước. Integration/API/concurrency PostgreSQL và CI chưa chạy vì thiếu implementation/DB.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không thêm thay đổi kỹ thuật sau `62215fc`; chỉ cập nhật trạng thái tài liệu. Các nhóm lấy main mới để dùng interface/schema v1, tự triển khai adapter thuộc phạm vi mình.
+- Phần còn thiếu / blocker: Phạm vi tích hợp bước 2 không còn; UC nghiệp vụ cần migration/port BE1 và BE3 thật, PostgreSQL và kiểm tích hợp. Trong đặc tả cũ có 5 liên kết hình ERD thiếu file media từ trước đợt này; không ảnh hưởng contract bước 2.
+- Bước tiếp theo: BE2 triển khai migration/adapter và UC02; BE1/BE3 đối chiếu handoff trước khi nối service; kiểm lại origin/main sau commit tài liệu này.
 
 ### 2026-10-22 16:12 (Asia/Saigon) — BE2 — Hoàn thành nền bước 2 và chuẩn bị tích hợp main
 

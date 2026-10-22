@@ -4,7 +4,7 @@
 
 Nguồn: [Bao_Cao_SE113_Final.md](Bao_Cao_SE113_Final.md), bản bổ sung ngày 16/10/2026. Tài liệu tập hợp đầy đủ các phần liên quan từ báo cáo để agent tra cứu khi triển khai: 15 FR, 20 BR, 16 UC, 25 bảng, TC01–TC60, EC01–EC40, ma trận test giao diện, tiêu chí CI và hợp đồng API.
 
-**Đây là đặc tả cần triển khai, chưa phải chức năng đã hoạt động.** Repo đã có khung API/worker/web, manifest/lockfile và cấu hình phát triển theo [development-setup.md](development-setup.md). BE2 đã có nền code transaction/port, DTO/schema và test unit/contract trên nhánh bước 2; chưa có model/migration nghiệp vụ, endpoint chạy hoặc CI thực thi. SQL là thiết kế tham khảo; endpoint chưa được kiểm chứng trên server. Coverage nền có ghi trong [sổ tiến độ](../progress/README.md), không thay cho nghiệm thu UC. OpenAPI và schema request/response hiện mới bao phủ một phần hợp đồng.
+**Đây là đặc tả cần triển khai, chưa phải chức năng đã hoạt động.** Repo đã có khung API/worker/web, manifest/lockfile và cấu hình phát triển theo [development-setup.md](development-setup.md). Nền code transaction/port, DTO/schema và test unit/contract BE2 đã lên `main` tại `62215fc`; chưa có model/migration nghiệp vụ, endpoint chạy hoặc CI thực thi. SQL là thiết kế tham khảo; endpoint chưa được kiểm chứng trên server. Coverage nền có ghi trong [sổ tiến độ](../progress/README.md), không thay cho nghiệm thu UC. OpenAPI và schema request/response hiện mới bao phủ một phần hợp đồng.
 
 Các mục bên dưới giữ nguyên số thứ tự trong báo cáo để đối chiếu. Thứ tự tra cứu: tổng quan (chương 1), chức năng/quyền/quy tắc và UC (chương 2–3), kiến trúc và database (chương 4–5), test (chương 6 và mục 7.2.5–7.5), API (mục 7.1 ở cuối file). Các hình/đường dẫn ngoài nếu thiếu cần bổ sung khi sử dụng.
 
