@@ -102,7 +102,7 @@ export interface CvSelectionPort {
 
 // Required BE1 providers. These are interface boundaries, not BE1 implementations.
 export interface IdentityCandidatePort {
-  /** For submit/upload: ACTIVE + CANDIDATE + verified; never trust actor.roles alone. */
+  /** Lock user first for submit/upload; verify ACTIVE + CANDIDATE + email, never actor.roles alone. */
   assertActiveCandidate(
     actor: Actor,
     tx: Tx,
@@ -121,7 +121,8 @@ export interface CompanyAccessPort {
   }>;
 }
 export interface JobApplicationPort {
-  /** Acquire locks in the global plan; verify deadline at DB clock after locking. */
+  /** Lock company then job; verify company APPROVED/owner, job PUBLISHED, no active
+   * candidate membership, and DB clock strictly before deadline after locking. */
   lockForSubmission(
     jobId: string,
     candidateId: string,

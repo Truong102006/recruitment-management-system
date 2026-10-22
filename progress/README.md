@@ -90,6 +90,7 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 | BE2-PROFILE-04 | Phần BE2 độc lập của UC12 / BE2 + Codex | DONE | [Bàn giao profile](../Docs/be2-profile-handoff.md), lên `main` tại `9ae1f4e`: repository, service profile/skill/version, snapshot và OpenAPI GET/PATCH. UC12 tổng thể vẫn IN_PROGRESS |
 | STORAGE-01 | Storage CV và scanner / BE2 | IN_PROGRESS | Có port và service/repository quarantine/quét/xóa, unit test; còn provider PDF/scanner, object store, worker/reconciliation, API và test PostgreSQL |
 | BE2-CV-05 | Lát cắt độc lập kho CV bước 5 / BE2 + Codex | DONE | Repository/service và 3 unit test đạt trên `feat/be2-cv-submission`; chỉ DONE cho code độc lập, UC06/STORAGE-01 vẫn IN_PROGRESS |
+| BE2-SUBMIT-06 | Điều phối nộp hồ sơ bước 6 / BE2 + Codex | DONE | Workflow nối BE1/BE2 với persistence, ánh xạ UNIQUE và unit test; chỉ DONE cho phần độc lập, UC02 vẫn IN_PROGRESS |
 | WORKER-01 | Outbox/email/worker / BE3; idempotency/transaction do BE2 phối hợp | TODO | Chưa triển khai |
 | VIDEO-01 | Jitsi và thu hồi quyền phòng / BE3 | TODO | Chưa tích hợp/kiểm provider thật |
 | QA-01 | Unit/integration/API/concurrency/FE/E2E / từng người theo phần mình | IN_PROGRESS | BE2: 82 unit + 13 contract test đạt trên code đã tích hợp `main`, coverage source hiện có 87,68% dòng, 85,06% nhánh; SQL repository chưa kiểm DB, integration/API/concurrency/FE/E2E chưa chạy |
@@ -110,6 +111,21 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 - Bước kế tiếp của BE1: tạo nhánh BE1, bắt đầu pha 1 chốt contract/fixtures, bootstrap + Identity migration để mở khóa BE2 và BE3.
 
 ## Nhật ký báo cáo
+
+### 2026-10-23 00:51 (Asia/Saigon) — BE2 — Bước 6 điều phối nộp hồ sơ
+
+- Mã báo cáo: 20261023-0051-BE2-dieu-phoi-nop-ho-so
+- Người thực hiện / AI hỗ trợ: Người phụ trách BE2 (GitHub repository Truong102006) / Codex; chưa xác nhận tên thật.
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: BE2-SUBMIT-06, UC02, FR05–FR06, BR02/BR05–BR07, TC08–TC12, EC01–EC03/EC29 ở phạm vi unit.
+- Trạng thái: DONE — code điều phối và unit phần BE2 độc lập; UC02 tổng thể IN_PROGRESS vì chưa có API, port/provider thật và test DB.
+- Nhánh / commit / PR / tích hợp main: `feat/be2-cv-submission` / commit chứa báo cáo này / chưa có PR / Chưa gộp main tại thời điểm báo cáo.
+- Đã hoàn thành: Validate ID/key; khóa user qua BE1, company/job qua BE1, CV READY BE2 theo thứ tự, snapshot profile; nối persistence ghi application/history/outbox/idempotency cùng tx; ánh xạ UNIQUE candidate/job thành conflict và giữ lỗi DB khác.
+- File / bằng chứng: `apps/api/src/modules/application/services/submit-application-workflow.service.ts`, `submit-application-workflow.service.spec.ts`, `repositories/prisma-application.repository.ts`, `prisma-application.repository.spec.ts`, `libs/contracts/backend/index.ts`, đặc tả và hợp đồng tích hợp.
+- Kiểm tra đã chạy: TypeScript backend và public contracts đạt; ESLint toàn `apps libs tests` đạt; Jest toàn bộ 90/90 unit và 13/13 contract đạt trên Windows/Node 24; Prettier đã chạy cho file bước 6.
+- Kiểm tra chưa chạy / coverage: Coverage chưa đo. PostgreSQL, API/guard, đồng thời với đóng tin/đình chỉ và hai key khác nhau chưa chạy do chưa có BE1 migration/ports, BE3 Outbox.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không đổi SQL, DTO, event hay endpoint; làm rõ hợp đồng BE1 phải khóa user rồi company/job và kiểm membership/deadline bằng DB clock. BE3 phải cấp OutboxPort trong cùng transaction.
+- Phần còn thiếu / blocker: BE1 Identity/Job implementation, migration và guard/CSRF; BE3 Outbox; API/DB/concurrency/FE test. UC02 chưa được nghiệm thu.
+- Bước tiếp theo: Chạy suite chung, commit riêng bước 6, đưa hai commit lên main và cập nhật tích hợp.
 
 ### 2026-10-23 00:48 (Asia/Saigon) — BE2 — Bước 5 kho CV
 
