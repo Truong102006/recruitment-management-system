@@ -102,6 +102,8 @@ Base path `/api`, UUID và ISO8601 có offset, response thành công `{ data, me
 
 ## 6. Idempotency, Outbox và lỗi tích hợp
 
+Lát cắt kho CV bước 5 nằm tại `apps/api/src/modules/cv/`: BE1 phải cấp `IdentityCandidatePort.assertActiveCandidate` có khóa user ở đầu transaction; BE2 reserve quota dưới khóa đó, finalize chỉ một upload attempt, và worker sau commit mới claim lease quét/xóa. `QuarantineStore` phải tạo object/version bất biến và URL tải tối đa 300 giây; `CvSafetyInspector` phải parse cấu trúc PDF, phát hiện mã hóa và scan malware bằng provider thật, lỗi kỹ thuật trả về retry quarantine. Các adapter này và HTTP guard chưa được đăng ký; không được dùng fake inspector trong môi trường vận hành. BE3 chuyển `cv.scan_requested`/`cv.delete_requested` cho worker và deduplicate bằng event ID. Reconciliation phải dọn object orphan do lỗi commit và attempt hết hạn; chưa triển khai ở bước này.
+
 Adapter và lát cắt ghi nội bộ bước 3 xem [bàn giao persistence BE2](be2-persistence-handoff.md). `authorize(tx)` phải kiểm quyền hiện tại cho cả replay; chỉ claim mới gọi `verifyNew(tx)` để kiểm điều kiện tin và CV READY thật. Test driver giả chỉ chứng minh thứ tự/rollback ở mức code. Không gọi lát cắt này từ controller cho đến khi guard và các port có implementation.
 
 - BE2 điều phối `UnitOfWork` và `IdempotencyStore`. `UNIQUE(user_id,operation,key)` + `request_hash` của payload chuẩn hóa; cùng key/payload trả cùng resource sau **kiểm quyền hiện tại**, khác payload trả 409. Giữ record ít nhất 24 giờ. In-progress trả `409 REQUEST_IN_PROGRESS` với `Retry-After`; không tạo key mới để retry khi kết quả chưa rõ.
