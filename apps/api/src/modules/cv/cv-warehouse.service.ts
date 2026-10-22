@@ -190,9 +190,9 @@ export class CvWarehouseService {
     });
   }
 
-  async deleteObject(candidateId: string, cvId: string): Promise<boolean> {
-    const cv = await this.unitOfWork.run((tx) => this.repository.getOwned(candidateId, cvId, tx));
-    if (cv.status !== 'DELETE_PENDING') return false;
+  async deleteObject(cvId: string): Promise<boolean> {
+    const cv = await this.unitOfWork.run((tx) => this.repository.getForWorker(cvId, tx));
+    if (!cv || cv.status !== 'DELETE_PENDING') return false;
     if (cv.storageVersionId) await this.store.deleteVersion(cv.objectKey, cv.storageVersionId);
     return this.unitOfWork.run((tx) => this.repository.finishDelete(cvId, cv.storageVersionId, tx));
   }

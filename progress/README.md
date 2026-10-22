@@ -34,7 +34,7 @@
 
 ## Tổng quan hiện tại
 
-Cập nhật ngày **23/10/2026**: nền BE2, kế hoạch BE1/BE3, quy tắc thuần và các bước BE2 2–6 đã tích hợp trên `main` (`6de3918`, `57bcbbe`, `9ae1f4e`, `3123e75`, `c874fbb`). BE2 đạt 90 unit + 13 contract test cho code hiện có. Có model và SQL BE2 chờ bảng nền BE1; chưa có migration PostgreSQL đã áp dụng, route API nghiệp vụ chạy được hoặc pipeline CI. Việc cài dependency và mở Vite ngày 16/10 là ghi nhận lịch sử ở môi trường trước, không xác nhận máy của mọi thành viên đã setup thành công.
+Cập nhật ngày **23/10/2026**: nền BE2, kế hoạch BE1/BE3, quy tắc thuần và các bước BE2 2–6 đã tích hợp trên `main` (`6de3918`, `57bcbbe`, `9ae1f4e`, `3123e75`, `c874fbb`); đã sửa thêm đường xử lý sự kiện xóa CV. BE2 đạt 91 unit + 13 contract test cho code hiện có. Có model và SQL BE2 chờ bảng nền BE1; chưa có migration PostgreSQL đã áp dụng, route API nghiệp vụ chạy được hoặc pipeline CI. Việc cài dependency và mở Vite ngày 16/10 là ghi nhận lịch sử ở môi trường trước, không xác nhận máy của mọi thành viên đã setup thành công.
 
 Các công việc trên nhánh cá nhân chưa được báo cáo vào đây chưa được xác nhận. Mỗi thành viên cập nhật kết quả của mình kèm bằng chứng; không coi bảng TODO là kết luận người đó chưa làm gì ngoài main.
 
@@ -93,7 +93,7 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 | BE2-SUBMIT-06 | Điều phối nộp hồ sơ bước 6 / BE2 + Codex | DONE | Workflow nối BE1/BE2 với persistence, ánh xạ UNIQUE và unit test, đã push `main` tại `c874fbb`; chỉ DONE cho phần độc lập, UC02 vẫn IN_PROGRESS |
 | WORKER-01 | Outbox/email/worker / BE3; idempotency/transaction do BE2 phối hợp | TODO | Chưa triển khai |
 | VIDEO-01 | Jitsi và thu hồi quyền phòng / BE3 | TODO | Chưa tích hợp/kiểm provider thật |
-| QA-01 | Unit/integration/API/concurrency/FE/E2E / từng người theo phần mình | IN_PROGRESS | BE2: 90 unit + 13 contract test đạt trên code đã tích hợp `main`; coverage mới chưa đo (số 87,68% dòng/85,06% nhánh là lần đo cũ); SQL repository chưa kiểm DB, integration/API/concurrency/FE/E2E chưa chạy |
+| QA-01 | Unit/integration/API/concurrency/FE/E2E / từng người theo phần mình | IN_PROGRESS | BE2: 91 unit + 13 contract test đạt; coverage mới chưa đo (số 87,68% dòng/85,06% nhánh là lần đo cũ); SQL repository chưa kiểm DB, integration/API/concurrency/FE/E2E chưa chạy |
 | CI-01 | Pipeline và evidence gate / BE1 điều phối, cả nhóm bổ sung | TODO | Chưa có workflow thực thi |
 | OPS-01 | Hiệu năng, backup/restore và vận hành / BE3 điều phối, cả nhóm kiểm chứng | TODO | Chưa đo/chưa diễn tập |
 
@@ -112,6 +112,21 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 - Bước kế tiếp của BE1: tạo nhánh BE1, bắt đầu pha 1 chốt contract/fixtures, bootstrap + Identity migration để mở khóa BE2 và BE3.
 
 ## Nhật ký báo cáo
+
+### 2026-10-23 00:54 (Asia/Saigon) — BE2 — Nối sự kiện xóa CV với worker
+
+- Mã báo cáo: 20261023-0054-BE2-xoa-cv-worker
+- Người thực hiện / AI hỗ trợ: Người phụ trách BE2 (GitHub repository Truong102006) / Codex; chưa xác nhận tên thật.
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: BE2-CV-05, UC06, BR06–BR07, STORAGE-01.
+- Trạng thái: DONE — sửa điểm nối worker trong lát cắt BE2; UC06 tổng thể còn IN_PROGRESS.
+- Nhánh / commit / PR / tích hợp main: `main` / commit chứa báo cáo này / không có PR / Chưa push commit sửa này tại thời điểm báo cáo.
+- Đã hoàn thành: Worker xóa object tra CV bằng `cvId` duy nhất đúng payload `cv.delete_requested`; hoàn tất DELETED sau khi xóa đúng storage version, retry no-op nếu đã hoàn tất.
+- File / bằng chứng: `apps/api/src/modules/cv/cv.repository.ts`, `cv-warehouse.service.ts`, `cv-warehouse.service.spec.ts`.
+- Kiểm tra đã chạy: TypeScript backend đạt; Jest toàn suite 91/91 unit đạt, riêng CV 4/4 đạt; ESLint thư mục CV đạt; Prettier ba file đạt trên Windows/Node 24.
+- Kiểm tra chưa chạy / coverage: Contract suite không chạy lại sau sửa này vì không đổi contract; coverage chưa đo; DB/provider/worker thật chưa có.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không đổi schema/DTO/event; worker BE3 chỉ cần `cvId` sẵn có trong event, không cần candidateId.
+- Phần còn thiếu / blocker: Cần adapter object store/scanner và worker thật để kiểm end-to-end; cần BE1 migration/guard cho route.
+- Bước tiếp theo: Commit/push sửa này; kiểm trạng thái main và báo cáo giới hạn nghiệm thu.
 
 ### 2026-10-23 00:53 (Asia/Saigon) — BE2 — Tích hợp bước 5–6 lên main
 

@@ -27,6 +27,7 @@ export interface CvRepository extends CvSelectionPort {
     tx: TransactionContext,
   ): Promise<CvRecord>;
   getOwned(candidateId: string, cvId: string, tx: TransactionContext): Promise<CvRecord>;
+  getForWorker(cvId: string, tx: TransactionContext): Promise<CvRecord | null>;
   quarantine(
     cvId: string,
     attemptId: string,
@@ -124,6 +125,15 @@ export class PrismaCvRepository implements CvRepository {
     );
     if (!row) throw new ApplicationRuleError('RESOURCE_NOT_FOUND', 'CV not found');
     return map(row);
+  }
+
+  async getForWorker(cvId: string, tx: TransactionContext): Promise<CvRecord | null> {
+    const [row] = await this.sql.query<DbRow>(
+      tx,
+      `SELECT ${columns} FROM cv_version WHERE id = $1::uuid FOR UPDATE`,
+      [cvId],
+    );
+    return row ? map(row) : null;
   }
 
   async quarantine(

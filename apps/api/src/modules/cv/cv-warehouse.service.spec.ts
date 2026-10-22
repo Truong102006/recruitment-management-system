@@ -62,6 +62,9 @@ function setup() {
       if (!row || row.candidateId !== candidateId) throw new Error('not found');
       return row;
     },
+    async getForWorker(cvId, tx) {
+      return uow.clientFor(tx).get(cvId) ?? null;
+    },
     async quarantine(cvId, attemptId, versionId, _size, checksum, tx) {
       const row = uow.clientFor(tx).get(cvId)!;
       if (row.status !== 'PENDING_UPLOAD' || row.uploadAttemptId !== attemptId) return false;
@@ -202,5 +205,18 @@ describe('CV warehouse', () => {
       ),
     ).rejects.toMatchObject({ code: 'UNSUPPORTED_MEDIA_TYPE' });
     expect(h.objects.size).toBe(0);
+  });
+
+  it('deletes an unreferenced object using only the CV ID from the event', async () => {
+    const h = setup();
+    const init = await h.service.initiate(actor, 'resume.pdf');
+    await h.service.upload(actor, init.cvId, init.attemptId, 'application/pdf', file());
+    await h.service.scan(init.cvId);
+    await h.service.requestDelete(actor, init.cvId);
+    expect(h.events).toEqual(['cv.scan_requested', 'cv.delete_requested']);
+    expect(await h.service.deleteObject(init.cvId)).toBe(true);
+    expect(h.rows().get(init.cvId)?.status).toBe('DELETED');
+    expect(h.objects.size).toBe(0);
+    expect(await h.service.deleteObject(init.cvId)).toBe(false);
   });
 });
