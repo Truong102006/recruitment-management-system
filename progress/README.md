@@ -53,7 +53,7 @@ Các công việc trên nhánh cá nhân chưa được báo cáo vào đây ch�
 | UC09 | Công bố kết quả | BE3 | TODO | Có điểm nối và quy tắc nhận kết quả ở BE2; chưa có workflow/test tích hợp BE3 |
 | UC10 | Quản trị và kiểm duyệt | BE1 | TODO | Chưa có API/test |
 | UC11 | Doanh nghiệp và thành viên | BE1 | TODO | Chưa có API/test |
-| UC12 | Hồ sơ cá nhân | BE2 | TODO | Có DTO/schema, CandidateProfilePort và mapper field công khai; chưa có API/migration/integration test |
+| UC12 | Hồ sơ cá nhân | BE2 | IN_PROGRESS | Bước 4 trên `feat/be2-steps-2-4`; hiện có DTO/schema, CandidateProfilePort và mapper; chưa có API/migration/integration test |
 | UC13 | Đánh giá và hoàn tất phỏng vấn | BE3 | TODO | Chưa có API/test |
 | UC14 | Lưu tin quan tâm | BE2 | TODO | Có contract thiết kế; chưa có API/test |
 | UC15 | Thông báo | BE3 | TODO | Chưa có worker/API/test |
@@ -85,6 +85,8 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 | CONTRACT-01 | Port, DTO, OpenAPI, event schema và contract test / cả ba BE | IN_PROGRESS | Đã có phần BE2 và contract test; còn BE1/BE3, OpenAPI đầy đủ, adapter và nghiệm thu liên module |
 | BE2-STEP2 | Nền transaction và hợp đồng tích hợp / BE2 + Codex | DONE | Đã gộp `main` tại `62215fc`; [bàn giao](../Docs/be2-step2-handoff.md), 23 unit + 11 contract test đạt. DONE chỉ cho phạm vi nền bước 2, không phải UC |
 | BE2-DOMAIN-01 | Quy tắc nghiệp vụ thuần BE2 / BE2 + Codex | DONE | Đã gộp và push `main` tại `f7e8223`; 71 unit + 11 contract test đạt. DONE chỉ cho hàm thuần, không phải UC/API |
+| BE2-DATA-02 | Thiết kế model/ràng buộc và migration BE2 / BE2 + Codex | DONE | Tám model Prisma và SQL chờ tích hợp tại [kế hoạch migration](../Docs/be2-data-migration-plan.md) trên `feat/be2-steps-2-4`; DONE chỉ cho bản thiết kế/schema, chưa chạy migration thật vì thiếu BE1 |
+| BE2-REPO-03 | Repository và idempotency trong transaction / BE2 + Codex | TODO | Bắt đầu sau bước thiết kế dữ liệu |
 | STORAGE-01 | Storage CV và scanner / BE2 | TODO | Chưa có adapter/worker scan/test |
 | WORKER-01 | Outbox/email/worker / BE3; idempotency/transaction do BE2 phối hợp | TODO | Chưa triển khai |
 | VIDEO-01 | Jitsi và thu hồi quyền phòng / BE3 | TODO | Chưa tích hợp/kiểm provider thật |
@@ -105,6 +107,21 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 - Bước kế tiếp của BE1: tạo nhánh BE1, bắt đầu pha 1 chốt contract/fixtures, bootstrap + Identity migration để mở khóa BE2 và BE3.
 
 ## Nhật ký báo cáo
+
+### 2026-10-22 21:20 (Asia/Saigon) — BE2 — Bước 2 thiết kế dữ liệu
+
+- Mã báo cáo: 20261022-2120-BE2-thiet-ke-du-lieu
+- Người thực hiện / AI hỗ trợ: Người phụ trách BE2 (GitHub repository Truong102006) / Codex; chưa xác nhận tên thật.
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: BE2-DATA-02, DB-01; bảng candidate_profile, candidate_skill, cv_version, application, application_history, cv_change_request, saved_job, idempotency_record; mục 5.1–5.4, INV01–04/09.
+- Trạng thái: DONE — phạm vi model và bản SQL chuẩn bị; migration PostgreSQL thực chưa triển khai.
+- Nhánh / commit / PR / tích hợp main: `feat/be2-steps-2-4` / commit chứa báo cáo này / chưa có PR / Chưa gộp main tại thời điểm báo cáo.
+- Đã hoàn thành: Tám model Prisma do BE2 sở hữu; SQL chờ FK tới BE1, FK ghép owner CV/application, unique ứng tuyển, partial unique đề nghị PENDING, CHECK trạng thái/kết quả, trigger bất biến snapshot/CV gốc/object READY và history append-only; kế hoạch thứ tự tích hợp sau BE1.
+- File / bằng chứng: `prisma/schema.prisma`, `prisma/pending/be2-after-be1.sql`, `Docs/be2-data-migration-plan.md`, `Docs/project-specification.md`, `Docs/be2-integration-contract.md`.
+- Kiểm tra đã chạy: 22/10 trên Windows/Node 24: `prisma validate` với `DATABASE_URL` giả đạt; `prisma migrate diff --from-empty --to-schema-datamodel ... --script` sinh DDL để đối chiếu model; kiểm tám model/tám CREATE TABLE và `git diff --check` đạt.
+- Kiểm tra chưa chạy / coverage: Chưa chạy SQL trên PostgreSQL, catalog/insert sai/upgrade fixture vì main chưa có bảng user_account/job_post/skill của BE1 và máy chưa có DB runtime; coverage Chưa đo cho SQL.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Thêm model và bản SQL pending, chưa tự động áp dụng; BE1 phải gộp migration nền trước, BE3 thêm FK sau application. Không đổi API/DTO.
+- Phần còn thiếu / blocker: Áp dụng và kiểm migration thật cần schema BE1; điều kiện gỡ là BE1 gộp Identity/Job/Skill và BE2 chuyển SQL pending thành migration có thứ tự.
+- Bước tiếp theo: Bước 3 viết repository và idempotency qua `TransactionContext`, kiểm logic với fake transaction client trước khi có PostgreSQL.
 
 ### 2026-10-22 21:07 (Asia/Saigon) — BE2 — Tích hợp quy tắc thuần lên main
 

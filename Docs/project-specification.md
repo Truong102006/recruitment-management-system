@@ -1374,6 +1374,8 @@ Hệ thống có 25 bảng, gồm 24 bảng nghiệp vụ và hạ tầng đã x
 
 ## 5.2 Ràng buộc liên bảng và tính nhất quán
 
+**Triển khai BE2 đang chờ migration nền:** [kế hoạch model và migration BE2](be2-data-migration-plan.md) liệt kê tám model do BE2 sở hữu và SQL FK/CHECK/trigger/chỉ mục ở `prisma/pending/`. Bản SQL chưa được áp dụng vì `user_account`, `skill`, `job_post` của BE1 chưa có migration trên main; nó phải được chuyển thành migration sau BE1 rồi kiểm PostgreSQL thật trước khi coi DB BE2 hoàn thành. Quy tắc và bất biến trong các bảng dưới đây không thay đổi.
+
 | **Mã** | **Bất biến**                                                         | **Nơi bảo vệ và ca kiểm thử**                                                        |
 |--------|----------------------------------------------------------------------|--------------------------------------------------------------------------------------|
 | INV01  | Một application cho candidate và job kể cả đã kết thúc               | UNIQUE candidate_id job_id; TC08 TC43                                                |

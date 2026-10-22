@@ -1,4 +1,5 @@
-// Infrastructure configuration only. No business models implemented yet.
+// BE2-owned models. Cross-team FKs and checks are in prisma/pending/be2/.
+// Do not db push this partial schema: BE1 owns the referenced account/job/skill tables.
 generator client {
   provider = "prisma-client-js"
 }
@@ -6,4 +7,144 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model CandidateProfile {
+  userId    String   @id @map("user_id") @db.Uuid
+  phone     String?  @db.VarChar(20)
+  headline  String?  @db.VarChar(160)
+  summary   String?
+  location  String?  @db.VarChar(160)
+  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+  version   Int      @default(0)
+
+  @@map("candidate_profile")
+}
+
+model CandidateSkill {
+  candidateId String @map("candidate_id") @db.Uuid
+  skillId     String @map("skill_id") @db.Uuid
+
+  @@id([candidateId, skillId])
+  @@map("candidate_skill")
+}
+
+model CvVersion {
+  id                String    @id @db.Uuid
+  candidateId       String    @map("candidate_id") @db.Uuid
+  versionNo         Int       @map("version_no")
+  originalName      String    @map("original_name") @db.VarChar(255)
+  objectKey         String    @unique @map("object_key") @db.VarChar(500)
+  sizeBytes         BigInt?   @map("size_bytes")
+  mimeType          String?   @map("mime_type") @db.VarChar(80)
+  checksumSha256    String?   @map("checksum_sha256") @db.Char(64)
+  status            String    @db.VarChar(24)
+  scanAttemptCount  Int       @default(0) @map("scan_attempt_count")
+  scanLockedUntil   DateTime? @map("scan_locked_until") @db.Timestamptz(6)
+  scanNextRetryAt   DateTime? @map("scan_next_retry_at") @db.Timestamptz(6)
+  scanReason        String?   @map("scan_reason") @db.VarChar(500)
+  uploadExpiresAt   DateTime  @map("upload_expires_at") @db.Timestamptz(6)
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  readyAt           DateTime? @map("ready_at") @db.Timestamptz(6)
+  deletedAt         DateTime? @map("deleted_at") @db.Timestamptz(6)
+  storageVersionId  String?   @map("storage_version_id") @db.VarChar(255)
+  uploadAttemptId   String?   @map("upload_attempt_id") @db.Uuid
+  leaseToken        String?   @map("lease_token") @db.Uuid
+  deleteRequestedAt DateTime? @map("delete_requested_at") @db.Timestamptz(6)
+  version           Int       @default(0)
+
+  @@unique([id, candidateId])
+  @@unique([candidateId, versionNo])
+  @@index([candidateId, createdAt(sort: Desc), id])
+  @@index([status, scanNextRetryAt, scanLockedUntil])
+  @@map("cv_version")
+}
+
+model Application {
+  id                  String    @id @db.Uuid
+  jobId               String    @map("job_id") @db.Uuid
+  candidateId         String    @map("candidate_id") @db.Uuid
+  originalCvVersionId String    @map("original_cv_version_id") @db.Uuid
+  currentCvVersionId  String    @map("current_cv_version_id") @db.Uuid
+  candidateSnapshot   Json      @map("candidate_snapshot") @db.JsonB
+  status              String    @db.VarChar(24)
+  coverLetter         String?   @map("cover_letter")
+  resultMessage       String?   @map("result_message")
+  resultPublishedAt   DateTime? @map("result_published_at") @db.Timestamptz(6)
+  submittedAt         DateTime  @default(now()) @map("submitted_at") @db.Timestamptz(6)
+  updatedAt           DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)
+  version             Int       @default(0)
+
+  @@unique([id, candidateId])
+  @@unique([candidateId, jobId])
+  @@index([jobId, status, submittedAt(sort: Desc), id])
+  @@index([candidateId, submittedAt(sort: Desc), id])
+  @@map("application")
+}
+
+model ApplicationHistory {
+  id               String    @id @db.Uuid
+  applicationId    String    @map("application_id") @db.Uuid
+  candidateId      String    @map("candidate_id") @db.Uuid
+  actorId          String?   @map("actor_id") @db.Uuid
+  actorType        String    @map("actor_type") @db.VarChar(10)
+  eventType        String    @map("event_type") @db.VarChar(40)
+  fromStatus       String?   @map("from_status") @db.VarChar(24)
+  toStatus         String    @map("to_status") @db.VarChar(24)
+  oldCvId          String?   @map("old_cv_id") @db.Uuid
+  newCvId          String?   @map("new_cv_id") @db.Uuid
+  reason           String?
+  publicMessage    String?   @map("public_message") @db.VarChar(3000)
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  aggregateVersion Int       @map("aggregate_version")
+
+  @@index([applicationId, createdAt, id])
+  @@map("application_history")
+}
+
+model CvChangeRequest {
+  id                          String    @id @db.Uuid
+  applicationId               String    @map("application_id") @db.Uuid
+  candidateId                 String    @map("candidate_id") @db.Uuid
+  newCvId                     String    @map("new_cv_id") @db.Uuid
+  baseCvVersionId             String    @map("base_cv_version_id") @db.Uuid
+  applicationVersionAtRequest Int       @map("application_version_at_request")
+  status                      String    @db.VarChar(16)
+  requestedAt                 DateTime  @default(now()) @map("requested_at") @db.Timestamptz(6)
+  reviewedBy                  String?   @map("reviewed_by") @db.Uuid
+  reviewedAt                  DateTime? @map("reviewed_at") @db.Timestamptz(6)
+  reason                      String?
+  cancelledAt                 DateTime? @map("cancelled_at") @db.Timestamptz(6)
+  version                     Int       @default(0)
+
+  @@index([applicationId, requestedAt(sort: Desc), id])
+  @@map("cv_change_request")
+}
+
+model SavedJob {
+  candidateId String   @map("candidate_id") @db.Uuid
+  jobId       String   @map("job_id") @db.Uuid
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@id([candidateId, jobId])
+  @@index([candidateId, createdAt(sort: Desc), jobId])
+  @@map("saved_job")
+}
+
+model IdempotencyRecord {
+  id           String    @id @db.Uuid
+  userId       String    @map("user_id") @db.Uuid
+  operation    String    @db.VarChar(80)
+  key          String    @db.VarChar(100)
+  requestHash  String    @map("request_hash") @db.Char(64)
+  resourceId   String?   @map("resource_id") @db.Uuid
+  status       String    @db.VarChar(16)
+  responseCode Int?      @map("response_code") @db.SmallInt
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  expiresAt    DateTime  @map("expires_at") @db.Timestamptz(6)
+  completedAt  DateTime? @map("completed_at") @db.Timestamptz(6)
+
+  @@unique([userId, operation, key])
+  @@index([status, expiresAt])
+  @@map("idempotency_record")
 }
