@@ -1,0 +1,96 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://rms.example/contracts/events/be2.v1.json",
+  "title": "BE2 producer envelope v1; consumer delivery remains owned by BE3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "eventType",
+    "schemaVersion",
+    "aggregateId",
+    "aggregateVersion",
+    "occurredAt",
+    "payload"
+  ],
+  "properties": {
+    "eventId": { "type": "string", "format": "uuid" },
+    "eventType": {
+      "type": "string",
+      "enum": [
+        "candidate.profile_updated",
+        "cv.scan_requested",
+        "cv.delete_requested",
+        "application.submitted",
+        "application.status_changed",
+        "application.cv_replaced",
+        "application.withdrawn",
+        "application.result_published",
+        "saved_job.created",
+        "saved_job.deleted"
+      ]
+    },
+    "schemaVersion": { "const": 1 },
+    "aggregateId": { "type": "string", "format": "uuid" },
+    "aggregateVersion": { "type": "integer", "minimum": 0 },
+    "occurredAt": { "type": "string", "format": "date-time" },
+    "payload": { "type": "object" }
+  },
+  "oneOf": [
+    {
+      "properties": {
+        "eventType": { "const": "candidate.profile_updated" },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["candidateId"],
+          "properties": { "candidateId": { "type": "string", "format": "uuid" } }
+        }
+      }
+    },
+    {
+      "properties": {
+        "eventType": { "enum": ["cv.scan_requested", "cv.delete_requested"] },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["cvId"],
+          "properties": { "cvId": { "type": "string", "format": "uuid" } }
+        }
+      }
+    },
+    {
+      "properties": {
+        "eventType": {
+          "enum": [
+            "application.submitted",
+            "application.status_changed",
+            "application.cv_replaced",
+            "application.withdrawn",
+            "application.result_published"
+          ]
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["applicationId"],
+          "properties": { "applicationId": { "type": "string", "format": "uuid" } }
+        }
+      }
+    },
+    {
+      "properties": {
+        "eventType": { "enum": ["saved_job.created", "saved_job.deleted"] },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["candidateId", "jobId"],
+          "properties": {
+            "candidateId": { "type": "string", "format": "uuid" },
+            "jobId": { "type": "string", "format": "uuid" }
+          }
+        }
+      }
+    }
+  ]
+}

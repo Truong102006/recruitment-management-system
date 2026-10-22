@@ -4,11 +4,11 @@
 
 Nguồn: [Bao_Cao_SE113_Final.md](Bao_Cao_SE113_Final.md), bản bổ sung ngày 16/10/2026. Tài liệu tập hợp đầy đủ các phần liên quan từ báo cáo để agent tra cứu khi triển khai: 15 FR, 20 BR, 16 UC, 25 bảng, TC01–TC60, EC01–EC40, ma trận test giao diện, tiêu chí CI và hợp đồng API.
 
-**Đây là đặc tả cần triển khai, chưa phải chức năng đã hoạt động.** Repo đã có khung API/worker/web, manifest/lockfile và cấu hình phát triển theo [development-setup.md](development-setup.md); file nguồn ứng dụng còn trống, chưa có model/migration, test hay CI thực thi. SQL là thiết kế tham khảo; endpoint chưa được kiểm chứng trên server; test chưa chạy và coverage chưa đo. Khi triển khai cần bổ sung OpenAPI và schema request/response chi tiết theo hợp đồng nguồn.
+**Đây là đặc tả cần triển khai, chưa phải chức năng đã hoạt động.** Repo đã có khung API/worker/web, manifest/lockfile và cấu hình phát triển theo [development-setup.md](development-setup.md). BE2 đã có nền code transaction/port, DTO/schema và test unit/contract trên nhánh bước 2; chưa có model/migration nghiệp vụ, endpoint chạy hoặc CI thực thi. SQL là thiết kế tham khảo; endpoint chưa được kiểm chứng trên server. Coverage nền có ghi trong [sổ tiến độ](../progress/README.md), không thay cho nghiệm thu UC. OpenAPI và schema request/response hiện mới bao phủ một phần hợp đồng.
 
 Các mục bên dưới giữ nguyên số thứ tự trong báo cáo để đối chiếu. Thứ tự tra cứu: tổng quan (chương 1), chức năng/quyền/quy tắc và UC (chương 2–3), kiến trúc và database (chương 4–5), test (chương 6 và mục 7.2.5–7.5), API (mục 7.1 ở cuối file). Các hình/đường dẫn ngoài nếu thiếu cần bổ sung khi sử dụng.
 
-Tiến độ thực tế: [agent-progress.md](agent-progress.md). Quy trình agent: [AGENTS.md](../AGENTS.md). Khi thay đổi thiết kế trong lúc code, cập nhật tài liệu này và ghi rõ khác biệt với báo cáo trong tiến độ; không sửa báo cáo gốc một cách âm thầm.
+Tiến độ thực tế: [progress/README.md](../progress/README.md); [agent-progress.md](agent-progress.md) giữ lịch sử. Quy trình agent: [AGENTS.md](../AGENTS.md). Khi thay đổi thiết kế trong lúc code, cập nhật tài liệu này và ghi rõ khác biệt với báo cáo trong tiến độ; không sửa báo cáo gốc một cách âm thầm.
 
 # CHƯƠNG 1 TỔNG QUAN VÀ PHẠM VI
 
@@ -909,7 +909,7 @@ Không phải module nào cũng cần đủ tất cả thư mục; cấu trúc p
 | OutboxPort                     | eventId aggregateId type schemaVersion payload tx             | Chỉ ghi; worker gửi sau commit; payload tối thiểu       |
 | VideoPort StoragePort MailPort | DTO tích hợp không lộ model ORM                               | Timeout rõ; retry và idempotency theo khả năng provider |
 
-**Hợp đồng tích hợp BE2 phiên bản 1:** [be2-integration-contract.md](be2-integration-contract.md) chốt dữ liệu/port giữa BE1–BE2–BE3, ownership và thứ tự migration, chữ ký logic `ApplicationPort`/`ApplicationResultPort`/`InterviewLifecyclePort`, DTO/HTTP BE2 và tên event v1. Đây là chi tiết triển khai bổ sung cho mục 4.3, không thay đổi BR01–BR20, cạnh trạng thái ở mục 3.2 hay API đã liệt kê ở mục 7.1; chưa có port, event schema hoặc contract test chạy được. Khi triển khai hoặc đổi hợp đồng này, phải cập nhật đặc tả, OpenAPI/event schema và test liên quan trong cùng PR.
+**Hợp đồng tích hợp BE2 phiên bản 1:** [be2-integration-contract.md](be2-integration-contract.md) chốt dữ liệu/port giữa BE1–BE2–BE3, ownership và thứ tự migration, chữ ký logic `ApplicationPort`/`ApplicationResultPort`/`InterviewLifecyclePort`, DTO/HTTP BE2 và tên event v1. [Bàn giao bước 2](be2-step2-handoff.md) chỉ vị trí code TypeScript, schema, fixture và phạm vi kiểm chứng. Đã có `UnitOfWork`/driver, interface/stub port, DTO ứng viên, schema event/request và test unit/contract; chưa có API/migration/repository nghiệp vụ hoặc kiểm DB thật. Đây là chi tiết triển khai bổ sung cho mục 4.3, không thay đổi BR01–BR20, cạnh trạng thái ở mục 3.2 hay API đã liệt kê ở mục 7.1. `name` công khai ánh xạ từ cột `user_account.full_name`; header `X-CSRF-Token` là tên kỹ thuật để triển khai yêu cầu CSRF/Origin ở mục 4.6. Khi triển khai hoặc đổi hợp đồng này, phải cập nhật đặc tả, OpenAPI/event schema và test liên quan trong cùng PR.
 
 ## 4.4 Transaction khóa và thao tác đồng thời
 
