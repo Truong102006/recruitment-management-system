@@ -39,6 +39,8 @@ Actor chỉ được BE1 xác thực từ session; client không được khai `
 
 Thứ tự khóa chung: `user_account` theo UUID tăng dần → `company` → `job_post` → `application` → `interview` → `cv_version`. Trong mỗi nhóm khóa theo UUID tăng dần. Đọc trước toàn bộ ID liên quan, khóa theo thứ tự rồi kiểm lại quan hệ, quyền, trạng thái và version; nếu phạm vi thay đổi thì rollback và thử lại có giới hạn. Deadline ứng tuyển dùng `clock_timestamp()` của DB **sau khi có khóa**, nhận khi `< deadline`, từ chối tại đúng deadline. Không giữ transaction trong lúc upload, quét, gọi provider hoặc gửi email.
 
+**Quy tắc thuần BE2 (đợt sau bước nền):** `apps/api/src/modules/application/rules/application-transition.rules.ts` quyết định riêng cho review, xác nhận/hủy lịch, INTERVIEWED, công bố kết quả và withdraw; `cv-change.rules.ts` quyết định thay CV/duyệt đề nghị; `policies/application.policy.ts` so ID ứng viên hoặc company với quyền BE1 đã kiểm. Các hàm này không đọc DB hoặc tự cấp quyền. Service phải gọi port BE1/BE3, khóa và kiểm lại hàng hiện hành, rồi áp dụng quyết định trong cùng transaction. `cancelPendingCvChange` và `cancelOpenInterviews` là việc workflow bắt buộc thực hiện trước khi commit, không phải tác dụng phụ đã xảy ra khi hàm trả về. `InterviewEvidence` phải thuộc application/transaction hiện tại; công bố kết quả yêu cầu không còn PROPOSED/CONFIRMED sau khi BE3 xử lý lịch mở. Không đổi cạnh trạng thái hoặc quy tắc của báo cáo; mới chỉ tách logic có thể kiểm độc lập khỏi service/DB.
+
 ## 3. BE1 cung cấp cho BE2
 
 | Port/đầu vào | Kết quả BE2 cần | Quy tắc bắt buộc |
