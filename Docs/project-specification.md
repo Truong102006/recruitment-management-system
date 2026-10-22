@@ -8,7 +8,7 @@ Nguồn: [Bao_Cao_SE113_Final.md](Bao_Cao_SE113_Final.md), bản bổ sung ngày
 
 Các mục bên dưới giữ nguyên số thứ tự trong báo cáo để đối chiếu. Thứ tự tra cứu: tổng quan (chương 1), chức năng/quyền/quy tắc và UC (chương 2–3), kiến trúc và database (chương 4–5), test (chương 6 và mục 7.2.5–7.5), API (mục 7.1 ở cuối file). Các hình/đường dẫn ngoài nếu thiếu cần bổ sung khi sử dụng.
 
-Tiến độ thực tế: [progress/README.md](../progress/README.md); [agent-progress.md](agent-progress.md) giữ lịch sử. Quy trình agent: [AGENTS.md](../AGENTS.md). Khi thay đổi thiết kế trong lúc code, cập nhật tài liệu này và ghi rõ khác biệt với báo cáo trong tiến độ; không sửa báo cáo gốc một cách âm thầm.
+Tiến độ thực tế: [progress/README.md](../progress/README.md); [agent-progress.md](agent-progress.md) chỉ giữ lịch sử. Quy trình agent: [AGENTS.md](../AGENTS.md). Khi thay đổi thiết kế trong lúc code, cập nhật tài liệu này và ghi rõ khác biệt với báo cáo trong tiến độ; không sửa báo cáo gốc một cách âm thầm.
 
 # CHƯƠNG 1 TỔNG QUAN VÀ PHẠM VI
 

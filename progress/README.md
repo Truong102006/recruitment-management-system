@@ -34,7 +34,7 @@
 
 ## Tổng quan hiện tại
 
-Cập nhật ngày **22/10/2026**: nền BE2 bước 2 đã được kiểm trên `feat/be2-contract-foundation` và push lên `main` tại `62215fc`. Repository có khung, tài liệu, transaction/port và contract BE2, cùng unit/contract test; chưa có chức năng nghiệp vụ chạy được, model/migration thực hoặc pipeline CI. Việc cài dependency và mở Vite ngày 16/10 là ghi nhận lịch sử ở môi trường trước, không xác nhận máy của mọi thành viên đã setup thành công.
+Cập nhật ngày **22/10/2026**: nền BE2 bước 2 (`62215fc`, `905c9aa`) và toàn bộ tài liệu kế hoạch triển khai 8 pha BE1/BE3 (DOC-05, DOC-06) đã được tích hợp và đồng bộ trên nhánh `main`. Repository có khung, tài liệu đặc tả, transaction/port/contract BE2 kèm unit/contract test (23 unit + 11 contract test đạt), cùng hai bộ kế hoạch chi tiết cho BE1 và BE3; chưa có chức năng nghiệp vụ chạy được, model/migration thực hoặc pipeline CI. Việc cài dependency và mở Vite ngày 16/10 là ghi nhận lịch sử ở môi trường trước, không xác nhận máy của mọi thành viên đã setup thành công.
 
 Các công việc trên nhánh cá nhân chưa được báo cáo vào đây chưa được xác nhận. Mỗi thành viên cập nhật kết quả của mình kèm bằng chứng; không coi bảng TODO là kết luận người đó chưa làm gì ngoài main.
 
@@ -78,6 +78,8 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 | DOC-02 | Contract tích hợp BE2 / BE2 + Codex | DONE | [Contract v1](../Docs/be2-integration-contract.md), commit `f0dd6e7` trên main; mức thiết kế |
 | DOC-03 | Ghi chú AI BE1/BE3 / BE2 + Codex | DONE | [Ghi chú](../Docs/BE1-BE3_note.md), commit `f0dd6e7` trên main |
 | DOC-04 | Sổ tiến độ chung / BE2 + Codex; cả nhóm cập nhật | DONE | File này và hướng dẫn liên quan trong commit chứa báo cáo; kiểm tra tài liệu, không phải test ứng dụng |
+| DOC-05 | Kế hoạch triển khai toàn bộ BE3 / Codex hỗ trợ BE3, chưa xác nhận người phụ trách | DONE | [Kế hoạch 8 pha](../plans/261022-1652-be3-complete-implementation/plan.md), [rà soát](../plans/261022-1652-be3-complete-implementation/reports/plan-review.md); Đã tích hợp main; 6 UC chưa triển khai |
+| DOC-06 | Kế hoạch triển khai toàn bộ BE1 / Codex hỗ trợ BE1, chưa xác nhận người phụ trách | DONE | [Kế hoạch 8 pha](../plans/261022-1711-be1-complete-implementation/plan.md), [rà soát](../plans/261022-1711-be1-complete-implementation/reports/plan-review.md); Đã tích hợp main; 5 UC chưa triển khai |
 | BE-FOUNDATION | Bootstrap NestJS / BE1 | IN_PROGRESS | Có cấu hình và file bootstrap trống; chưa có server chạy |
 | DB-01 | Prisma, 25 bảng, migration/seed / mỗi BE sở hữu phần mình, BE2 điều phối | IN_PROGRESS | Mới có datasource/generator và Compose; chưa có model/migration |
 | CONTRACT-01 | Port, DTO, OpenAPI, event schema và contract test / cả ba BE | IN_PROGRESS | Đã có phần BE2 và contract test; còn BE1/BE3, OpenAPI đầy đủ, adapter và nghiệm thu liên module |
@@ -91,12 +93,61 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 
 ## Phối hợp và bước tiếp theo
 
+- 22/10/2026: DOC-06 đã hoàn thành kế hoạch BE1: 8 pha, inventory file/class/port/API, pseudocode auth/membership/admin, 15 gate A01–A15 và ma trận test. Đã bổ sung liên kết/milestone hai chiều BE3 và quy tắc dùng chung scripts CI/evidence. Đã tích hợp lên main.
+- 22/10/2026: DOC-05 đã hoàn thành kế hoạch BE3: 8 pha, blueprint code/API/transaction, 13 quyết định contract cần chốt, ma trận test và review. Đã tích hợp lên main.
+- Giới hạn tài liệu đã xác minh: đặc tả đang tham chiếu 5 ảnh `Docs/Bao_Cao_SE113_media/image16.png`–`image20.png` chưa có từ HEAD trước thay đổi. Không tạo ảnh thay thế; không coi mọi liên kết đặc tả đạt. Link tiến độ trong phần mở đầu đặc tả đã sửa về sổ chung, giữ sổ cũ làm lịch sử.
 - BE2 đã bàn giao tài liệu contract và ghi chú cho hai AI ở `f0dd6e7`; BE1/BE3 đọc trước khi xây port phía mình.
 - BE2 hoàn thành phạm vi nền bước 2 trên `feat/be2-contract-foundation` và đã đưa lên `main` tại `62215fc`: `UnitOfWork`/`Tx`, driver Prisma 6 dạng interface, thứ tự khóa, interface/stub, DTO/fixture, schema, OpenAPI UC02 một phần và contract test. Đã đối chiếu mục 4.3–4.5, 8.4 và 7.1 của báo cáo Word. Chưa có endpoint nghiệp vụ; migration application chờ nền BE1.
-- BE1 cần cung cấp nền Identity/Company/Job/Skill và migration được tham chiếu; BE3 cần cung cấp InterviewLifecycle/Outbox. Đây là phụ thuộc đã biết, chưa có báo cáo tiến độ triển khai từ hai người trong sổ chung.
-- Bước kế tiếp của BE2: nhận migration Identity/Company/Job/Skill và port BE1, viết migration/adapter BE2, triển khai lát cắt UC02 kèm PostgreSQL integration và concurrency test; sau đó ghép BE3 để kiểm withdraw/result. Các máy cần xác minh Node/npm/Docker và dependency khi bắt đầu chạy ứng dụng; không dùng kết quả setup của máy khác thay cho kiểm tra local.
+- BE1 cần cung cấp nền Identity/Company/Job/Skill và migration được tham chiếu; BE3 cần cung cấp InterviewLifecycle/Outbox. Đây là phụ thuộc đã biết.
+- Bước kế tiếp của BE2: nhận migration Identity/Company/Job/Skill và port BE1, viết migration/adapter BE2, triển khai lát cắt UC02 kèm PostgreSQL integration và concurrency test; sau đó ghép BE3 để kiểm withdraw/result.
+- Bước kế tiếp của BE1: tạo nhánh BE1, bắt đầu pha 1 chốt contract/fixtures, bootstrap + Identity migration để mở khóa BE2 và BE3.
 
 ## Nhật ký báo cáo
+
+### 2026-10-22 18:18 (Asia/Saigon) — Antigravity — Tích hợp main và đồng bộ kế hoạch BE1/BE3
+
+- Mã báo cáo: 20261022-1818-Antigravity-dong-bo-main-plans
+- Người thực hiện / AI hỗ trợ: Antigravity AI hỗ trợ người dùng theo yêu cầu.
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: DOC-05, DOC-06, BE2-STEP2, CONTRACT-01, QA-01; tích hợp kế hoạch BE1/BE3 và đồng bộ toàn bộ nhánh `main` với GitHub remote.
+- Trạng thái: DONE — hoàn thành tích hợp và đồng bộ lên GitHub `origin/main`.
+- Nhánh / commit / PR / tích hợp main: `main` → `origin/main` / commit chứa báo cáo này / Đã gộp và đẩy origin/main thành công.
+- Đã hoàn thành: Kéo 2 commit mới của BE2 từ remote (`62215fc`, `905c9aa`), fast-forward và rebase các kế hoạch DOC-05 (BE3) và DOC-06 (BE1); giải quyết conflict `progress/README.md` và `Docs/project-specification.md`, bảo toàn toàn bộ báo cáo lịch sử của BE1, BE2, BE3 theo AGENTS.md; cập nhật unignore exception cho `plans/**/reports/` trong `.gitignore`; chạy `npm install` cập nhật dependencies; xác minh toàn bộ test và linter.
+- File / bằng chứng: `progress/README.md`, `Docs/project-specification.md`, `.gitignore`, `plans/261022-1652-be3-complete-implementation/` (12 file), `plans/261022-1711-be1-complete-implementation/` (12 file).
+- Kiểm tra đã chạy: `npm run typecheck` đạt (0 lỗi cả backend và web), `npm run typecheck:contracts:public` đạt (0 lỗi), `npm run lint` đạt (0 lỗi, 0 warning), `npm run test:unit:ci` đạt 23/23 tests (4 suites, coverage 97.18% dòng, 100% nhánh), `npm run test:contract:ci` đạt 11/11 tests (1 suite), `git diff --check` đạt.
+- Kiểm tra chưa chạy / coverage: Chưa chạy PostgreSQL integration/API/concurrency, FE/E2E hoặc CI pipeline do chưa có migration/DB runtime.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không thay đổi DB/API; hoàn thành tích hợp kế hoạch BE1/BE3 và code nền BE2 lên `main`.
+- Phần còn thiếu / blocker: Toàn bộ code nghiệp vụ các UC; BE1 cần khởi tạo Identity migration làm tiền đề cho BE2 và BE3.
+- Bước tiếp theo: BE1 tiến hành pha 1 theo kế hoạch triển khai.
+
+### 2026-10-22 17:22 (Asia/Saigon) — BE1 — Kế hoạch triển khai đầy đủ
+
+- Mã báo cáo: 20261022-1722-BE1-ke-hoach-trien-khai
+- Người thực hiện / AI hỗ trợ: Codex hỗ trợ BE1 theo yêu cầu; chưa xác nhận tên thật/GitHub người phụ trách, không ký thay thành viên khác.
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: DOC-06; kế hoạch UC01/04/05/10/11, FR01–04/15, BR01–05/15–20 và giao điểm BR12; UI01–06/16–18/26–28, options UI07/21; TC01–04/25–26/31–36/55–57, EC19–23/34/37–38 và phối hợp TC12/28–30/43/59–60, EC17/24/29/32–33/39–40; BE-FOUNDATION/DB-01/CONTRACT-01/QA-01/CI-01 và OPS phối hợp BE3 ở mức kế hoạch.
+- Trạng thái: DONE — chỉ tài liệu kế hoạch; ClaudeKit xác nhận 8 pha triển khai pending; UC giữ TODO theo bằng chứng hiện có.
+- Nhánh / commit / PR / tích hợp main: `main` working tree local / chưa commit / chưa PR / chưa gộp main các thay đổi này; giữ thay đổi BE3 và đặc tả từ lượt trước, không tự commit/push/deploy.
+- Đã hoàn thành: Đọc yêu cầu/contract/hiện trạng, scaffold ClaudeKit CLI 8 pha và điền quy trình/từng bước/code inventory/API/port/pseudocode/test; 15 quyết định cần chốt trước code; ma trận milestones BE1↔BE2/BE3; review chéo và sửa 3 findings: advisory lock không dựa role discovery, auth envelope authenticated integrity/AAD, reset chỉ revoke session theo nguồn.
+- File / bằng chứng: `plans/261022-1711-be1-complete-implementation/` (12 Markdown: plan, 8 phase, blueprint, verification matrix, reports/plan-review.md); `plans/261022-1652-be3-complete-implementation/plan.md`, `plans/261022-1652-be3-complete-implementation/phase-08-verification-operations-and-handoff.md` (chỉ điểm phối hợp); `progress/README.md`.
+- Kiểm tra đã chạy: Git status/branch/log và source/config inventory; `npm exec --yes --package claudekit-cli@4.5.2 -- ck plan create ...` thành công; `ck plan status .../plan.md` qua npm exec: pending, 0/8 completed. Python kiểm cả BE1/BE3 + progress/spec: 26 Markdown, cấu trúc 8 pha BE1, fences/placeholder/whitespace/liên kết, 0 lỗi mới; 5 ảnh thiếu sẵn trong spec được phân biệt. `git diff --check` đạt. Review toàn kế hoạch và cross-plan consistency, không dùng nhận xét TC36 nhầm của agent sau khi đã đối chiếu đúng TC36 OWNER/TC52 saved-job.
+- Kiểm tra chưa chạy / coverage: Chưa chạy ứng dụng/typecheck/build/unit/integration/API/CI/provider/load/restore vì lượt này chỉ soạn kế hoạch, chưa sửa source triển khai; coverage Chưa đo. Không dùng mock hoặc tài liệu làm bằng chứng nghiệm thu.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không đổi DB/nghiệp vụ/API/DTO/contract hiện hành. A01–A15 là đề xuất/gate chốt cùng BE2/BE3/FE trước implementation; báo rõ title draft nullable, member identifiers, CSRF/key/rate policies, same-Tx revoke và baseline migrations. Hai plan có relatedPlans/milestone references, không tạo vòng blockedBy toàn phần; CI scripts/manifest dùng chung, BE1 điều phối.
+- Phần còn thiếu / blocker: Không có trong phạm vi bàn giao kế hoạch. Triển khai còn toàn bộ code/test; cần UoW/profile/conflict BE2, Outbox/Audit/lifecycle/mail/provider BE3 và HTTPS topology trước nghiệm thu. 5 ảnh spec thiếu sẵn không cản kế hoạch.
+- Bước tiếp theo: Khi triển khai, đọc plan chính và mọi tài liệu liên kết; tạo nhánh BE1, chốt A01–A15/ports/fixtures, bootstrap + Identity migration, auth/company/job/admin từng lát cắt có test/OpenAPI/progress, review BE2→BE1 và BE1→BE3.
+
+### 2026-10-22 17:03 (Asia/Saigon) — BE3 — Kế hoạch triển khai đầy đủ
+
+- Mã báo cáo: 20261022-1703-BE3-ke-hoach-trien-khai
+- Người thực hiện / AI hỗ trợ: Codex hỗ trợ vai trò BE3 theo yêu cầu; chưa xác nhận tên/GitHub người phụ trách; không ký thay thành viên khác.
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: DOC-05; kế hoạch UC03/08/09/13/15/16, FR09–12/14 và giao điểm FR15, BR01/05/09–20; UI11/13–15/20–25/28; TC14–18/20/24/28–30/44–51/53–54/58–60; EC10–18/24–27/35, phối hợp EC08–09/22/32–33/40; CONTRACT-01/DB-01/WORKER-01/VIDEO-01/QA-01/CI-01/OPS-01 ở mức lập kế hoạch.
+- Trạng thái: DONE — chỉ phạm vi tài liệu kế hoạch; các pha triển khai pending, UC giữ TODO theo bằng chứng hiện có.
+- Nhánh / commit / PR / tích hợp main: `main` working tree local / chưa commit / chưa có PR / chưa gộp main các thay đổi này; không tự commit/push/deploy.
+- Đã hoàn thành: Đọc 6 file Docs và sổ tiến độ, đối chiếu source/config; tạo 8 pha bằng ClaudeKit CLI và điền từng bước/file/class/port/API/transaction/test; blueprint, ma trận kiểm chứng, review chéo và 13 quyết định cần chốt trước phụ thuộc. Sửa link tiến độ cũ trong đặc tả về sổ chung.
+- File / bằng chứng: `plans/261022-1652-be3-complete-implementation/` (12 Markdown: plan, 8 phase, blueprint, verification matrix, reports/plan-review.md); `Docs/project-specification.md` (chỉ liên kết sổ tiến độ), `progress/README.md`.
+- Kiểm tra đã chạy: PowerShell/Node v24.21.0/npm11.19.0; `npm exec --yes --package claudekit-cli -- ck plan create ...` thành công; `ck plan status .../plan.md` qua npm exec trả pending, 0/8 completed. Python kiểm cuối 14 Markdown/43 liên kết local, cấu trúc 8 phase, code fences/placeholder/whitespace và 12 trường nhật ký: 0 lỗi mới; có 5 ảnh thiếu sẵn trong spec, đã xác nhận đường dẫn có trong `git show HEAD:Docs/project-specification.md`. `git diff --check` đạt; rà source/Git và consistency kế hoạch, xử lý 4 findings cuối theo report.
+- Kiểm tra chưa chạy / coverage: Chưa chạy test ứng dụng/typecheck/build/CI/provider/load/restore vì chỉ lập kế hoạch, không sửa source triển khai; coverage Chưa đo. Một lần gọi role planner lỗi model không hỗ trợ; agent mặc định đã thực hiện review tài liệu. Lệnh npm exec gói `claudekit` ban đầu không có executable ck; gói `claudekit-cli` 4.5.2 đã scaffold thành công, không đổi manifest/lockfile dự án.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không đổi schema/nghiệp vụ/endpoint/DTO/contract hiện hành; D01–D13 là đề xuất và gate pha 1 cần BE1/BE2/BE3/FE phối hợp. Không sửa báo cáo gốc hay sổ lịch sử. Bổ sung kế hoạch migration Outbox/Audit sớm, port hủy cuối, evidence/version, auth mail, retry budget và revoke task có ghi rõ chưa chốt.
+- Phần còn thiếu / blocker: Không có trong phạm vi bàn giao kế hoạch. Triển khai còn toàn bộ code/test; port/migration BE1/BE2 và provider Jitsi thật là dependency runtime; 5 ảnh thiếu trong đặc tả là tồn tại trước đợt này, không cản lập kế hoạch.
+- Bước tiếp theo: Bắt đầu pha 1 theo kế hoạch khi triển khai: nhánh BE3, chốt D01–D13/fixtures/Tx/access/event schemas, spike video; rồi thực hiện từng lát cắt có test/OpenAPI/tiến độ và review BE1→BE3, BE3→BE2.
 
 ### 2026-10-22 16:15 (Asia/Saigon) — BE2 — Tích hợp nền bước 2 lên main
 
