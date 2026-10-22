@@ -34,7 +34,7 @@
 
 ## Tổng quan hiện tại
 
-Cập nhật ngày **23/10/2026**: nền BE2, kế hoạch BE1/BE3, quy tắc thuần và các bước BE2 2–6 đã tích hợp trên `main` (`6de3918`, `57bcbbe`, `9ae1f4e`, `3123e75`, `c874fbb`); đã sửa thêm đường xử lý sự kiện xóa CV. BE2 đạt 91 unit + 13 contract test cho code hiện có. Có model và SQL BE2 chờ bảng nền BE1; chưa có migration PostgreSQL đã áp dụng, route API nghiệp vụ chạy được hoặc pipeline CI. Việc cài dependency và mở Vite ngày 16/10 là ghi nhận lịch sử ở môi trường trước, không xác nhận máy của mọi thành viên đã setup thành công.
+Cập nhật ngày **23/10/2026**: nền BE2, kế hoạch BE1/BE3, quy tắc thuần và các bước BE2 2–6 đã tích hợp trên `main` (`6de3918`, `57bcbbe`, `9ae1f4e`, `3123e75`, `c874fbb`); sửa đường xử lý sự kiện xóa CV tại `eeadd96`. BE2 đạt 91 unit + 13 contract test cho code hiện có. Có model và SQL BE2 chờ bảng nền BE1; chưa có migration PostgreSQL đã áp dụng, route API nghiệp vụ chạy được hoặc pipeline CI. Việc cài dependency và mở Vite ngày 16/10 là ghi nhận lịch sử ở môi trường trước, không xác nhận máy của mọi thành viên đã setup thành công.
 
 Các công việc trên nhánh cá nhân chưa được báo cáo vào đây chưa được xác nhận. Mỗi thành viên cập nhật kết quả của mình kèm bằng chứng; không coi bảng TODO là kết luận người đó chưa làm gì ngoài main.
 
@@ -89,7 +89,7 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 | BE2-REPO-03 | Repository và idempotency trong transaction / BE2 + Codex | DONE | [Bàn giao persistence](../Docs/be2-persistence-handoff.md), lên `main` tại `57bcbbe`: SQL adapter, claim/replay/complete, lát cắt ghi UC02 nội bộ. DONE chỉ cho phần độc lập, chưa có DB/API thật |
 | BE2-PROFILE-04 | Phần BE2 độc lập của UC12 / BE2 + Codex | DONE | [Bàn giao profile](../Docs/be2-profile-handoff.md), lên `main` tại `9ae1f4e`: repository, service profile/skill/version, snapshot và OpenAPI GET/PATCH. UC12 tổng thể vẫn IN_PROGRESS |
 | STORAGE-01 | Storage CV và scanner / BE2 | IN_PROGRESS | Có port và service/repository quarantine/quét/xóa, unit test; còn provider PDF/scanner, object store, worker/reconciliation, API và test PostgreSQL |
-| BE2-CV-05 | Lát cắt độc lập kho CV bước 5 / BE2 + Codex | DONE | Repository/service và 3 unit test, đã push `main` tại `3123e75`; chỉ DONE cho code độc lập, UC06/STORAGE-01 vẫn IN_PROGRESS |
+| BE2-CV-05 | Lát cắt độc lập kho CV bước 5 / BE2 + Codex | DONE | Repository/service tại `3123e75`, sửa event worker tại `eeadd96`, đã push `main`; 4 unit CV đạt. Chỉ DONE cho code độc lập, UC06/STORAGE-01 vẫn IN_PROGRESS |
 | BE2-SUBMIT-06 | Điều phối nộp hồ sơ bước 6 / BE2 + Codex | DONE | Workflow nối BE1/BE2 với persistence, ánh xạ UNIQUE và unit test, đã push `main` tại `c874fbb`; chỉ DONE cho phần độc lập, UC02 vẫn IN_PROGRESS |
 | WORKER-01 | Outbox/email/worker / BE3; idempotency/transaction do BE2 phối hợp | TODO | Chưa triển khai |
 | VIDEO-01 | Jitsi và thu hồi quyền phòng / BE3 | TODO | Chưa tích hợp/kiểm provider thật |
@@ -119,7 +119,7 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 - Người thực hiện / AI hỗ trợ: Người phụ trách BE2 (GitHub repository Truong102006) / Codex; chưa xác nhận tên thật.
 - Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: BE2-CV-05, UC06, BR06–BR07, STORAGE-01.
 - Trạng thái: DONE — sửa điểm nối worker trong lát cắt BE2; UC06 tổng thể còn IN_PROGRESS.
-- Nhánh / commit / PR / tích hợp main: `main` / commit chứa báo cáo này / không có PR / Chưa push commit sửa này tại thời điểm báo cáo.
+- Nhánh / commit / PR / tích hợp main: `main` / `eeadd96` / không có PR / Đã push `origin/main` lúc 00:54 ngày 23/10.
 - Đã hoàn thành: Worker xóa object tra CV bằng `cvId` duy nhất đúng payload `cv.delete_requested`; hoàn tất DELETED sau khi xóa đúng storage version, retry no-op nếu đã hoàn tất.
 - File / bằng chứng: `apps/api/src/modules/cv/cv.repository.ts`, `cv-warehouse.service.ts`, `cv-warehouse.service.spec.ts`.
 - Kiểm tra đã chạy: TypeScript backend đạt; Jest toàn suite 91/91 unit đạt, riêng CV 4/4 đạt; ESLint thư mục CV đạt; Prettier ba file đạt trên Windows/Node 24.
