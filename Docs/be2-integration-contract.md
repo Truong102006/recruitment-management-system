@@ -3,7 +3,7 @@
 **Ngày chốt thiết kế:** 20/10/2026 (Asia/Saigon)
 **Chủ sở hữu:** BE2
 **Phạm vi:** UC02, UC06, UC07, UC12, UC14; điểm nối với UC01/04/05/10/11 của BE1 và UC08/09/13/15/16 của BE3.
-**Trạng thái (22/10/2026):** nền code port/transaction, DTO ứng viên, JSON Schema/event v1, OpenAPI một phần và test contract đã lên `main` tại `62215fc`; chưa có API nghiệp vụ, migration hoặc kiểm PostgreSQL thật. Xem [bàn giao bước 2](be2-step2-handoff.md) và [tiến độ chung](../progress/README.md).
+**Trạng thái (22/10/2026):** nền port/transaction, quy tắc thuần, model BE2/SQL pending, repository/idempotency nội bộ và service/contract UC12 đã lên `main` qua `62215fc`, `f7e8223`, `6de3918`, `57bcbbe`, `9ae1f4e`. Chưa có route API nghiệp vụ, migration áp dụng hoặc kiểm PostgreSQL thật. Xem [bàn giao nền](be2-step2-handoff.md), [dữ liệu](be2-data-migration-plan.md), [persistence](be2-persistence-handoff.md), [UC12](be2-profile-handoff.md) và [tiến độ chung](../progress/README.md).
 
 Tài liệu này cụ thể hóa [đặc tả tổng hợp](project-specification.md), nhất là BR01–BR20, mục 3.2, 4.3–4.5, 5 và 7.1. Nếu có xung đột, quy tắc nghiệp vụ và bất biến trong đặc tả tổng hợp được ưu tiên; sửa cả hai tài liệu trong cùng PR trước khi đổi code. BE1/BE3 dùng hợp đồng dưới đây làm đầu vào triển khai, không đọc hoặc ghi trực tiếp repository của BE2.
 
