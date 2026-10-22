@@ -18,8 +18,8 @@ export interface VerifiedSubmission {
 }
 
 /**
- * Internal persistence slice, not an HTTP use case. The caller's verify callback
- * must lock/recheck BE1 job and identity, then require READY CV in this same tx.
+ * Internal persistence slice, not an HTTP use case. Authorization runs for
+ * replay; new-submission eligibility and READY CV are checked only for a claim.
  */
 export interface SubmissionPersistenceCommand {
   readonly candidateId: string;
@@ -27,7 +27,8 @@ export interface SubmissionPersistenceCommand {
   readonly cvId: string;
   readonly coverLetter?: string | null;
   readonly idempotencyKey: string;
-  readonly verify: (tx: TransactionContext) => Promise<VerifiedSubmission>;
+  readonly authorize: (tx: TransactionContext) => Promise<{ readonly candidateId: string }>;
+  readonly verifyNew: (tx: TransactionContext) => Promise<VerifiedSubmission>;
 }
 
 export type SubmissionPersistenceResult =
@@ -66,9 +67,9 @@ export class SubmitApplicationPersistenceService {
       }),
     };
     return this.unitOfWork.run(async (tx) => {
-      // Recheck current authorization even for a replay. Never trust cached facts.
-      const verified = await input.verify(tx);
-      if (verified.candidateId !== input.candidateId || verified.cvId !== input.cvId) {
+      // Current authorization is still required for replay, even after job closure.
+      const authorized = await input.authorize(tx);
+      if (authorized.candidateId !== input.candidateId) {
         throw new ApplicationRuleError('RESOURCE_NOT_FOUND', 'Submission scope changed');
       }
       const claim = await this.idempotency.claim(request, tx);
@@ -78,6 +79,10 @@ export class SubmitApplicationPersistenceService {
         return { kind: 'replay', applicationId: claim.resourceId };
       }
 
+      const verified = await input.verifyNew(tx);
+      if (verified.candidateId !== input.candidateId || verified.cvId !== input.cvId) {
+        throw new ApplicationRuleError('RESOURCE_NOT_FOUND', 'Submission scope changed');
+      }
       const applicationId = randomUUID();
       await this.applications.createSubmitted(
         {

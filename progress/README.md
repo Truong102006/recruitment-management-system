@@ -53,7 +53,7 @@ Các công việc trên nhánh cá nhân chưa được báo cáo vào đây ch�
 | UC09 | Công bố kết quả | BE3 | TODO | Có điểm nối và quy tắc nhận kết quả ở BE2; chưa có workflow/test tích hợp BE3 |
 | UC10 | Quản trị và kiểm duyệt | BE1 | TODO | Chưa có API/test |
 | UC11 | Doanh nghiệp và thành viên | BE1 | TODO | Chưa có API/test |
-| UC12 | Hồ sơ cá nhân | BE2 | IN_PROGRESS | Bước 4 trên `feat/be2-steps-2-4`; hiện có DTO/schema, CandidateProfilePort và mapper; chưa có API/migration/integration test |
+| UC12 | Hồ sơ cá nhân | BE2 | IN_PROGRESS | Có service/repository BE2, unit/contract test và OpenAPI GET/PATCH; chưa đăng ký route do thiếu guard/port BE1, migration PostgreSQL và API/integration test |
 | UC13 | Đánh giá và hoàn tất phỏng vấn | BE3 | TODO | Chưa có API/test |
 | UC14 | Lưu tin quan tâm | BE2 | TODO | Có contract thiết kế; chưa có API/test |
 | UC15 | Thông báo | BE3 | TODO | Chưa có worker/API/test |
@@ -87,10 +87,11 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 | BE2-DOMAIN-01 | Quy tắc nghiệp vụ thuần BE2 / BE2 + Codex | DONE | Đã gộp và push `main` tại `f7e8223`; 71 unit + 11 contract test đạt. DONE chỉ cho hàm thuần, không phải UC/API |
 | BE2-DATA-02 | Thiết kế model/ràng buộc và migration BE2 / BE2 + Codex | DONE | Tám model Prisma và SQL chờ tích hợp tại [kế hoạch migration](../Docs/be2-data-migration-plan.md) trên `feat/be2-steps-2-4`; DONE chỉ cho bản thiết kế/schema, chưa chạy migration thật vì thiếu BE1 |
 | BE2-REPO-03 | Repository và idempotency trong transaction / BE2 + Codex | DONE | [Bàn giao persistence](../Docs/be2-persistence-handoff.md): SQL adapter, claim/replay/complete, lát cắt ghi UC02 nội bộ; 78 unit + 11 contract test đạt. DONE chỉ cho phần độc lập, chưa có DB/API thật |
+| BE2-PROFILE-04 | Phần BE2 độc lập của UC12 / BE2 + Codex | DONE | [Bàn giao profile](../Docs/be2-profile-handoff.md): repository, service profile/skill/version, snapshot và OpenAPI GET/PATCH; 82 unit + 13 contract test đạt. UC12 tổng thể vẫn IN_PROGRESS |
 | STORAGE-01 | Storage CV và scanner / BE2 | TODO | Chưa có adapter/worker scan/test |
 | WORKER-01 | Outbox/email/worker / BE3; idempotency/transaction do BE2 phối hợp | TODO | Chưa triển khai |
 | VIDEO-01 | Jitsi và thu hồi quyền phòng / BE3 | TODO | Chưa tích hợp/kiểm provider thật |
-| QA-01 | Unit/integration/API/concurrency/FE/E2E / từng người theo phần mình | IN_PROGRESS | BE2: 78 unit + 11 contract test đạt trên nhánh `feat/be2-steps-2-4`, coverage source hiện có 94,02% dòng, 92,63% nhánh; integration/API/concurrency/FE/E2E chưa chạy |
+| QA-01 | Unit/integration/API/concurrency/FE/E2E / từng người theo phần mình | IN_PROGRESS | BE2: 82 unit + 13 contract test đạt trên nhánh `feat/be2-steps-2-4`, coverage source hiện có 87,68% dòng, 85,06% nhánh; SQL repository chưa kiểm DB, integration/API/concurrency/FE/E2E chưa chạy |
 | CI-01 | Pipeline và evidence gate / BE1 điều phối, cả nhóm bổ sung | TODO | Chưa có workflow thực thi |
 | OPS-01 | Hiệu năng, backup/restore và vận hành / BE3 điều phối, cả nhóm kiểm chứng | TODO | Chưa đo/chưa diễn tập |
 
@@ -107,6 +108,21 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 - Bước kế tiếp của BE1: tạo nhánh BE1, bắt đầu pha 1 chốt contract/fixtures, bootstrap + Identity migration để mở khóa BE2 và BE3.
 
 ## Nhật ký báo cáo
+
+### 2026-10-22 21:31 (Asia/Saigon) — BE2 — Bước 4 hồ sơ cá nhân
+
+- Mã báo cáo: 20261022-2131-BE2-ho-so-ca-nhan
+- Người thực hiện / AI hỗ trợ: Người phụ trách BE2 (GitHub repository Truong102006) / Codex; chưa xác nhận tên thật.
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: BE2-PROFILE-04, UC12, QA-01, CONTRACT-01; mục 3.1.12, 5.1, BR18, TC10 và EC36 ở mức unit/contract.
+- Trạng thái: DONE — phần code/contract BE2 độc lập của bước 4; UC12 tổng thể IN_PROGRESS.
+- Nhánh / commit / PR / tích hợp main: `feat/be2-steps-2-4` / commit chứa báo cáo này / chưa có PR / Chưa gộp main tại thời điểm báo cáo.
+- Đã hoàn thành: Repository profile/skill bằng transaction client, `CandidateProfilePort.ensureForCandidate` và snapshot cho lần nộp sau; service đọc/sửa profile với BE1 Identity/Skill ports, version, allowlist và Outbox cùng tx. OpenAPI/JSON Schema GET/PATCH cho FE; test fake xác nhận tên BE1/profile BE2 rollback cùng nhau và snapshot cũ không đổi. Rà bước 3 và tách kiểm quyền replay khỏi điều kiện tạo application mới để retry hợp lệ sau khi tin đóng.
+- File / bằng chứng: `apps/api/src/modules/candidate/repositories/`, `apps/api/src/modules/candidate/services/`, `apps/api/src/modules/application/services/submit-application.service.ts`, `contracts/openapi/be2-profile.v1.json`, `contracts/schemas/be2.v1.json`, `tests/contract/be2-contract.spec.ts`, [bàn giao](../Docs/be2-profile-handoff.md).
+- Kiểm tra đã chạy: 22/10 trên Windows/Node 24: Prettier liên quan đạt; TypeScript backend và public contracts đạt; ESLint toàn `apps libs tests` đạt; Jest unit 82/82 (10 suite), coverage source hiện có 87,68% dòng/85,06% nhánh; contract 13/13. Kiểm schema/OpenAPI trong contract test; link tài liệu mới đạt, 5 ảnh ERD thiếu sẵn trong đặc tả được phân biệt.
+- Kiểm tra chưa chạy / coverage: PostgreSQL, API thật, concurrency, FE/E2E chưa chạy vì migration nền và auth/guard/port BE1, Outbox BE3 chưa có; repository SQL chưa có kiểm DB và coverage file repository hiện 0%.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không đổi model bước 2; thêm JSON Schema DTO và OpenAPI GET/PATCH `/api/candidate/profile`, không đăng ký route chưa có guard. BE1 phải gọi ensureForCandidate trong transaction cấp role và cung cấp Identity/Skill ports; FE có thể dựng theo contract.
+- Phần còn thiếu / blocker: Để UC12 hoạt động qua HTTP cần BE1 auth/session/CSRF/Identity/Skill, migration BE1/BE2, binding Nest và kiểm tích hợp PostgreSQL; phần code độc lập BE2 của bước 4 không còn.
+- Bước tiếp theo: Rà diff ba bước, tích hợp/push main theo yêu cầu; tiếp tục bước 5 UC06 kho CV khi được giao.
 
 ### 2026-10-22 21:25 (Asia/Saigon) — BE2 — Bước 3 repository và idempotency
 

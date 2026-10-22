@@ -79,7 +79,8 @@ function harness() {
     cvId: 'cv-1',
     coverLetter: '  Xin chào  ',
     idempotencyKey: 'submit-1',
-    verify: jest.fn(async () => ({
+    authorize: jest.fn(async () => ({ candidateId: 'candidate-1' })),
+    verifyNew: jest.fn(async () => ({
       candidateId: 'candidate-1',
       cvId: 'cv-1',
       snapshot: { name: 'Ứng viên', email: 'candidate@example.test', phone: null, headline: null },
@@ -120,7 +121,8 @@ describe('submission persistence slice', () => {
     });
     const replay = await h.service.execute(h.input);
     expect(replay).toEqual({ kind: 'replay', applicationId: created.applicationId });
-    expect(h.input.verify).toHaveBeenCalledTimes(2);
+    expect(h.input.authorize).toHaveBeenCalledTimes(2);
+    expect(h.input.verifyNew).toHaveBeenCalledTimes(1);
     expect(h.state().applications).toHaveLength(1);
     expect(h.state().history).toHaveLength(1);
     expect(h.state().events).toHaveLength(1);
@@ -143,7 +145,7 @@ describe('submission persistence slice', () => {
       h.service.execute({
         ...h.input,
         cvId: 'cv-2',
-        verify: async () => ({
+        verifyNew: async () => ({
           candidateId: 'candidate-1',
           cvId: 'cv-2',
           snapshot: {
@@ -158,19 +160,22 @@ describe('submission persistence slice', () => {
     expect(h.state().applications).toHaveLength(1);
   });
 
-  it('requires verified owner and CV even for a replay', async () => {
+  it('requires current authorization for replay without rechecking new-submission eligibility', async () => {
     const h = harness();
     await h.service.execute(h.input);
     await expect(
       h.service.execute({
         ...h.input,
-        verify: async () => ({
-          candidateId: 'someone-else',
-          cvId: 'cv-1',
-          snapshot: { name: 'X', email: 'x@example.test', phone: null, headline: null },
-        }),
+        authorize: async () => ({ candidateId: 'someone-else' }),
       }),
     ).rejects.toMatchObject({ code: 'RESOURCE_NOT_FOUND' });
+    const replay = await h.service.execute({
+      ...h.input,
+      verifyNew: async () => {
+        throw new Error('job is now closed');
+      },
+    });
+    expect(replay.kind).toBe('replay');
     expect(h.state().applications).toHaveLength(1);
   });
 });

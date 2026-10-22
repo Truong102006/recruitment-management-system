@@ -5,6 +5,7 @@ import events from '../../contracts/events/be2.v1.json';
 import fixture from '../../contracts/fixtures/candidate-application.v1.json';
 import eventFixture from '../../contracts/fixtures/application-submitted.v1.json';
 import openapi from '../../contracts/openapi/be2-foundation.v1.json';
+import profileOpenapi from '../../contracts/openapi/be2-profile.v1.json';
 import {
   APPLICATION_STATUSES,
   type CandidateApplicationDto,
@@ -23,6 +24,42 @@ const validateEvent = ajv.compile(events);
 const validate = (name: string, value: unknown) =>
   ajv.validate(`${schema.$id}#/definitions/${name}`, value);
 const application: CandidateApplicationDto = { ...fixture.data, status: 'SUBMITTED' };
+
+describe('UC12 profile wire contract', () => {
+  const profile = {
+    name: 'Ứng viên',
+    email: 'candidate@example.test',
+    phone: null,
+    headline: null,
+    summary: null,
+    location: null,
+    skillIds: [],
+    version: 0,
+  };
+
+  it('allows only public profile fields and requires a versioned update', () => {
+    expect(validate('CandidateProfileDto', profile)).toBe(true);
+    expect(validate('CandidateProfileDto', { ...profile, passwordHash: 'secret' })).toBe(false);
+    expect(validate('UpdateCandidateProfileRequest', { version: 0, skillIds: [] })).toBe(true);
+    expect(validate('UpdateCandidateProfileRequest', { name: 'Tên' })).toBe(false);
+    expect(validate('UpdateCandidateProfileRequest', { version: 0, role: 'ADMIN' })).toBe(false);
+  });
+
+  it('publishes GET/PATCH profile with session and CSRF contract', () => {
+    const path = profileOpenapi.paths['/api/candidate/profile'];
+    expect(path.get.responses['200']).toBeDefined();
+    expect(path.patch.responses['200']).toBeDefined();
+    expect(path.patch.requestBody.content['application/json'].schema.$ref).toBe(
+      '#/components/schemas/UpdateProfileRequest',
+    );
+    expect(path.patch.parameters[0]).toMatchObject({
+      in: 'header',
+      name: 'X-CSRF-Token',
+      required: true,
+    });
+    expect(path.get.security).toEqual([{ sessionCookie: [] }]);
+  });
+});
 
 describe('BE2 wire contracts — Word BR01, BR07, BR13, BR18, BR20', () => {
   it('compiles every definition and keeps all documented application states', () => {

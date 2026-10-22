@@ -207,6 +207,30 @@
         "version": { "$ref": "#/definitions/Version" }
       }
     },
+    "CandidateProfileDto": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "email",
+        "phone",
+        "headline",
+        "summary",
+        "location",
+        "skillIds",
+        "version"
+      ],
+      "properties": {
+        "name": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "email": { "type": "string", "format": "email", "maxLength": 254 },
+        "phone": { "type": ["string", "null"], "maxLength": 20 },
+        "headline": { "type": ["string", "null"], "maxLength": 160 },
+        "summary": { "type": ["string", "null"], "maxLength": 3000 },
+        "location": { "type": ["string", "null"], "maxLength": 160 },
+        "skillIds": { "type": "array", "items": { "$ref": "#/definitions/Uuid" } },
+        "version": { "$ref": "#/definitions/Version" }
+      }
+    },
     "ApiError": {
       "type": "object",
       "additionalProperties": false,

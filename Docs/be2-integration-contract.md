@@ -84,6 +84,8 @@ Với `reason=RESULT_REJECTED`, BE3 phải từ chối công bố nếu còn l�
 
 ## 5. API và DTO mà BE1/BE3/FE cần dựa vào
 
+UC12 đã có service/repository BE2 độc lập và [bàn giao profile](be2-profile-handoff.md) cùng [OpenAPI riêng](../contracts/openapi/be2-profile.v1.json). GET/PATCH chưa được đăng ký vào Nest vì guard/session/CSRF của BE1 và migration thật chưa có; FE dùng contract và fixture, không coi endpoint đã hoạt động.
+
 Base path `/api`, UUID và ISO8601 có offset, response thành công `{ data, meta? }`; lỗi `{ code, message, fieldErrors?, traceId }`. DTO đầu ra tách `CandidateApplicationDto` và `RecruiterApplicationDto`; không trả Prisma record trực tiếp. Danh sách lọc scope ngay trong query, kể cả `total`.
 
 | API BE2 | Chủ thể | Contract chính |
@@ -100,7 +102,7 @@ Base path `/api`, UUID và ISO8601 có offset, response thành công `{ data, me
 
 ## 6. Idempotency, Outbox và lỗi tích hợp
 
-Adapter và lát cắt ghi nội bộ bước 3 xem [bàn giao persistence BE2](be2-persistence-handoff.md). `verify(tx)` của luồng nộp phải nối BE1 và CV READY thật trước khi gọi repository; test driver giả chỉ chứng minh thứ tự/rollback ở mức code. Không gọi lát cắt này từ controller cho đến khi guard và các port có implementation.
+Adapter và lát cắt ghi nội bộ bước 3 xem [bàn giao persistence BE2](be2-persistence-handoff.md). `authorize(tx)` phải kiểm quyền hiện tại cho cả replay; chỉ claim mới gọi `verifyNew(tx)` để kiểm điều kiện tin và CV READY thật. Test driver giả chỉ chứng minh thứ tự/rollback ở mức code. Không gọi lát cắt này từ controller cho đến khi guard và các port có implementation.
 
 - BE2 điều phối `UnitOfWork` và `IdempotencyStore`. `UNIQUE(user_id,operation,key)` + `request_hash` của payload chuẩn hóa; cùng key/payload trả cùng resource sau **kiểm quyền hiện tại**, khác payload trả 409. Giữ record ít nhất 24 giờ. In-progress trả `409 REQUEST_IN_PROGRESS` với `Retry-After`; không tạo key mới để retry khi kết quả chưa rõ.
 - BE3 sở hữu bảng/adapter `OutboxPort`; BE2 gọi `append(eventType, aggregateId, aggregateVersion, schemaVersion=1, payload, tx)` trong cùng tx với mutation. Event v1 do BE2 phát gồm `candidate.profile_updated`, `cv.scan_requested`, `cv.delete_requested`, `application.submitted`, `application.status_changed`, `application.cv_replaced`, `application.withdrawn`, `application.result_published`, `saved_job.created`, `saved_job.deleted`. Payload chỉ chứa ID cần thiết, version và mốc thời gian; không có CV content/key/URL, email, token, điểm hoặc internal reason. Với mutation idempotent không đổi dữ liệu (PUT đã lưu/DELETE đã bỏ lưu), không phát event thành công mới.
