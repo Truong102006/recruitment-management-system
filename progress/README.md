@@ -43,7 +43,7 @@ Các công việc trên nhánh cá nhân chưa được báo cáo vào đây ch�
 | Mã | Chức năng | Phụ trách | Trạng thái triển khai trên main | Bằng chứng / phần còn thiếu |
 |---|---|---|---|---|
 | UC01 | Đăng tin tuyển dụng | BE1 | TODO | Chưa có API/test |
-| UC02 | Nộp CV ứng tuyển | BE2 | TODO | Có DTO/schema/OpenAPI một phần và contract test nền; chưa có API/migration/integration test |
+| UC02 | Nộp CV ứng tuyển | BE2 | TODO | Có DTO/schema/OpenAPI một phần và lát cắt ghi nội bộ application/history/outbox/idempotency; chưa có BE1/BE3 binding, API/migration/integration test |
 | UC03 | Phỏng vấn trực tuyến | BE3 | TODO | Chưa có API/provider test |
 | UC04 | Đăng ký và xác thực | BE1 | TODO | Chưa có bootstrap/auth/test |
 | UC05 | Tìm kiếm và xem tin | BE1 | TODO | Chưa có API/test |
@@ -86,11 +86,11 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 | BE2-STEP2 | Nền transaction và hợp đồng tích hợp / BE2 + Codex | DONE | Đã gộp `main` tại `62215fc`; [bàn giao](../Docs/be2-step2-handoff.md), 23 unit + 11 contract test đạt. DONE chỉ cho phạm vi nền bước 2, không phải UC |
 | BE2-DOMAIN-01 | Quy tắc nghiệp vụ thuần BE2 / BE2 + Codex | DONE | Đã gộp và push `main` tại `f7e8223`; 71 unit + 11 contract test đạt. DONE chỉ cho hàm thuần, không phải UC/API |
 | BE2-DATA-02 | Thiết kế model/ràng buộc và migration BE2 / BE2 + Codex | DONE | Tám model Prisma và SQL chờ tích hợp tại [kế hoạch migration](../Docs/be2-data-migration-plan.md) trên `feat/be2-steps-2-4`; DONE chỉ cho bản thiết kế/schema, chưa chạy migration thật vì thiếu BE1 |
-| BE2-REPO-03 | Repository và idempotency trong transaction / BE2 + Codex | TODO | Bắt đầu sau bước thiết kế dữ liệu |
+| BE2-REPO-03 | Repository và idempotency trong transaction / BE2 + Codex | DONE | [Bàn giao persistence](../Docs/be2-persistence-handoff.md): SQL adapter, claim/replay/complete, lát cắt ghi UC02 nội bộ; 78 unit + 11 contract test đạt. DONE chỉ cho phần độc lập, chưa có DB/API thật |
 | STORAGE-01 | Storage CV và scanner / BE2 | TODO | Chưa có adapter/worker scan/test |
 | WORKER-01 | Outbox/email/worker / BE3; idempotency/transaction do BE2 phối hợp | TODO | Chưa triển khai |
 | VIDEO-01 | Jitsi và thu hồi quyền phòng / BE3 | TODO | Chưa tích hợp/kiểm provider thật |
-| QA-01 | Unit/integration/API/concurrency/FE/E2E / từng người theo phần mình | IN_PROGRESS | BE2: 71 unit + 11 contract test đạt trên code đã gộp main, coverage nền và quy tắc 98,38% dòng, 97,67% nhánh; integration/API/concurrency/FE/E2E chưa chạy |
+| QA-01 | Unit/integration/API/concurrency/FE/E2E / từng người theo phần mình | IN_PROGRESS | BE2: 78 unit + 11 contract test đạt trên nhánh `feat/be2-steps-2-4`, coverage source hiện có 94,02% dòng, 92,63% nhánh; integration/API/concurrency/FE/E2E chưa chạy |
 | CI-01 | Pipeline và evidence gate / BE1 điều phối, cả nhóm bổ sung | TODO | Chưa có workflow thực thi |
 | OPS-01 | Hiệu năng, backup/restore và vận hành / BE3 điều phối, cả nhóm kiểm chứng | TODO | Chưa đo/chưa diễn tập |
 
@@ -107,6 +107,21 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 - Bước kế tiếp của BE1: tạo nhánh BE1, bắt đầu pha 1 chốt contract/fixtures, bootstrap + Identity migration để mở khóa BE2 và BE3.
 
 ## Nhật ký báo cáo
+
+### 2026-10-22 21:25 (Asia/Saigon) — BE2 — Bước 3 repository và idempotency
+
+- Mã báo cáo: 20261022-2125-BE2-repository-idempotency
+- Người thực hiện / AI hỗ trợ: Người phụ trách BE2 (GitHub repository Truong102006) / Codex; chưa xác nhận tên thật.
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: BE2-REPO-03, CONTRACT-01, QA-01; lát cắt ghi nội bộ UC02, mục 4.3–4.5, BR07/18/20, TC08/41–42 ở mức unit.
+- Trạng thái: DONE — phạm vi repository và idempotency độc lập; UC02 vẫn TODO.
+- Nhánh / commit / PR / tích hợp main: `feat/be2-steps-2-4` / commit chứa báo cáo này / chưa có PR / Chưa gộp main tại thời điểm báo cáo.
+- Đã hoàn thành: Adapter SQL tham số hóa lấy client chỉ qua `TransactionContext`; repository ghi application/history; idempotency claim/replay/conflict/complete theo cùng transaction; lát cắt ghi ứng tuyển nội bộ kiểm quyền lại kể cả replay, ghi application/history/outbox/complete và rollback nếu lỗi. Không có endpoint HTTP hoặc provider giả trả thành công.
+- File / bằng chứng: `libs/platform/database/sql-client.ts`, `libs/platform/idempotency/sql-idempotency-store.ts`, `apps/api/src/modules/application/repositories/`, `apps/api/src/modules/application/services/submit-application.service.ts`, [bàn giao](../Docs/be2-persistence-handoff.md) và test cạnh đó.
+- Kiểm tra đã chạy: 22/10 trên Windows/Node 24: TypeScript backend đạt; ESLint file liên quan đạt; Jest unit toàn repo 78/78 (9 suite), coverage 94,02% dòng/92,63% nhánh; contract 11/11; `git diff --check` đạt. Fake transaction kiểm rollback Outbox, replay kiểm quyền và key khác payload.
+- Kiểm tra chưa chạy / coverage: PostgreSQL integration/constraint/concurrency và API chưa chạy vì thiếu migration nền BE1, port BE3 thật và bootstrap; các adapter SQL chưa được xác minh trên DB, coverage phần repo SQL còn 0%.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không đổi schema sau bước 2, endpoint hoặc DTO; bổ sung implementation nội bộ theo contract. BE1/BE3 cần nối callback/port thật, không gọi trực tiếp từ HTTP khi chưa có guard.
+- Phần còn thiếu / blocker: Để UC02 hoạt động cần BE1 Identity/Job/Skill, BE3 Outbox, migration và kiểm PostgreSQL; bước 3 độc lập không còn blocker.
+- Bước tiếp theo: Bước 4 triển khai UC12 profile/skill/version bằng port BE1 và repository BE2, định nghĩa API để FE dùng khi auth/bootstrap sẵn sàng.
 
 ### 2026-10-22 21:20 (Asia/Saigon) — BE2 — Bước 2 thiết kế dữ liệu
 

@@ -932,6 +932,8 @@ READ COMMITTED kết hợp khóa hàng và ràng buộc DB là mức mặc đị
 
 ## 4.5 Outbox idempotency và phục hồi worker
 
+**BE2 bước 3:** [bàn giao repository/idempotency](be2-persistence-handoff.md) mô tả adapter SQL và lát cắt ghi application/history/outbox/claim trong cùng `TransactionContext`. Đây mới là code nội bộ kiểm bằng fake transaction; chưa có port BE1/BE3 thật, API hay migration DB chạy được. Quy tắc kiểm quyền hiện tại khi replay và rollback khi ghi lỗi giữ nguyên như các đoạn dưới.
+
 Worker claim batch bằng FOR UPDATE SKIP LOCKED trong transaction ngắn, đặt PROCESSING, locked_until và lease_token duy nhất rồi commit. Lease 120 giây, heartbeat 30 giây. Mọi heartbeat/ack/fail phải WHERE id AND status AND lease_token; worker hết lease không được ghi đè kết quả của worker mới. Scan worker và email worker áp dụng cùng nguyên tắc. Provider vẫn có thể nhận tác dụng phụ từ worker cũ; phải dùng provider idempotency nếu có hoặc chấp nhận at least once đối với email.
 
 Retry lỗi tạm tối đa năm lần sau lần đầu, theo 10 giây, 30 giây, 2 phút, 5 phút và 15 phút, thêm jitter. attempt_count đếm mọi lần claim; lần lỗi thứ sáu chuyển FAILED. Lỗi vĩnh viễn như địa chỉ email không hợp lệ không retry như lỗi mạng. ADMIN chỉ retry event FAILED sau khi kiểm quyền, ghi lý do và audit, dùng nguyên event_id. Scanner hết lượt chuyển REJECTED với scan_reason TECHNICAL_FAILURE, không kết luận MALWARE và cho người dùng upload lại.
