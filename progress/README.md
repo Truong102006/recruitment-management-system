@@ -34,7 +34,7 @@
 
 ## Tổng quan hiện tại
 
-Cập nhật ngày **22/10/2026**: nền BE2 bước 2 (`62215fc`, `905c9aa`) và tài liệu kế hoạch triển khai 8 pha BE1/BE3 (DOC-05, DOC-06) đã được tích hợp trên `main`. Quy tắc nghiệp vụ thuần BE2 đã kiểm trên `feat/be2-domain-rules` (71 unit + 11 contract test đạt) và đang được tích hợp. Repository chưa có chức năng nghiệp vụ chạy được, model/migration thực hoặc pipeline CI. Việc cài dependency và mở Vite ngày 16/10 là ghi nhận lịch sử ở môi trường trước, không xác nhận máy của mọi thành viên đã setup thành công.
+Cập nhật ngày **22/10/2026**: nền BE2 bước 2 (`62215fc`, `905c9aa`), tài liệu kế hoạch BE1/BE3 (DOC-05, DOC-06) và quy tắc nghiệp vụ thuần BE2 (`f7e8223`) đã được tích hợp trên `main`. BE2 đạt 71 unit + 11 contract test cho code hiện có. Repository chưa có chức năng nghiệp vụ chạy được, model/migration thực hoặc pipeline CI. Việc cài dependency và mở Vite ngày 16/10 là ghi nhận lịch sử ở môi trường trước, không xác nhận máy của mọi thành viên đã setup thành công.
 
 Các công việc trên nhánh cá nhân chưa được báo cáo vào đây chưa được xác nhận. Mỗi thành viên cập nhật kết quả của mình kèm bằng chứng; không coi bảng TODO là kết luận người đó chưa làm gì ngoài main.
 
@@ -47,13 +47,13 @@ Các công việc trên nhánh cá nhân chưa được báo cáo vào đây ch�
 | UC03 | Phỏng vấn trực tuyến | BE3 | TODO | Chưa có API/provider test |
 | UC04 | Đăng ký và xác thực | BE1 | TODO | Chưa có bootstrap/auth/test |
 | UC05 | Tìm kiếm và xem tin | BE1 | TODO | Chưa có API/test |
-| UC06 | Quản lý CV và thay CV đã nộp | BE2 | TODO | Có DTO/schema và port chọn CV; chưa có storage/scanner/API/integration test |
-| UC07 | Xét duyệt và rút hồ sơ | BE2 | TODO | Có DTO/schema và port giao tiếp BE3; chưa có workflow/API/integration test |
+| UC06 | Quản lý CV và thay CV đã nộp | BE2 | TODO | Có DTO/schema, port chọn CV và quy tắc thay/đề nghị thay CV thuần; chưa có storage/scanner/API/integration test |
+| UC07 | Xét duyệt và rút hồ sơ | BE2 | TODO | Có DTO/schema, port BE3 và quy tắc chuyển trạng thái/rút hồ sơ thuần; chưa có workflow/API/integration test |
 | UC08 | Quản lý lịch phỏng vấn | BE3 | TODO | Chưa có API/test concurrency |
-| UC09 | Công bố kết quả | BE3 | TODO | Có điểm nối BE2 trong contract; chưa có workflow/test |
+| UC09 | Công bố kết quả | BE3 | TODO | Có điểm nối và quy tắc nhận kết quả ở BE2; chưa có workflow/test tích hợp BE3 |
 | UC10 | Quản trị và kiểm duyệt | BE1 | TODO | Chưa có API/test |
 | UC11 | Doanh nghiệp và thành viên | BE1 | TODO | Chưa có API/test |
-| UC12 | Hồ sơ cá nhân | BE2 | TODO | Có DTO/schema và CandidateProfilePort; chưa có API/migration/integration test |
+| UC12 | Hồ sơ cá nhân | BE2 | TODO | Có DTO/schema, CandidateProfilePort và mapper field công khai; chưa có API/migration/integration test |
 | UC13 | Đánh giá và hoàn tất phỏng vấn | BE3 | TODO | Chưa có API/test |
 | UC14 | Lưu tin quan tâm | BE2 | TODO | Có contract thiết kế; chưa có API/test |
 | UC15 | Thông báo | BE3 | TODO | Chưa có worker/API/test |
@@ -84,11 +84,11 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 | DB-01 | Prisma, 25 bảng, migration/seed / mỗi BE sở hữu phần mình, BE2 điều phối | IN_PROGRESS | Mới có datasource/generator và Compose; chưa có model/migration |
 | CONTRACT-01 | Port, DTO, OpenAPI, event schema và contract test / cả ba BE | IN_PROGRESS | Đã có phần BE2 và contract test; còn BE1/BE3, OpenAPI đầy đủ, adapter và nghiệm thu liên module |
 | BE2-STEP2 | Nền transaction và hợp đồng tích hợp / BE2 + Codex | DONE | Đã gộp `main` tại `62215fc`; [bàn giao](../Docs/be2-step2-handoff.md), 23 unit + 11 contract test đạt. DONE chỉ cho phạm vi nền bước 2, không phải UC |
-| BE2-DOMAIN-01 | Quy tắc nghiệp vụ thuần BE2 / BE2 + Codex | DONE | Hoàn thành trên `feat/be2-domain-rules` từ `905c9aa`; chưa gộp main tại thời điểm báo cáo; 71 unit + 11 contract test đạt. DONE chỉ cho hàm thuần, không phải UC/API |
+| BE2-DOMAIN-01 | Quy tắc nghiệp vụ thuần BE2 / BE2 + Codex | DONE | Đã gộp và push `main` tại `f7e8223`; 71 unit + 11 contract test đạt. DONE chỉ cho hàm thuần, không phải UC/API |
 | STORAGE-01 | Storage CV và scanner / BE2 | TODO | Chưa có adapter/worker scan/test |
 | WORKER-01 | Outbox/email/worker / BE3; idempotency/transaction do BE2 phối hợp | TODO | Chưa triển khai |
 | VIDEO-01 | Jitsi và thu hồi quyền phòng / BE3 | TODO | Chưa tích hợp/kiểm provider thật |
-| QA-01 | Unit/integration/API/concurrency/FE/E2E / từng người theo phần mình | IN_PROGRESS | BE2: 71 unit + 11 contract test đạt trên nhánh quy tắc, coverage nền và quy tắc 98,38% dòng, 97,67% nhánh; integration/API/concurrency/FE/E2E chưa chạy |
+| QA-01 | Unit/integration/API/concurrency/FE/E2E / từng người theo phần mình | IN_PROGRESS | BE2: 71 unit + 11 contract test đạt trên code đã gộp main, coverage nền và quy tắc 98,38% dòng, 97,67% nhánh; integration/API/concurrency/FE/E2E chưa chạy |
 | CI-01 | Pipeline và evidence gate / BE1 điều phối, cả nhóm bổ sung | TODO | Chưa có workflow thực thi |
 | OPS-01 | Hiệu năng, backup/restore và vận hành / BE3 điều phối, cả nhóm kiểm chứng | TODO | Chưa đo/chưa diễn tập |
 
@@ -99,12 +99,27 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 - Giới hạn tài liệu đã xác minh: đặc tả đang tham chiếu 5 ảnh `Docs/Bao_Cao_SE113_media/image16.png`–`image20.png` chưa có từ HEAD trước thay đổi. Không tạo ảnh thay thế; không coi mọi liên kết đặc tả đạt. Link tiến độ trong phần mở đầu đặc tả đã sửa về sổ chung, giữ sổ cũ làm lịch sử.
 - BE2 đã bàn giao tài liệu contract và ghi chú cho hai AI ở `f0dd6e7`; BE1/BE3 đọc trước khi xây port phía mình.
 - BE2 hoàn thành phạm vi nền bước 2 trên `feat/be2-contract-foundation` và đã đưa lên `main` tại `62215fc`: `UnitOfWork`/`Tx`, driver Prisma 6 dạng interface, thứ tự khóa, interface/stub, DTO/fixture, schema, OpenAPI UC02 một phần và contract test. Đã đối chiếu mục 4.3–4.5, 8.4 và 7.1 của báo cáo Word. Chưa có endpoint nghiệp vụ; migration application chờ nền BE1.
-- BE2 đã hoàn thành và kiểm phần quy tắc nghiệp vụ thuần trên `feat/be2-domain-rules` theo UC06/UC07/UC09 và mục 3.2 báo cáo. Các service/DB/API chưa được triển khai; UC vẫn TODO. Đang tích hợp nhánh này lên main theo yêu cầu.
+- BE2 đã hoàn thành và kiểm phần quy tắc nghiệp vụ thuần trên `feat/be2-domain-rules` theo UC06/UC07/UC09 và mục 3.2 báo cáo; đã gộp/push `main` tại `f7e8223`. Các service/DB/API chưa được triển khai; UC vẫn TODO.
 - BE1 cần cung cấp nền Identity/Company/Job/Skill và migration được tham chiếu; BE3 cần cung cấp InterviewLifecycle/Outbox. Đây là phụ thuộc đã biết.
 - Bước kế tiếp của BE2: nhận migration Identity/Company/Job/Skill và port BE1, viết migration/adapter BE2, triển khai lát cắt UC02 kèm PostgreSQL integration và concurrency test; sau đó ghép BE3 để kiểm withdraw/result.
 - Bước kế tiếp của BE1: tạo nhánh BE1, bắt đầu pha 1 chốt contract/fixtures, bootstrap + Identity migration để mở khóa BE2 và BE3.
 
 ## Nhật ký báo cáo
+
+### 2026-10-22 21:07 (Asia/Saigon) — BE2 — Tích hợp quy tắc thuần lên main
+
+- Mã báo cáo: 20261022-2107-BE2-tich-hop-quy-tac
+- Người thực hiện / AI hỗ trợ: Người phụ trách BE2 (GitHub repository Truong102006) / Codex; chưa xác nhận tên thật.
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: BE2-DOMAIN-01, QA-01; quy tắc thuần UC06/07/09, BR07–BR09, BR13–BR14, BR18 và mapper profile ứng viên.
+- Trạng thái: DONE — hoàn thành tích hợp code quy tắc thuần lên GitHub `origin/main`; các UC vẫn TODO.
+- Nhánh / commit / PR / tích hợp main: `feat/be2-domain-rules` → `main` → `origin/main` / `f7e8223` / không có PR theo yêu cầu push main / Đã gộp và push thành công.
+- Đã hoàn thành: Rebase commit BE2 lên `46b7e19`, bảo toàn kế hoạch và nhật ký BE1/BE3 vừa xuất hiện trên main; giải quyết conflict chỉ trong `progress/README.md`; fast-forward main và push code BE2 lên remote. Cập nhật bảng tiến độ, phạm vi UC còn thiếu và nhật ký tích hợp.
+- File / bằng chứng: Commit `f7e8223`; `apps/api/src/modules/application/rules/`, `policies/`, `mappers/`, `Docs/be2-integration-contract.md`, `Docs/project-specification.md`, `progress/README.md`.
+- Kiểm tra đã chạy: Trước tích hợp, 71/71 unit và 11/11 contract test đạt, TypeScript/ESLint/Prettier đạt theo báo cáo 21:03; sau rebase `git diff --check origin/main...HEAD` đạt, fast-forward `main` và `git push origin main` trả `46b7e19..f7e8223 main -> main`.
+- Kiểm tra chưa chạy / coverage: Không chạy lại test vì commit mới từ main chỉ đổi tài liệu/kế hoạch; coverage đo trước tích hợp là 98,38% dòng, 97,67% nhánh cho source hiện có. PostgreSQL integration/API/concurrency/FE/E2E chưa chạy do chưa có service/migration/endpoint.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không đổi DB/endpoint/DTO; thêm hàm thuần nội bộ và hướng dẫn service sử dụng. BE1/BE3 có thể lấy `main` mới; interface phối hợp hiện hành giữ nguyên.
+- Phần còn thiếu / blocker: Không có trong phạm vi tích hợp bước 1; hoàn thành UC cần migration/service/adapter BE1 và bằng chứng lịch BE3 thật.
+- Bước tiếp theo: BE2 chuyển sang bước tiếp theo của kế hoạch khi được giao; các nhóm khác tiếp tục tích hợp theo contract và cập nhật sổ tiến độ chung.
 
 ### 2026-10-22 21:03 (Asia/Saigon) — BE2 — Quy tắc nghiệp vụ thuần bước 1
 
