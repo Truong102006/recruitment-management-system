@@ -69,13 +69,14 @@ Các công việc trên nhánh cá nhân chưa được báo cáo vào đây ch�
 
 Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; không đánh dấu cả nhóm UI hoàn thành nếu mới xong một màn.
 
-| Mã         | Phạm vi                                                                                       | Phụ trách | Trạng thái trên main | Bằng chứng / phần còn thiếu                                                                                                                    |
-| ---------- | --------------------------------------------------------------------------------------------- | --------- | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| FE1        | UI01–UI12, UI24, UI29: tìm việc, auth, ứng viên, CV, hồ sơ, tin lưu, thông báo, lỗi chung     | FE1       | TODO                 | Có cấu hình React/Vite; React entry, app/router còn trống                                                                                      |
-| FE2        | UI13–UI23, UI25–UI28: lịch/video, doanh nghiệp, tin, hồ sơ, đánh giá/kết quả, thống kê, admin | FE2       | TODO                 | Chưa có màn hình hoặc E2E                                                                                                                      |
-| FE2-PHASE1 | Nền tảng kiến trúc FE2: Tokens, Router modular, HTTP client, CompanyContext, Mock layer       | FE2       | DONE (trên nhánh)    | 21 tests đạt; coverage 97,56% dòng / 92,09% nhánh; build/lint/typecheck pass trên `feat/fe2-implementation`. Chưa gộp main.                    |
-| FE2-PHASE2 | Thành phần dùng chung FE2: DataTable generic, Calendar/Agenda, Dialog, StatusBadge            | FE2       | DONE (trên nhánh)    | 42 tests đạt; coverage 95,51% dòng / 88,41% nhánh; typecheck/lint/build/format clean trên `feat/fe2-implementation`. Chưa gộp main.            |
-| FE2-PHASE3 | Phân hệ Doanh nghiệp & Tin tuyển dụng: UI16, UI17, UI18 (FE26, FE27, FE28, FE29)              | FE2       | DONE (trên nhánh)    | 65 tests đạt (16 suites); coverage 88,79% dòng / 80,57% nhánh; build/lint/typecheck/format pass trên `feat/fe2-implementation`. Chưa gộp main. |
+| Mã         | Phạm vi                                                                                       | Phụ trách | Trạng thái trên main | Bằng chứng / phần còn thiếu                                                                                                                                              |
+| ---------- | --------------------------------------------------------------------------------------------- | --------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| FE1        | UI01–UI12, UI24, UI29: tìm việc, auth, ứng viên, CV, hồ sơ, tin lưu, thông báo, lỗi chung     | FE1       | TODO                 | Có cấu hình React/Vite; React entry, app/router còn trống                                                                                                                |
+| FE2        | UI13–UI23, UI25–UI28: lịch/video, doanh nghiệp, tin, hồ sơ, đánh giá/kết quả, thống kê, admin | FE2       | TODO                 | Chưa có màn hình hoặc E2E                                                                                                                                                |
+| FE2-PHASE1 | Nền tảng kiến trúc FE2: Tokens, Router modular, HTTP client, CompanyContext, Mock layer       | FE2       | DONE (trên nhánh)    | 21 tests đạt; coverage 97,56% dòng / 92,09% nhánh; build/lint/typecheck pass trên `feat/fe2-implementation`. Chưa gộp main.                                              |
+| FE2-PHASE2 | Thành phần dùng chung FE2: DataTable generic, Calendar/Agenda, Dialog, StatusBadge            | FE2       | DONE (trên nhánh)    | 42 tests đạt; coverage 95,51% dòng / 88,41% nhánh; typecheck/lint/build/format clean trên `feat/fe2-implementation`. Chưa gộp main.                                      |
+| FE2-PHASE3 | Phân hệ Doanh nghiệp & Tin tuyển dụng: UI16, UI17, UI18 (FE26, FE27, FE28, FE29)              | FE2       | DONE (trên nhánh)    | 65 tests đạt (16 suites); coverage 88,79% dòng / 80,57% nhánh; build/lint/typecheck/format pass trên `feat/fe2-implementation`. Chưa gộp main.                           |
+| FE2-PHASE4 | Hồ sơ ứng viên & Đánh giá phỏng vấn: UI19, UI20, UI21, UI22, UI23 (FE30, FE31)                | FE2       | DONE (trên nhánh)    | 87 tests đạt (20 suites); coverage 85,18% dòng / 79,37% nhánh; typecheck/lint/build/format clean trên `feat/fe2-implementation`. Chưa gộp main. |
 
 ### Tài liệu và hạ tầng chung
 
@@ -133,6 +134,55 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 - Bước kế tiếp của BE1: nhận và bind runtime ports BE2/BE3; chạy actual cross-owner/provider/HTTPS acceptance, CI GitHub/negative controls/load/restore/runtime DB permissions và xử lý dependency audit theo owner. Source và gate local đã có bằng chứng; chưa gộp main.
 
 ## Nhật ký báo cáo
+
+### 2026-10-23 21:46 (Asia/Saigon) — FE2 — Hoàn thành Pha 4 Hồ sơ ứng viên & Đánh giá phỏng vấn (UI19, UI20, UI21, UI22, UI23)
+
+- Mã báo cáo: 20261023-2146-FE2-phase4-done
+- Người thực hiện / AI hỗ trợ: Antigravity (hỗ trợ FE2).
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: FE2-PHASE4; UC06, UC07, UC08, UC09, UC13; UI19, UI20, UI21, UI22, UI23; BR01, BR08, BR09, BR10, BR11, BR13, BR14, BR18, BR19; FE30, FE31.
+- Trạng thái: DONE (phạm vi nhánh `feat/fe2-implementation`).
+- Nhánh / commit / PR / tích hợp main: `feat/fe2-implementation`; commit chứa báo cáo này; chưa gộp main.
+- Đã hoàn thành:
+  - UI19 (RecruiterApplicationsListPage - `/recruiter/applications`): DataTable danh sách hồ sơ ứng viên theo công ty; bộ lọc vị trí tin tuyển dụng, bộ lọc trạng thái xét duyệt (SUBMITTED, SCREENING, SHORTLISTED,...), tìm kiếm ứng viên theo từ khóa (tên, email, headline); hiển thị snapshot ứng viên, phiên bản CV đang xét và badge nổi bật khi có đề nghị đổi CV; tuân thủ FE30: tự động làm sạch và tải lại dữ liệu đúng scope khi chuyển đổi doanh nghiệp.
+  - UI20 (RecruiterApplicationDetailPage - `/recruiter/applications/:id`): Xem chi tiết hồ sơ, snapshot ứng viên, thư giới thiệu, phiên bản CV gốc và CV đang xét; chuyển trạng thái hồ sơ SUBMITTED -> SCREENING -> SHORTLISTED (UC07, BR09); xử lý duyệt đề nghị thay đổi CV từ ứng viên theo FE31 & BR08 (cập nhật phiên bản CV mới, xóa pending request và ghi nhận sự kiện CV_REPLACED); hiển thị dòng thời gian CandidateHistoryDto (mốc thời gian, loại sự kiện, trạng thái, thông điệp công khai); modal xem trước tệp PDF CV an toàn (BR06).
+  - UI21 (InterviewListPage - Modal xếp lịch phỏng vấn tại `/interviews`): Giao diện modal xếp lịch tuân thủ BR10 & BR11: chọn hồ sơ ứng viên, thời gian bắt đầu bắt buộc ở tương lai so với hiện tại, thời lượng 15-120 phút, phân công ít nhất 1 người phỏng vấn trong danh sách thành viên doanh nghiệp, chọn hình thức ONLINE (WebRTC Jitsi) hoặc IN_PERSON.
+  - UI22 (InterviewEvaluationPage - `/interviews/:id/evaluation`): Dành cho Interviewer đánh giá sau phỏng vấn (UC13, BR13): 3 tiêu chí chấm điểm 1-5 sao/slider (Technical Competency, Problem Solving, Culture Fit); chọn khuyến nghị tuyển dụng HIRE / HOLD / REJECT; ghi chú nhận xét chi tiết bắt buộc 10-5000 ký tự; cam kết bảo mật BR13 tuyệt mật nội bộ doanh nghiệp, không bao giờ lộ ra ngoài cho ứng viên.
+  - UI23 (RecruiterApplicationDetailPage - Modal công bố kết quả tuyển dụng): Phục vụ UC09 & BR13: công bố kết quả HIRED hoặc REJECTED; nếu REJECTED, bắt buộc nhập lý do từ chối nội bộ (`reason`) phục vụ báo cáo và kiểm duyệt, không bao giờ gửi cho ứng viên; nhập thông điệp (`message`) gửi cho ứng viên; cập nhật trạng thái hồ sơ về kết thúc.
+- File / bằng chứng:
+  - `apps/web/src/features/applications/api/applications.api.ts`
+  - `apps/web/src/features/applications/pages/recruiter-applications-list-page.tsx`, `recruiter-applications-list-page.test.tsx`
+  - `apps/web/src/features/applications/pages/recruiter-application-detail-page.tsx`, `recruiter-application-detail-page.test.tsx`
+  - `apps/web/src/features/applications/recruiter-applications.routes.tsx`
+  - `apps/web/src/features/interviews/api/interviews.api.ts`
+  - `apps/web/src/features/interviews/pages/interview-evaluation-page.tsx`, `interview-evaluation-page.test.tsx`
+  - `apps/web/src/features/interviews/pages/interview-list-page.tsx`, `interview-list-page.test.tsx`
+  - `apps/web/src/features/interviews/interview.routes.tsx`
+  - `apps/web/src/lib/mocks/dev-mock-store.ts`
+- Kiểm tra đã chạy:
+  - `npm run test:web:ci`: 20 test files pass (20/20 suites, 87/87 tests 100% pass), code coverage tổng thể 85,18% dòng (vượt yêu cầu >=80%), 79,37% nhánh (vượt yêu cầu >=70%).
+  - `npm run typecheck`: TypeScript compilation sạch hoàn toàn, 0 lỗi.
+  - `npm run lint`: ESLint sạch hoàn toàn, 0 cảnh báo, 0 lỗi.
+  - `npm run format:check`: Tất cả file tuân thủ chuẩn Prettier.
+  - `npm run build`: Build production frontend & backend thành công trong 2.35s.
+- Kiểm tra chưa chạy / coverage: E2E tests chưa chạy vì dành riêng cho Pha 6 (kiểm thử tích hợp hệ thống).
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không thay đổi DB schema hay backend API; tuân thủ hoàn toàn hợp đồng `@rms/contracts/public` và zero-collision với FE1 / Backend.
+- Phần còn thiếu / blocker: Không có trong phạm vi Pha 4. Sẵn sàng chuyển tiếp sang Pha 5 (Thống kê & Quản trị Admin: UI25–UI28).
+- Bước tiếp theo: Triển khai Pha 5: UI25 Báo cáo thống kê tuyển dụng, UI26 Quản trị kiểm duyệt tin tuyển dụng, UI27 Quản trị kiểm duyệt doanh nghiệp, UI28 Quản trị tài khoản người dùng và phân quyền.
+
+### 2026-10-23 21:18 (Asia/Saigon) — FE2 — Bắt đầu Pha 4 Hồ sơ ứng viên & Đánh giá phỏng vấn (UI19, UI20, UI21, UI22, UI23)
+
+- Mã báo cáo: 20261023-2118-FE2-phase4-start
+- Người thực hiện / AI hỗ trợ: Antigravity (hỗ trợ FE2).
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: FE2-PHASE4; UC06, UC07, UC08, UC09, UC13; UI19, UI20, UI21, UI22, UI23; BR01, BR08, BR09, BR10, BR11, BR13, BR14, BR18, BR19; FE30, FE31.
+- Trạng thái: IN_PROGRESS
+- Nhánh / commit / PR / tích hợp main: `feat/fe2-implementation`; commit chứa báo cáo này; chưa gộp main.
+- Đã hoàn thành: Hoàn tất Pha 3 (UI16, UI17, UI18) và bổ sung tầng dev fallback mock data cho trải nghiệm trình duyệt độc lập (commit `c0b5773` và `9ca5e32`). Bắt đầu triển khai Pha 4: UI19 Danh sách hồ sơ ứng tuyển, UI20 Chi tiết hồ sơ & duyệt thay CV, UI21 Xếp lịch phỏng vấn, UI22 Phiếu đánh giá phỏng vấn, UI23 Công bố kết quả tuyển dụng (HIRED/REJECTED).
+- File / bằng chứng: Cập nhật progress/README.md.
+- Kiểm tra đã chạy: 65 tests pass; typecheck, lint, build, format đều clean trên nhánh `feat/fe2-implementation`.
+- Kiểm tra chưa chạy / coverage: Chưa chạy test cho Pha 4 vì đang bắt đầu viết code.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không sửa đổi DB/API; bám sát các hợp đồng `@rms/contracts/public` cho CandidateApplicationDto, ReviewApplicationRequest, ReviewCvChangeRequest, PublishResultRequest.
+- Phần còn thiếu / blocker: Đang viết UI19, UI20, UI21, UI22, UI23 và bộ test Vitest tương ứng.
+- Bước tiếp theo: Xây dựng API service/hooks, trang UI19, UI20, UI21, UI22, UI23 và bộ kiểm thử Vitest.
 
 ### 2026-10-23 20:45 (Asia/Saigon) — FE2 — Hoàn thành Pha 3 Phân hệ Doanh nghiệp & Tin tuyển dụng (UI16, UI17, UI18)
 

@@ -11,6 +11,12 @@ import type {
   AddMemberRequest,
   UpdateMemberRequest,
   TransferOwnerRequest,
+  CandidateApplicationDto,
+  CandidateHistoryDto,
+  ApplicationStatus,
+  ReviewApplicationRequest,
+  ReviewCvChangeRequest,
+  PublishResultRequest,
 } from '@rms/contracts/public';
 
 export const isDevBrowser = (): boolean => {
@@ -293,4 +299,515 @@ export const devMockStore = {
   getSkills: async (): Promise<SkillDto[]> => {
     return [...devSkills];
   },
+
+  // ==========================================
+  // Applications Store & Handlers
+  // ==========================================
+  getApplications: async (params?: {
+    jobId?: string;
+    status?: ApplicationStatus;
+    q?: string;
+  }): Promise<{ data: DevApplicationItem[]; meta: { total: number } }> => {
+    let list = [...devApplicationsStore];
+    if (params?.jobId) {
+      list = list.filter((a) => a.jobId === params.jobId);
+    }
+    if (params?.status) {
+      list = list.filter((a) => a.status === params.status);
+    }
+    if (params?.q) {
+      const q = params.q.toLowerCase();
+      list = list.filter(
+        (a) =>
+          a.candidateSnapshot.name.toLowerCase().includes(q) ||
+          a.candidateSnapshot.email.toLowerCase().includes(q) ||
+          (a.candidateSnapshot.headline && a.candidateSnapshot.headline.toLowerCase().includes(q)),
+      );
+    }
+    return { data: list, meta: { total: list.length } };
+  },
+
+  getApplicationDetail: async (id: string): Promise<DevApplicationItem> => {
+    const found = devApplicationsStore.find((a) => a.applicationId === id);
+    if (!found) {
+      // Fallback to first if not found
+      return devApplicationsStore[0]!;
+    }
+    return { ...found };
+  },
+
+  getApplicationHistory: async (applicationId: string): Promise<CandidateHistoryDto[]> => {
+    return (
+      devHistoryStore[applicationId] || [
+        {
+          id: `h-init-${Date.now()}`,
+          eventType: 'SUBMIT',
+          fromStatus: null,
+          toStatus: 'SUBMITTED',
+          oldCvId: null,
+          newCvId: 'cv-ver-1',
+          publicMessage: 'Hồ sơ đã được gửi thành công.',
+          createdAt: '2026-02-01T08:00:00Z',
+          aggregateVersion: 1,
+        },
+      ]
+    );
+  },
+
+  reviewApplication: async (
+    applicationId: string,
+    payload: ReviewApplicationRequest,
+  ): Promise<DevApplicationItem> => {
+    const app = devApplicationsStore.find((a) => a.applicationId === applicationId);
+    if (!app) throw new Error('Không tìm thấy hồ sơ');
+    const oldStatus = app.status;
+    app.status = payload.status;
+    app.version += 1;
+    app.updatedAt = new Date().toISOString();
+
+    const history = devHistoryStore[applicationId] || [];
+    history.unshift({
+      id: `h-${Date.now()}`,
+      eventType: 'STATUS_CHANGE',
+      fromStatus: oldStatus,
+      toStatus: payload.status,
+      oldCvId: null,
+      newCvId: null,
+      publicMessage: `Trạng thái hồ sơ được cập nhật sang ${payload.status}.`,
+      createdAt: new Date().toISOString(),
+      aggregateVersion: app.version,
+    });
+    devHistoryStore[applicationId] = history;
+
+    return { ...app };
+  },
+
+  reviewCvChange: async (
+    applicationId: string,
+    payload: ReviewCvChangeRequest,
+  ): Promise<DevApplicationItem> => {
+    void payload;
+    const app = devApplicationsStore.find((a) => a.applicationId === applicationId);
+    if (!app) throw new Error('Không tìm thấy hồ sơ');
+    if (!app.pendingCvChange) throw new Error('Không có đề nghị đổi CV nào đang chờ duyệt');
+
+    const oldCvId = app.currentCvVersionId;
+    const newCvId = app.pendingCvChange.newCvId;
+    app.currentCvVersionId = newCvId;
+    app.pendingCvChange = null;
+    app.version += 1;
+    app.updatedAt = new Date().toISOString();
+
+    const history = devHistoryStore[applicationId] || [];
+    history.unshift({
+      id: `h-cv-${Date.now()}`,
+      eventType: 'CV_REPLACED',
+      fromStatus: app.status,
+      toStatus: app.status,
+      oldCvId,
+      newCvId,
+      publicMessage: 'Nhà tuyển dụng đã chấp thuận đề nghị cập nhật CV phiên bản mới.',
+      createdAt: new Date().toISOString(),
+      aggregateVersion: app.version,
+    });
+    devHistoryStore[applicationId] = history;
+
+    return { ...app };
+  },
+
+  publishResult: async (
+    applicationId: string,
+    payload: PublishResultRequest,
+  ): Promise<DevApplicationItem> => {
+    const app = devApplicationsStore.find((a) => a.applicationId === applicationId);
+    if (!app) throw new Error('Không tìm thấy hồ sơ');
+    const oldStatus = app.status;
+    app.status = payload.result;
+    app.resultMessage = payload.message;
+    app.resultPublishedAt = new Date().toISOString();
+    app.version += 1;
+    app.updatedAt = new Date().toISOString();
+
+    const history = devHistoryStore[applicationId] || [];
+    history.unshift({
+      id: `h-res-${Date.now()}`,
+      eventType: 'RESULT_PUBLISHED',
+      fromStatus: oldStatus,
+      toStatus: payload.result,
+      oldCvId: null,
+      newCvId: null,
+      publicMessage: payload.message,
+      createdAt: new Date().toISOString(),
+      aggregateVersion: app.version,
+    });
+    devHistoryStore[applicationId] = history;
+
+    return { ...app };
+  },
+
+  // ==========================================
+  // Interviews Store & Handlers
+  // ==========================================
+  getInterviews: async (): Promise<DevInterviewItem[]> => {
+    return [...devInterviewsStore];
+  },
+
+  getInterviewDetail: async (id: string): Promise<DevInterviewItem> => {
+    const found = devInterviewsStore.find((iv) => iv.id === id);
+    if (found) return { ...found };
+    return { ...devInterviewsStore[0]! };
+  },
+
+  scheduleInterview: async (payload: {
+    applicationId: string;
+    startAt: string;
+    durationMinutes: number;
+    format: 'ONLINE' | 'IN_PERSON';
+    interviewerIds: string[];
+    notes?: string;
+    location?: string;
+  }): Promise<DevInterviewItem> => {
+    const app = devApplicationsStore.find((a) => a.applicationId === payload.applicationId);
+    const candidateName = app ? app.candidateSnapshot.name : 'Ứng viên';
+    const candidateEmail = app ? app.candidateSnapshot.email : 'candidate@email.com';
+    const jobTitle = app ? app.jobTitle : 'Vị trí tuyển dụng';
+
+    const startDate = new Date(payload.startAt);
+    const endDate = new Date(startDate.getTime() + payload.durationMinutes * 60000);
+
+    const interviewers = devMembersStore.filter((m) => payload.interviewerIds.includes(m.userId));
+
+    const newInterview: DevInterviewItem = {
+      id: `iv-${Date.now()}`,
+      applicationId: payload.applicationId,
+      candidateName,
+      candidateEmail,
+      jobTitle,
+      startAt: payload.startAt,
+      endAt: endDate.toISOString(),
+      durationMinutes: payload.durationMinutes,
+      format: payload.format,
+      status: 'CONFIRMED',
+      interviewers: interviewers.map((i) => ({
+        userId: i.userId,
+        fullName: i.fullName,
+        email: i.email,
+      })),
+      locationOrMeetingLink:
+        payload.format === 'ONLINE'
+          ? 'https://meet.talento.vn/room-iv-' + Date.now().toString(36)
+          : payload.location || 'Phòng họp Tầng 8, Trụ sở Talento',
+      evaluations: [],
+    };
+
+    devInterviewsStore.unshift(newInterview);
+
+    if (app) {
+      app.status = 'INTERVIEW_SCHEDULED';
+      app.version += 1;
+      const history = devHistoryStore[payload.applicationId] || [];
+      history.unshift({
+        id: `h-iv-${Date.now()}`,
+        eventType: 'INTERVIEW_CONFIRMED',
+        fromStatus: 'SHORTLISTED',
+        toStatus: 'INTERVIEW_SCHEDULED',
+        oldCvId: null,
+        newCvId: null,
+        publicMessage: `Lịch phỏng vấn đã được xác nhận vào lúc ${new Date(payload.startAt).toLocaleString('vi-VN')}.`,
+        createdAt: new Date().toISOString(),
+        aggregateVersion: app.version,
+      });
+      devHistoryStore[payload.applicationId] = history;
+    }
+
+    return newInterview;
+  },
+
+  submitEvaluation: async (
+    interviewId: string,
+    payload: {
+      interviewerId: string;
+      technicalScore: number;
+      problemSolvingScore: number;
+      cultureFitScore: number;
+      recommendation: 'HIRE' | 'HOLD' | 'REJECT';
+      note: string;
+    },
+  ): Promise<{ success: true }> => {
+    const iv = devInterviewsStore.find((i) => i.id === interviewId);
+    if (!iv) throw new Error('Không tìm thấy lịch phỏng vấn');
+
+    const reviewer = devMembersStore.find((m) => m.userId === payload.interviewerId);
+    if (!iv.evaluations) iv.evaluations = [];
+
+    iv.evaluations.push({
+      interviewerId: payload.interviewerId,
+      interviewerName: reviewer?.fullName || 'Người phỏng vấn',
+      technicalScore: payload.technicalScore,
+      problemSolvingScore: payload.problemSolvingScore,
+      cultureFitScore: payload.cultureFitScore,
+      recommendation: payload.recommendation,
+      note: payload.note,
+      submittedAt: new Date().toISOString(),
+    });
+
+    iv.status = 'COMPLETED';
+
+    // Transition application to INTERVIEWED if not yet
+    const app = devApplicationsStore.find((a) => a.applicationId === iv.applicationId);
+    if (app && app.status === 'INTERVIEW_SCHEDULED') {
+      app.status = 'INTERVIEWED';
+      app.version += 1;
+    }
+
+    return { success: true };
+  },
 };
+
+// ====================================================
+// Mock In-memory Storage for Applications & Interviews
+// ====================================================
+export interface DevApplicationItem extends CandidateApplicationDto {
+  jobTitle: string;
+  pendingCvChange?: {
+    requestId: string;
+    requestVersion: number;
+    newCvId: string;
+    newCvName?: string;
+    reason?: string;
+    createdAt: string;
+  } | null;
+}
+
+export interface DevInterviewItem {
+  id: string;
+  applicationId: string;
+  candidateName: string;
+  candidateEmail: string;
+  jobTitle: string;
+  startAt: string;
+  endAt: string;
+  durationMinutes: number;
+  format: 'ONLINE' | 'IN_PERSON';
+  status: 'PROPOSED' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED';
+  interviewers: { userId: string; fullName: string; email: string }[];
+  locationOrMeetingLink: string;
+  evaluations?: {
+    interviewerId: string;
+    interviewerName: string;
+    technicalScore: number;
+    problemSolvingScore: number;
+    cultureFitScore: number;
+    recommendation: 'HIRE' | 'HOLD' | 'REJECT';
+    note: string;
+    submittedAt: string;
+  }[];
+}
+
+const devApplicationsStore: DevApplicationItem[] = [
+  {
+    applicationId: 'app-001',
+    jobId: 'j1111111-1111-1111-1111-111111111111',
+    jobTitle: 'Senior Frontend Engineer (React/TypeScript)',
+    status: 'SCREENING',
+    version: 2,
+    originalCvVersionId: 'cv-ver-1-quan',
+    currentCvVersionId: 'cv-ver-1-quan',
+    candidateSnapshot: {
+      name: 'Đặng Minh Quân',
+      email: 'minhquan.dang@gmail.com',
+      phone: '0901234567',
+      headline: 'Senior React Developer | 5 năm kinh nghiệm SPA & Design System',
+    },
+    coverLetter:
+      'Kính gửi bộ phận Tuyển dụng Talento, tôi có hơn 5 năm kinh nghiệm thực chiến phát triển ứng dụng React quy mô lớn với TypeScript, Tailwind và kiến trúc Micro-Frontend. Rất mong muốn được đóng góp cho hệ thống của công ty.',
+    submittedAt: '2026-02-01T09:30:00+07:00',
+    updatedAt: '2026-02-02T14:15:00+07:00',
+    resultMessage: null,
+    resultPublishedAt: null,
+    pendingCvChange: {
+      requestId: 'req-cv-001',
+      requestVersion: 1,
+      newCvId: 'cv-ver-2-quan',
+      newCvName: 'CV_DangMinhQuan_Frontend_Senior_2026_Updated.pdf',
+      reason: 'Cập nhật thêm chứng chỉ AWS Certified Developer và dự án fintech gần nhất.',
+      createdAt: '2026-02-02T14:00:00+07:00',
+    },
+  },
+  {
+    applicationId: 'app-002',
+    jobId: 'j1111111-1111-1111-1111-111111111111',
+    jobTitle: 'Senior Frontend Engineer (React/TypeScript)',
+    status: 'INTERVIEWED',
+    version: 4,
+    originalCvVersionId: 'cv-ver-1-baoanh',
+    currentCvVersionId: 'cv-ver-1-baoanh',
+    candidateSnapshot: {
+      name: 'Lê Bảo Anh',
+      email: 'baoanh.le@techcorp.vn',
+      phone: '0987654321',
+      headline: 'Frontend Lead | Next.js & Performance Optimization',
+    },
+    coverLetter: 'Xin chào quý công ty, tôi ứng tuyển vị trí Senior Frontend Engineer...',
+    submittedAt: '2026-01-20T10:00:00+07:00',
+    updatedAt: '2026-02-10T16:00:00+07:00',
+    resultMessage: null,
+    resultPublishedAt: null,
+    pendingCvChange: null,
+  },
+  {
+    applicationId: 'app-003',
+    jobId: 'j2222222-2222-2222-2222-222222222222',
+    jobTitle: 'Backend Engineer (NodeJS / NestJS)',
+    status: 'SUBMITTED',
+    version: 1,
+    originalCvVersionId: 'cv-ver-1-nam',
+    currentCvVersionId: 'cv-ver-1-nam',
+    candidateSnapshot: {
+      name: 'Phạm Hoàng Nam',
+      email: 'hoangnam.pham@backend.io',
+      phone: '0912348899',
+      headline: 'Backend Developer | NestJS, PostgreSQL & Event-Driven Architecture',
+    },
+    coverLetter: 'Tôi có 3 năm kinh nghiệm phát triển backend bằng NestJS và Prisma...',
+    submittedAt: '2026-02-12T11:20:00+07:00',
+    updatedAt: '2026-02-12T11:20:00+07:00',
+    resultMessage: null,
+    resultPublishedAt: null,
+    pendingCvChange: null,
+  },
+  {
+    applicationId: 'app-004',
+    jobId: 'j1111111-1111-1111-1111-111111111111',
+    jobTitle: 'Senior Frontend Engineer (React/TypeScript)',
+    status: 'HIRED',
+    version: 5,
+    originalCvVersionId: 'cv-ver-1-trang',
+    currentCvVersionId: 'cv-ver-1-trang',
+    candidateSnapshot: {
+      name: 'Vũ Thu Trang',
+      email: 'thutrang.vu@gmail.com',
+      phone: '0933221100',
+      headline: 'UI/UX Engineer & React Enthusiast',
+    },
+    coverLetter: 'Rất hân hạnh được ứng tuyển vào vị trí Frontend...',
+    submittedAt: '2026-01-10T08:00:00+07:00',
+    updatedAt: '2026-02-15T09:00:00+07:00',
+    resultMessage: 'Chúc mừng bạn đã trúng tuyển vị trí Senior Frontend Engineer tại Talento!',
+    resultPublishedAt: '2026-02-15T09:00:00+07:00',
+    pendingCvChange: null,
+  },
+];
+
+const devHistoryStore: Record<string, CandidateHistoryDto[]> = {
+  'app-001': [
+    {
+      id: 'h-01',
+      eventType: 'STATUS_CHANGE',
+      fromStatus: 'SUBMITTED',
+      toStatus: 'SCREENING',
+      oldCvId: null,
+      newCvId: null,
+      publicMessage:
+        'Hồ sơ đã qua vòng lọc hồ sơ ban đầu và chuyển sang trạng thái Sàng lọc chuyên sâu.',
+      createdAt: '2026-02-02T10:00:00+07:00',
+      aggregateVersion: 2,
+    },
+    {
+      id: 'h-00',
+      eventType: 'SUBMIT',
+      fromStatus: null,
+      toStatus: 'SUBMITTED',
+      oldCvId: null,
+      newCvId: 'cv-ver-1-quan',
+      publicMessage: 'Ứng viên nộp hồ sơ ứng tuyển với CV phiên bản 1.',
+      createdAt: '2026-02-01T09:30:00+07:00',
+      aggregateVersion: 1,
+    },
+  ],
+  'app-002': [
+    {
+      id: 'h-04',
+      eventType: 'STATUS_CHANGE',
+      fromStatus: 'INTERVIEW_SCHEDULED',
+      toStatus: 'INTERVIEWED',
+      oldCvId: null,
+      newCvId: null,
+      publicMessage: 'Đã hoàn thành buổi phỏng vấn chuyên môn và tổng hợp phiếu đánh giá.',
+      createdAt: '2026-02-10T16:00:00+07:00',
+      aggregateVersion: 4,
+    },
+    {
+      id: 'h-03',
+      eventType: 'INTERVIEW_CONFIRMED',
+      fromStatus: 'SHORTLISTED',
+      toStatus: 'INTERVIEW_SCHEDULED',
+      oldCvId: null,
+      newCvId: null,
+      publicMessage: 'Xác nhận lịch phỏng vấn chuyên môn kỹ thuật.',
+      createdAt: '2026-02-05T14:00:00+07:00',
+      aggregateVersion: 3,
+    },
+  ],
+};
+
+const devInterviewsStore: DevInterviewItem[] = [
+  {
+    id: 'iv-001',
+    applicationId: 'app-002',
+    candidateName: 'Lê Bảo Anh',
+    candidateEmail: 'baoanh.le@techcorp.vn',
+    jobTitle: 'Senior Frontend Engineer (React/TypeScript)',
+    startAt: '2026-02-10T14:30:00+07:00',
+    endAt: '2026-02-10T15:30:00+07:00',
+    durationMinutes: 60,
+    format: 'ONLINE',
+    status: 'COMPLETED',
+    interviewers: [
+      {
+        userId: 'u3333333-3333-3333-3333-333333333333',
+        fullName: 'Lê Hoàng Cường (Tech Lead)',
+        email: 'interviewer.cuong@talento.vn',
+      },
+    ],
+    locationOrMeetingLink: 'https://meet.talento.vn/room-senior-fe-baoanh',
+    evaluations: [
+      {
+        interviewerId: 'u3333333-3333-3333-3333-333333333333',
+        interviewerName: 'Lê Hoàng Cường',
+        technicalScore: 5,
+        problemSolvingScore: 4,
+        cultureFitScore: 5,
+        recommendation: 'HIRE',
+        note: 'Ứng viên nắm rất chắc về kiến trúc Frontend, am hiểu lifecycle React 19 và các kỹ thuật server components. Khuyên tuyển dụng.',
+        submittedAt: '2026-02-10T16:00:00+07:00',
+      },
+    ],
+  },
+  {
+    id: 'iv-002',
+    applicationId: 'app-001',
+    candidateName: 'Đặng Minh Quân',
+    candidateEmail: 'minhquan.dang@gmail.com',
+    jobTitle: 'Senior Frontend Engineer (React/TypeScript)',
+    startAt: '2026-12-25T10:00:00+07:00',
+    endAt: '2026-12-25T11:00:00+07:00',
+    durationMinutes: 60,
+    format: 'ONLINE',
+    status: 'CONFIRMED',
+    interviewers: [
+      {
+        userId: 'u2222222-2222-2222-2222-222222222222',
+        fullName: 'Trần Thị Bình (Tuyển dụng)',
+        email: 'recruiter.binh@talento.vn',
+      },
+      {
+        userId: 'u3333333-3333-3333-3333-333333333333',
+        fullName: 'Lê Hoàng Cường (Tech Lead)',
+        email: 'interviewer.cuong@talento.vn',
+      },
+    ],
+    locationOrMeetingLink: 'https://meet.talento.vn/room-fe-minhquan',
+    evaluations: [],
+  },
+];
