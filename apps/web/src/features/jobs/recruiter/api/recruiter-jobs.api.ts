@@ -1,4 +1,5 @@
 import { apiClient } from '../../../../lib/http/api-client';
+import { isDevBrowser, devMockStore } from '../../../../lib/mocks/dev-mock-store';
 import type {
   JobDetailDto,
   JobSummaryDto,
@@ -32,35 +33,70 @@ export const recruiterJobsApi = {
     companyId: string,
     params?: CompanyJobsQuery,
   ): Promise<CompanyJobsResponse> => {
-    return apiClient.get<CompanyJobsResponse>(`/companies/${companyId}/jobs`, {
-      params: params as Record<string, string | number | boolean | undefined>,
-    });
+    try {
+      return await apiClient.get<CompanyJobsResponse>(`/companies/${companyId}/jobs`, {
+        params: params as Record<string, string | number | boolean | undefined>,
+      });
+    } catch (err) {
+      if (isDevBrowser()) return devMockStore.getJobs(params);
+      throw err;
+    }
   },
 
   getJobDetail: async (jobId: string, companyId?: string): Promise<JobDetailDto> => {
-    if (companyId) {
-      return apiClient.get<JobDetailDto>(`/companies/${companyId}/jobs/${jobId}`);
+    try {
+      if (companyId) {
+        return await apiClient.get<JobDetailDto>(`/companies/${companyId}/jobs/${jobId}`);
+      }
+      return await apiClient.get<JobDetailDto>(`/jobs/${jobId}`);
+    } catch (err) {
+      if (isDevBrowser()) return devMockStore.getJobDetail(jobId);
+      throw err;
     }
-    return apiClient.get<JobDetailDto>(`/jobs/${jobId}`);
   },
 
   createJob: async (payload: CreateJobRequest): Promise<JobDetailDto> => {
-    return apiClient.post<JobDetailDto>('/jobs', payload);
+    try {
+      return await apiClient.post<JobDetailDto>('/jobs', payload);
+    } catch (err) {
+      if (isDevBrowser()) return devMockStore.createJob(payload);
+      throw err;
+    }
   },
 
   updateJob: async (jobId: string, payload: UpdateJobRequest): Promise<JobDetailDto> => {
-    return apiClient.patch<JobDetailDto>(`/jobs/${jobId}`, payload);
+    try {
+      return await apiClient.patch<JobDetailDto>(`/jobs/${jobId}`, payload);
+    } catch (err) {
+      if (isDevBrowser()) return devMockStore.updateJob(jobId, payload);
+      throw err;
+    }
   },
 
   publishJob: async (jobId: string, payload: PublishJobRequest): Promise<JobDetailDto> => {
-    return apiClient.post<JobDetailDto>(`/jobs/${jobId}/publish`, payload);
+    try {
+      return await apiClient.post<JobDetailDto>(`/jobs/${jobId}/publish`, payload);
+    } catch (err) {
+      if (isDevBrowser()) return devMockStore.publishJob(jobId, payload);
+      throw err;
+    }
   },
 
   closeJob: async (jobId: string, payload: CloseJobRequest): Promise<JobDetailDto> => {
-    return apiClient.post<JobDetailDto>(`/jobs/${jobId}/close`, payload);
+    try {
+      return await apiClient.post<JobDetailDto>(`/jobs/${jobId}/close`, payload);
+    } catch (err) {
+      if (isDevBrowser()) return devMockStore.closeJob(jobId);
+      throw err;
+    }
   },
 
   getSkills: async (): Promise<SkillDto[]> => {
-    return apiClient.get<SkillDto[]>('/skills');
+    try {
+      return await apiClient.get<SkillDto[]>('/skills');
+    } catch (err) {
+      if (isDevBrowser()) return devMockStore.getSkills();
+      throw err;
+    }
   },
 };

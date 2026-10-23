@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import type { CompanyDto, MembershipRole } from '@rms/contracts/public';
+import { isDevBrowser, devCompany } from '../../../lib/mocks/dev-mock-store';
 
 export interface CompanyMembershipInfo {
   company: CompanyDto;
@@ -26,13 +27,21 @@ export interface CompanyProviderProps {
 
 export const CompanyProvider: React.FC<CompanyProviderProps> = ({
   children,
-  initialMemberships = [],
+  initialMemberships,
   initialCompanyId,
 }) => {
   const queryClient = useQueryClient();
-  const [memberships, setMemberships] = useState<CompanyMembershipInfo[]>(initialMemberships);
+  const defaultMemberships = useMemo(() => {
+    if (initialMemberships !== undefined) return initialMemberships;
+    if (isDevBrowser()) {
+      return [{ company: devCompany, role: 'OWNER' as MembershipRole }];
+    }
+    return [];
+  }, [initialMemberships]);
+
+  const [memberships, setMemberships] = useState<CompanyMembershipInfo[]>(defaultMemberships);
   const [currentCompanyId, setCurrentCompanyId] = useState<string | null>(
-    initialCompanyId ?? initialMemberships[0]?.company.id ?? null,
+    initialCompanyId ?? defaultMemberships[0]?.company.id ?? null,
   );
 
   const currentMembership = useMemo(

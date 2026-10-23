@@ -1,4 +1,5 @@
 import { apiClient } from '../../../lib/http/api-client';
+import { isDevBrowser, devMockStore } from '../../../lib/mocks/dev-mock-store';
 import type {
   CompanyDto,
   UpdateCompanyRequest,
@@ -10,22 +11,42 @@ import type {
 
 export const companiesApi = {
   getCompany: async (companyId: string): Promise<CompanyDto> => {
-    return apiClient.get<CompanyDto>(`/companies/${companyId}`);
+    try {
+      return await apiClient.get<CompanyDto>(`/companies/${companyId}`);
+    } catch (err) {
+      if (isDevBrowser()) return devMockStore.getCompany();
+      throw err;
+    }
   },
 
   updateCompany: async (companyId: string, payload: UpdateCompanyRequest): Promise<CompanyDto> => {
-    return apiClient.patch<CompanyDto>(`/companies/${companyId}`, payload);
+    try {
+      return await apiClient.patch<CompanyDto>(`/companies/${companyId}`, payload);
+    } catch (err) {
+      if (isDevBrowser()) return devMockStore.updateCompany(payload);
+      throw err;
+    }
   },
 
   getCompanyMembers: async (companyId: string): Promise<CompanyMemberDto[]> => {
-    return apiClient.get<CompanyMemberDto[]>(`/companies/${companyId}/members`);
+    try {
+      return await apiClient.get<CompanyMemberDto[]>(`/companies/${companyId}/members`);
+    } catch (err) {
+      if (isDevBrowser()) return devMockStore.getCompanyMembers();
+      throw err;
+    }
   },
 
   addCompanyMember: async (
     companyId: string,
     payload: AddMemberRequest,
   ): Promise<CompanyMemberDto> => {
-    return apiClient.post<CompanyMemberDto>(`/companies/${companyId}/members`, payload);
+    try {
+      return await apiClient.post<CompanyMemberDto>(`/companies/${companyId}/members`, payload);
+    } catch (err) {
+      if (isDevBrowser()) return devMockStore.addMember(payload);
+      throw err;
+    }
   },
 
   updateCompanyMember: async (
@@ -33,13 +54,29 @@ export const companiesApi = {
     userId: string,
     payload: UpdateMemberRequest,
   ): Promise<CompanyMemberDto> => {
-    return apiClient.patch<CompanyMemberDto>(`/companies/${companyId}/members/${userId}`, payload);
+    try {
+      return await apiClient.patch<CompanyMemberDto>(
+        `/companies/${companyId}/members/${userId}`,
+        payload,
+      );
+    } catch (err) {
+      if (isDevBrowser()) return devMockStore.updateMember(userId, payload);
+      throw err;
+    }
   },
 
   transferOwner: async (
     companyId: string,
     payload: TransferOwnerRequest,
   ): Promise<{ success: true }> => {
-    return apiClient.post<{ success: true }>(`/companies/${companyId}/transfer-owner`, payload);
+    try {
+      return await apiClient.post<{ success: true }>(
+        `/companies/${companyId}/transfer-owner`,
+        payload,
+      );
+    } catch (err) {
+      if (isDevBrowser()) return devMockStore.transferOwner(payload);
+      throw err;
+    }
   },
 };
