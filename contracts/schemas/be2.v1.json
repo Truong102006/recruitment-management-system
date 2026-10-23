@@ -1,0 +1,285 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://rms.example/contracts/be2.v1.json",
+  "title": "BE2 contract v1 — normalized wire payloads; no endpoint implementation implied",
+  "definitions": {
+    "Uuid": { "type": "string", "format": "uuid" },
+    "Version": { "type": "integer", "minimum": 0 },
+    "Timestamp": { "type": "string", "format": "date-time" },
+    "Status": {
+      "type": "string",
+      "enum": [
+        "SUBMITTED",
+        "SCREENING",
+        "SHORTLISTED",
+        "INTERVIEW_SCHEDULED",
+        "INTERVIEWED",
+        "HIRED",
+        "REJECTED",
+        "WITHDRAWN"
+      ]
+    },
+    "SubmitApplicationRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["cvId"],
+      "properties": {
+        "cvId": { "$ref": "#/definitions/Uuid" },
+        "coverLetter": { "type": "string", "maxLength": 3000 }
+      }
+    },
+    "ReviewApplicationRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "version"],
+      "properties": {
+        "status": { "type": "string", "enum": ["SCREENING", "SHORTLISTED"] },
+        "version": { "$ref": "#/definitions/Version" }
+      }
+    },
+    "WithdrawApplicationRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version"],
+      "properties": { "version": { "$ref": "#/definitions/Version" } }
+    },
+    "ChangeCvRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["newCvId", "version"],
+      "properties": {
+        "newCvId": { "$ref": "#/definitions/Uuid" },
+        "version": { "$ref": "#/definitions/Version" }
+      }
+    },
+    "ReviewCvChangeRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["applicationVersion", "requestVersion"],
+      "properties": {
+        "applicationVersion": { "$ref": "#/definitions/Version" },
+        "requestVersion": { "$ref": "#/definitions/Version" },
+        "reason": { "type": "string", "minLength": 1, "pattern": "\\S" }
+      }
+    },
+    "RejectCvChangeRequest": {
+      "allOf": [
+        { "$ref": "#/definitions/ReviewCvChangeRequest" },
+        { "type": "object", "required": ["reason"] }
+      ]
+    },
+    "PublishResultRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["result", "message", "version"],
+      "properties": {
+        "result": { "type": "string", "enum": ["HIRED", "REJECTED"] },
+        "message": { "type": "string", "minLength": 1, "maxLength": 3000, "pattern": "\\S" },
+        "reason": { "type": "string", "minLength": 1, "pattern": "\\S" },
+        "version": { "$ref": "#/definitions/Version" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "result": { "const": "REJECTED" } } },
+          "then": { "required": ["reason"] }
+        }
+      ]
+    },
+    "CandidateSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "email", "phone", "headline"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1, "maxLength": 120, "pattern": "\\S" },
+        "email": { "type": "string", "format": "email", "maxLength": 254 },
+        "phone": { "type": ["string", "null"], "maxLength": 20 },
+        "headline": { "type": ["string", "null"], "maxLength": 160 }
+      }
+    },
+    "CandidateApplicationDto": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "applicationId",
+        "jobId",
+        "status",
+        "version",
+        "originalCvVersionId",
+        "currentCvVersionId",
+        "candidateSnapshot",
+        "coverLetter",
+        "submittedAt",
+        "updatedAt",
+        "resultMessage",
+        "resultPublishedAt"
+      ],
+      "properties": {
+        "applicationId": { "$ref": "#/definitions/Uuid" },
+        "jobId": { "$ref": "#/definitions/Uuid" },
+        "status": { "$ref": "#/definitions/Status" },
+        "version": { "$ref": "#/definitions/Version" },
+        "originalCvVersionId": { "$ref": "#/definitions/Uuid" },
+        "currentCvVersionId": { "$ref": "#/definitions/Uuid" },
+        "candidateSnapshot": { "$ref": "#/definitions/CandidateSnapshot" },
+        "coverLetter": { "type": ["string", "null"], "maxLength": 3000 },
+        "submittedAt": { "$ref": "#/definitions/Timestamp" },
+        "updatedAt": { "$ref": "#/definitions/Timestamp" },
+        "resultMessage": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 3000,
+          "pattern": "\\S"
+        },
+        "resultPublishedAt": { "type": ["string", "null"], "format": "date-time" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "enum": ["HIRED", "REJECTED"] } } },
+          "then": {
+            "properties": {
+              "resultMessage": { "type": "string" },
+              "resultPublishedAt": { "type": "string" }
+            }
+          },
+          "else": {
+            "properties": {
+              "resultMessage": { "type": "null" },
+              "resultPublishedAt": { "type": "null" }
+            }
+          }
+        }
+      ]
+    },
+    "CandidateApplicationResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["data"],
+      "properties": { "data": { "$ref": "#/definitions/CandidateApplicationDto" } }
+    },
+    "CandidateHistoryDto": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "eventType",
+        "fromStatus",
+        "toStatus",
+        "oldCvId",
+        "newCvId",
+        "publicMessage",
+        "createdAt",
+        "aggregateVersion"
+      ],
+      "properties": {
+        "id": { "$ref": "#/definitions/Uuid" },
+        "eventType": {
+          "type": "string",
+          "enum": [
+            "SUBMIT",
+            "STATUS_CHANGE",
+            "CV_REPLACED",
+            "RESULT_PUBLISHED",
+            "INTERVIEW_CONFIRMED",
+            "INTERVIEW_CANCELLED",
+            "WITHDRAW"
+          ]
+        },
+        "fromStatus": { "anyOf": [{ "$ref": "#/definitions/Status" }, { "type": "null" }] },
+        "toStatus": { "$ref": "#/definitions/Status" },
+        "oldCvId": { "type": ["string", "null"], "format": "uuid" },
+        "newCvId": { "type": ["string", "null"], "format": "uuid" },
+        "publicMessage": { "type": ["string", "null"], "maxLength": 3000 },
+        "createdAt": { "$ref": "#/definitions/Timestamp" },
+        "aggregateVersion": { "$ref": "#/definitions/Version" }
+      }
+    },
+    "UpdateCandidateProfileRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1, "maxLength": 120, "pattern": "\\S" },
+        "phone": { "type": ["string", "null"], "maxLength": 20 },
+        "headline": { "type": ["string", "null"], "maxLength": 160 },
+        "summary": { "type": ["string", "null"], "maxLength": 3000 },
+        "location": { "type": ["string", "null"], "maxLength": 160 },
+        "skillIds": { "type": "array", "maxItems": 50, "items": { "$ref": "#/definitions/Uuid" } },
+        "version": { "$ref": "#/definitions/Version" }
+      }
+    },
+    "CandidateProfileDto": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "email",
+        "phone",
+        "headline",
+        "summary",
+        "location",
+        "skillIds",
+        "version"
+      ],
+      "properties": {
+        "name": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "email": { "type": "string", "format": "email", "maxLength": 254 },
+        "phone": { "type": ["string", "null"], "maxLength": 20 },
+        "headline": { "type": ["string", "null"], "maxLength": 160 },
+        "summary": { "type": ["string", "null"], "maxLength": 3000 },
+        "location": { "type": ["string", "null"], "maxLength": 160 },
+        "skillIds": { "type": "array", "items": { "$ref": "#/definitions/Uuid" } },
+        "version": { "$ref": "#/definitions/Version" }
+      }
+    },
+    "CandidateProfileResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["data"],
+      "properties": { "data": { "$ref": "#/definitions/CandidateProfileDto" } }
+    },
+    "SavedJobDto": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["jobId", "savedAt", "available", "acceptingApplications", "title"],
+      "properties": {
+        "jobId": { "$ref": "#/definitions/Uuid" },
+        "savedAt": { "$ref": "#/definitions/Timestamp" },
+        "available": { "type": "boolean" },
+        "acceptingApplications": { "type": "boolean" },
+        "title": { "type": ["string", "null"], "maxLength": 150 }
+      }
+    },
+    "SavedJobPage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["data", "meta"],
+      "properties": {
+        "data": { "type": "array", "items": { "$ref": "#/definitions/SavedJobDto" } },
+        "meta": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["page", "pageSize", "total"],
+          "properties": {
+            "page": { "type": "integer", "minimum": 1 },
+            "pageSize": { "type": "integer", "minimum": 1, "maximum": 100 },
+            "total": { "type": "integer", "minimum": 0 }
+          }
+        }
+      }
+    },
+    "ApiError": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "message", "traceId"],
+      "properties": {
+        "code": { "type": "string", "minLength": 1 },
+        "message": { "type": "string" },
+        "traceId": { "type": "string", "minLength": 1 },
+        "fieldErrors": {
+          "type": "object",
+          "additionalProperties": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    }
+  }
+}

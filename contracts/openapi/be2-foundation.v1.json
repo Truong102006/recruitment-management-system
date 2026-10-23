@@ -1,0 +1,93 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "BE2 foundation — submit application contract",
+    "version": "1.0.0",
+    "description": "UC02 submit contract. Nest route is registered, but writes return 503 until BE3 Outbox is connected and BE2 migration is deployed. Payload normalization follows BR18. Permission, CV state, deadline and uniqueness are server/DB rules."
+  },
+  "servers": [{ "url": "/api" }],
+  "paths": {
+    "/jobs/{id}/applications": {
+      "post": {
+        "operationId": "submitApplication",
+        "security": [{ "session": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": { "type": "string", "minLength": 1, "maxLength": 100 }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": { "type": "string", "minLength": 1 },
+            "description": "Synchronizer token from BE1 session; BE1 must also validate Origin."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "../schemas/be2.v1.json#/definitions/SubmitApplicationRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Application committed with history/outbox/idempotency; replay same key/body after current authorization returns same resource.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/be2.v1.json#/definitions/CandidateApplicationResponse"
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/Error" },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "409": {
+            "description": "State/version/deadline/duplicate/idempotency conflict; do not invent a new key automatically.",
+            "headers": {
+              "Retry-After": {
+                "description": "Present for REQUEST_IN_PROGRESS; integer seconds",
+                "schema": { "type": "integer", "minimum": 1 }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "../schemas/be2.v1.json#/definitions/ApiError" }
+              }
+            }
+          },
+          "429": { "$ref": "#/components/responses/Error" },
+          "503": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "session": { "type": "apiKey", "in": "cookie", "name": "__Host-recruitment_session" }
+    },
+    "responses": {
+      "Error": {
+        "description": "Error envelope; no stack trace or private data",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "../schemas/be2.v1.json#/definitions/ApiError" }
+          }
+        }
+      }
+    }
+  }
+}

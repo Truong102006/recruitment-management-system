@@ -1,0 +1,21 @@
+{
+  "data": {
+    "applicationId": "00000000-0000-4000-8000-000000000001",
+    "jobId": "00000000-0000-4000-8000-000000000002",
+    "status": "SUBMITTED",
+    "version": 0,
+    "originalCvVersionId": "00000000-0000-4000-8000-000000000003",
+    "currentCvVersionId": "00000000-0000-4000-8000-000000000003",
+    "candidateSnapshot": {
+      "name": "Ứng viên kiểm thử",
+      "email": "candidate@example.test",
+      "phone": null,
+      "headline": "Backend developer"
+    },
+    "coverLetter": null,
+    "submittedAt": "2026-10-20T10:00:00.000Z",
+    "updatedAt": "2026-10-20T10:00:00.000Z",
+    "resultMessage": null,
+    "resultPublishedAt": null
+  }
+}

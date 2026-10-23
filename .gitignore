@@ -1,0 +1,14 @@
+node_modules/
+dist/
+coverage/
+reports/
+!plans/**/reports/
+.env
+.env.*
+!.env.example
+*.log
+*.tsbuildinfo
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.DS_Store

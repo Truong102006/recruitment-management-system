@@ -1,0 +1,8 @@
+{
+  "extends": "../../tsconfig.backend.json",
+  "compilerOptions": {
+    "outDir": "../../dist/api"
+  },
+  "include": ["src/**/*.ts", "../../libs/**/*.ts"],
+  "exclude": ["**/*.spec.ts", "**/tests/**", "../../node_modules"]
+}

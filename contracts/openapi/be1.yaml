@@ -1,0 +1,1691 @@
+openapi: 3.0.3
+info:
+  title: Recruitment Management System — BE1 OpenAPI Contract
+  version: 1.0.0
+  description: OpenAPI 3.0 specification for BE1 (Identity, Company, Job, Admin)
+paths:
+  /auth/register:
+    post:
+      summary: Register new user
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterResponse'
+        '202':
+          description: Registration accepted (duplicate email silent handle)
+        '400':
+          $ref: '#/components/responses/ValidationError'
+  /auth/login:
+    post:
+      summary: Login with email and password
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful, session cookie set
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /auth/logout:
+    post:
+      summary: Logout and revoke current session
+      tags:
+        - Auth
+      responses:
+        '204':
+          description: Logged out successfully
+  /auth/session:
+    get:
+      summary: Get current authenticated session and CSRF token
+      tags:
+        - Auth
+      responses:
+        '200':
+          description: Current session information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionDto'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /auth/verify-email:
+    post:
+      summary: Verify email with one-time token
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyEmailRequest'
+      responses:
+        '200':
+          description: Email verified successfully
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+  /auth/resend-verification:
+    post:
+      summary: Resend verification email
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResendVerificationRequest'
+      responses:
+        '202':
+          description: Resend accepted
+  /auth/forgot-password:
+    post:
+      summary: Request password reset link
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgotPasswordRequest'
+      responses:
+        '202':
+          description: Reset request accepted
+  /auth/reset-password:
+    post:
+      summary: Reset password with token
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordRequest'
+      responses:
+        '200':
+          description: Password reset successfully
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+  /companies:
+    post:
+      summary: Register a new company (creates PENDING company and OWNER membership)
+      tags:
+        - Company
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCompanyRequest'
+      responses:
+        '201':
+          description: Company registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanyDto'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+  /companies/{id}:
+    get:
+      summary: Get company details
+      tags:
+        - Company
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Company details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanyDto'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+    patch:
+      summary: Update company information
+      tags:
+        - Company
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCompanyRequest'
+      responses:
+        '200':
+          description: Company updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanyDto'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+  /companies/{id}/resubmit:
+    post:
+      summary: Resubmit a REJECTED company for review
+      tags:
+        - Company
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResubmitCompanyRequest'
+      responses:
+        '200':
+          description: Company resubmitted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanyDto'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+  /companies/{id}/members:
+    get:
+      summary: List company members
+      tags:
+        - Company Members
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: List of members
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CompanyMemberDto'
+    post:
+      summary: Add member to company
+      tags:
+        - Company Members
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddMemberRequest'
+      responses:
+        '201':
+          description: Member added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanyMemberDto'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+  /companies/{id}/members/{userId}:
+    patch:
+      summary: Update member permissions or active state
+      tags:
+        - Company Members
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMemberRequest'
+      responses:
+        '200':
+          description: Member updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanyMemberDto'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+  /companies/{id}/transfer-owner:
+    post:
+      summary: Transfer OWNER role to an active member
+      tags:
+        - Company Members
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransferOwnerRequest'
+      responses:
+        '200':
+          description: Owner transferred
+        '409':
+          $ref: '#/components/responses/ConflictError'
+  /skills:
+    get:
+      summary: Get active skill catalog
+      tags:
+        - Skills
+      responses:
+        '200':
+          description: List of skills
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SkillDto'
+  /jobs:
+    get:
+      summary: Public search and list published jobs
+      tags:
+        - Jobs
+      parameters:
+        - name: q
+          in: query
+          schema:
+            type: string
+        - name: location
+          in: query
+          schema:
+            type: string
+        - name: jobType
+          in: query
+          schema:
+            $ref: '#/components/schemas/JobType'
+        - name: workplaceMode
+          in: query
+          schema:
+            $ref: '#/components/schemas/WorkplaceMode'
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Paginated published jobs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/JobSummaryDto'
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      pageSize:
+                        type: integer
+                      total:
+                        type: integer
+    post:
+      summary: Create new job post (Draft)
+      tags:
+        - Jobs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateJobRequest'
+      responses:
+        '201':
+          description: Job created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobDetailDto'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+  /jobs/{id}:
+    get:
+      summary: Get public job detail
+      tags:
+        - Jobs
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Job details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobDetailDto'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+    patch:
+      summary: Update job post
+      tags:
+        - Jobs
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateJobRequest'
+      responses:
+        '200':
+          description: Job updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobDetailDto'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+  /jobs/{id}/publish:
+    post:
+      summary: Publish a job post
+      tags:
+        - Jobs
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublishJobRequest'
+      responses:
+        '200':
+          description: Job published
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobDetailDto'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+  /jobs/{id}/close:
+    post:
+      summary: Close a job post
+      tags:
+        - Jobs
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CloseJobRequest'
+      responses:
+        '200':
+          description: Job closed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobDetailDto'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+  /companies/{id}/jobs:
+    get:
+      summary: Recruiter list all jobs for company (including DRAFT, PUBLISHED, CLOSED)
+      tags:
+        - Company Jobs
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: List of jobs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/JobSummaryDto'
+  /admin/companies:
+    get:
+      summary: List companies for admin moderation
+      tags:
+        - Admin
+      responses:
+        '200':
+          description: Allowlisted paginated admin data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminCompaniesPage'
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 20
+        - name: status
+          in: query
+          schema:
+            type: string
+  /admin/companies/{id}:
+    get:
+      summary: Read company moderation detail (ADMIN only)
+      tags:
+        - Admin
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Allowlisted company moderation detail
+        '403':
+          description: Active verified ADMIN required
+    patch:
+      summary: Moderate company (Approve, Reject, Suspend, Unsuspend)
+      tags:
+        - Admin
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewCompanyRequest'
+      responses:
+        '200':
+          description: Mutation committed atomically
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminMutationResponse'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+        '503':
+          description: Required cross-team provider unavailable; mutation rolled back
+  /admin/companies/{id}/eligible-owners:
+    get:
+      summary: List eligible members for owner recovery
+      tags:
+        - Admin
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Eligible members
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EligibleOwnerDto'
+  /admin/companies/{id}/recover-owner:
+    post:
+      summary: Recover company owner by promoting eligible member
+      tags:
+        - Admin
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecoverOwnerRequest'
+      responses:
+        '200':
+          description: Mutation committed atomically
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminMutationResponse'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+        '503':
+          description: Required cross-team provider unavailable; mutation rolled back
+  /admin/users:
+    get:
+      summary: Admin list users
+      tags:
+        - Admin
+      responses:
+        '200':
+          description: Allowlisted paginated admin data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUsersPage'
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 20
+        - name: status
+          in: query
+          schema:
+            type: string
+  /admin/users/{id}:
+    patch:
+      summary: Admin lock or unlock user
+      tags:
+        - Admin
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminUpdateUserStatusRequest'
+      responses:
+        '200':
+          description: Mutation committed atomically
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminMutationResponse'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+        '503':
+          description: Required cross-team provider unavailable; mutation rolled back
+  /admin/jobs:
+    get:
+      summary: Minimal paginated jobs for ADMIN
+      tags:
+        - Admin
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 20
+        - name: status
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Allowlisted paginated admin data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminJobsPage'
+  /admin/jobs/{id}/close:
+    post:
+      summary: Admin close job post
+      tags:
+        - Admin
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminCloseJobRequest'
+      responses:
+        '200':
+          description: Mutation committed atomically
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminMutationResponse'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+        '503':
+          description: Required cross-team provider unavailable; mutation rolled back
+  /admin/interviews/{id}/security-cancel:
+    post:
+      summary: Security cancel interview
+      tags:
+        - Admin
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SecurityCancelInterviewRequest'
+      responses:
+        '200':
+          description: Mutation committed atomically
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminMutationResponse'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+        '503':
+          description: Required cross-team provider unavailable; mutation rolled back
+components:
+  schemas:
+    RegisterRequest:
+      type: object
+      required:
+        - email
+        - password
+        - fullName
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 10
+        fullName:
+          type: string
+        role:
+          type: string
+          enum:
+            - CANDIDATE
+            - RECRUITER
+    RegisterResponse:
+      type: object
+      required:
+        - userId
+        - email
+        - fullName
+        - roles
+        - status
+        - requiresVerification
+      properties:
+        userId:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        fullName:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+          enum:
+            - ACTIVE
+            - LOCKED
+        requiresVerification:
+          type: boolean
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+    LoginResponse:
+      type: object
+      required:
+        - userId
+        - email
+        - fullName
+        - roles
+        - status
+      properties:
+        userId:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        fullName:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+          enum:
+            - ACTIVE
+            - LOCKED
+    VerifyEmailRequest:
+      type: object
+      required:
+        - token
+      properties:
+        token:
+          type: string
+    ResendVerificationRequest:
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          type: string
+          format: email
+    ForgotPasswordRequest:
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          type: string
+          format: email
+    ResetPasswordRequest:
+      type: object
+      required:
+        - token
+        - newPassword
+      properties:
+        token:
+          type: string
+        newPassword:
+          type: string
+          minLength: 10
+    SessionDto:
+      type: object
+      required:
+        - userId
+        - email
+        - fullName
+        - roles
+        - status
+        - csrfToken
+      properties:
+        userId:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        fullName:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+          enum:
+            - ACTIVE
+            - LOCKED
+        csrfToken:
+          type: string
+    CreateCompanyRequest:
+      type: object
+      required:
+        - name
+        - taxCode
+        - address
+      properties:
+        name:
+          type: string
+        taxCode:
+          type: string
+        address:
+          type: string
+        website:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+    UpdateCompanyRequest:
+      type: object
+      required:
+        - version
+      properties:
+        name:
+          type: string
+        address:
+          type: string
+        website:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        version:
+          type: integer
+    ResubmitCompanyRequest:
+      type: object
+      required:
+        - version
+      properties:
+        name:
+          type: string
+        address:
+          type: string
+        website:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        version:
+          type: integer
+    CompanyDto:
+      type: object
+      required:
+        - id
+        - name
+        - taxCode
+        - address
+        - website
+        - description
+        - approvalStatus
+        - rejectionReason
+        - version
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        taxCode:
+          type: string
+        address:
+          type: string
+        website:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        approvalStatus:
+          type: string
+          enum:
+            - PENDING
+            - APPROVED
+            - REJECTED
+            - SUSPENDED
+        rejectionReason:
+          type: string
+          nullable: true
+        version:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    CompanyMemberDto:
+      type: object
+      required:
+        - userId
+        - email
+        - fullName
+        - role
+        - permissions
+        - active
+        - version
+        - joinedAt
+      properties:
+        userId:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        fullName:
+          type: string
+        role:
+          type: string
+          enum:
+            - OWNER
+            - RECRUITER
+            - INTERVIEWER
+        permissions:
+          type: array
+          items:
+            type: string
+        active:
+          type: boolean
+        version:
+          type: integer
+        joinedAt:
+          type: string
+          format: date-time
+    AddMemberRequest:
+      type: object
+      required:
+        - email
+        - role
+      properties:
+        email:
+          type: string
+          format: email
+        role:
+          type: string
+          enum:
+            - RECRUITER
+            - INTERVIEWER
+        permissions:
+          type: array
+          items:
+            type: string
+    UpdateMemberRequest:
+      type: object
+      required:
+        - version
+        - companyVersion
+      properties:
+        role:
+          type: string
+          enum:
+            - RECRUITER
+            - INTERVIEWER
+        permissions:
+          type: array
+          items:
+            type: string
+        active:
+          type: boolean
+        version:
+          type: integer
+        companyVersion:
+          type: integer
+    TransferOwnerRequest:
+      type: object
+      required:
+        - targetUserId
+        - targetMemberVersion
+        - companyVersion
+      properties:
+        targetUserId:
+          type: string
+          format: uuid
+        targetMemberVersion:
+          type: integer
+        companyVersion:
+          type: integer
+    SkillDto:
+      type: object
+      required:
+        - id
+        - name
+        - active
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        category:
+          type: string
+        active:
+          type: boolean
+    JobType:
+      type: string
+      enum:
+        - FULL_TIME
+        - PART_TIME
+        - CONTRACT
+        - INTERNSHIP
+    WorkplaceMode:
+      type: string
+      enum:
+        - ON_SITE
+        - HYBRID
+        - REMOTE
+    CreateJobRequest:
+      type: object
+      required:
+        - companyId
+      properties:
+        companyId:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        location:
+          type: string
+        headcount:
+          type: integer
+        jobType:
+          $ref: '#/components/schemas/JobType'
+        workplaceMode:
+          $ref: '#/components/schemas/WorkplaceMode'
+        deadline:
+          type: string
+          format: date-time
+        skillIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+    UpdateJobRequest:
+      type: object
+      required:
+        - version
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        location:
+          type: string
+        headcount:
+          type: integer
+        jobType:
+          $ref: '#/components/schemas/JobType'
+        workplaceMode:
+          $ref: '#/components/schemas/WorkplaceMode'
+        deadline:
+          type: string
+          format: date-time
+        skillIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+        version:
+          type: integer
+    PublishJobRequest:
+      type: object
+      required:
+        - version
+        - deadline
+      properties:
+        version:
+          type: integer
+        deadline:
+          type: string
+          format: date-time
+    CloseJobRequest:
+      type: object
+      required:
+        - version
+      properties:
+        version:
+          type: integer
+        reason:
+          type: string
+    JobSummaryDto:
+      type: object
+      required:
+        - id
+        - companyId
+        - companyName
+        - title
+        - location
+        - jobType
+        - workplaceMode
+        - deadline
+        - status
+        - skillIds
+        - skills
+      properties:
+        id:
+          type: string
+          format: uuid
+        companyId:
+          type: string
+          format: uuid
+        companyName:
+          type: string
+        title:
+          type: string
+        location:
+          type: string
+        jobType:
+          $ref: '#/components/schemas/JobType'
+        workplaceMode:
+          $ref: '#/components/schemas/WorkplaceMode'
+        deadline:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum:
+            - DRAFT
+            - PUBLISHED
+            - CLOSED
+        skillIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+        skills:
+          type: array
+          items:
+            $ref: '#/components/schemas/SkillDto'
+    JobDetailDto:
+      allOf:
+        - $ref: '#/components/schemas/JobSummaryDto'
+        - type: object
+          required:
+            - description
+            - headcount
+            - version
+            - createdAt
+            - updatedAt
+          properties:
+            description:
+              type: string
+            headcount:
+              type: integer
+            version:
+              type: integer
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+    AdminMutationResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+          required:
+            - id
+            - version
+          properties:
+            id:
+              type: string
+              format: uuid
+            version:
+              type: integer
+              minimum: 0
+            revocationStatus:
+              type: string
+              enum:
+                - PENDING
+    ReviewCompanyRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - status
+        - version
+        - reason
+      properties:
+        status:
+          type: string
+          enum:
+            - APPROVED
+            - REJECTED
+            - SUSPENDED
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+        version:
+          type: integer
+          minimum: 0
+    RecoverOwnerRequest:
+      type: object
+      required:
+        - targetUserId
+        - targetMemberVersion
+        - companyVersion
+        - reason
+      properties:
+        targetUserId:
+          type: string
+          format: uuid
+        targetMemberVersion:
+          type: integer
+          minimum: 0
+        companyVersion:
+          type: integer
+          minimum: 0
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+      additionalProperties: false
+    EligibleOwnerDto:
+      type: object
+      required:
+        - userId
+        - fullName
+        - email
+        - role
+        - active
+        - version
+      properties:
+        userId:
+          type: string
+          format: uuid
+        fullName:
+          type: string
+        email:
+          type: string
+          format: email
+        role:
+          type: string
+        active:
+          type: boolean
+        version:
+          type: integer
+    AdminUpdateUserStatusRequest:
+      type: object
+      required:
+        - status
+        - version
+        - reason
+      properties:
+        status:
+          type: string
+          enum:
+            - ACTIVE
+            - LOCKED
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+        version:
+          type: integer
+          minimum: 0
+      additionalProperties: false
+    AdminCloseJobRequest:
+      type: object
+      required:
+        - version
+        - reason
+      properties:
+        version:
+          type: integer
+          minimum: 0
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+      additionalProperties: false
+    SecurityCancelInterviewRequest:
+      type: object
+      required:
+        - version
+        - reason
+      properties:
+        version:
+          type: integer
+          minimum: 0
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+      additionalProperties: false
+    ApiError:
+      type: object
+      required:
+        - code
+        - message
+        - traceId
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        fieldErrors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        traceId:
+          type: string
+    AdminCompaniesPage:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+          required:
+            - items
+            - total
+            - page
+            - limit
+          properties:
+            items:
+              type: array
+              items:
+                type: object
+                required:
+                  - id
+                  - name
+                  - taxCode
+                  - address
+                  - approvalStatus
+                  - version
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  name:
+                    type: string
+                  taxCode:
+                    type: string
+                  address:
+                    type: string
+                  website:
+                    type: string
+                    nullable: true
+                  approvalStatus:
+                    type: string
+                    enum:
+                      - PENDING
+                      - APPROVED
+                      - REJECTED
+                      - SUSPENDED
+                  rejectionReason:
+                    type: string
+                    nullable: true
+                  version:
+                    type: integer
+                    minimum: 0
+            total:
+              type: integer
+              minimum: 0
+            page:
+              type: integer
+              minimum: 1
+            limit:
+              type: integer
+              minimum: 1
+              maximum: 50
+    AdminUsersPage:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+          required:
+            - items
+            - total
+            - page
+            - limit
+          properties:
+            items:
+              type: array
+              items:
+                type: object
+                required:
+                  - id
+                  - email
+                  - fullName
+                  - status
+                  - version
+                  - roles
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  email:
+                    type: string
+                    format: email
+                  fullName:
+                    type: string
+                  status:
+                    type: string
+                    enum:
+                      - ACTIVE
+                      - LOCKED
+                  version:
+                    type: integer
+                    minimum: 0
+                  roles:
+                    type: array
+                    items:
+                      type: object
+                      required:
+                        - role
+                      properties:
+                        role:
+                          type: string
+            total:
+              type: integer
+              minimum: 0
+            page:
+              type: integer
+              minimum: 1
+            limit:
+              type: integer
+              minimum: 1
+              maximum: 50
+    AdminJobsPage:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+          required:
+            - items
+            - total
+            - page
+            - limit
+          properties:
+            items:
+              type: array
+              items:
+                type: object
+                required:
+                  - id
+                  - companyId
+                  - title
+                  - status
+                  - version
+                  - closeReason
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  companyId:
+                    type: string
+                    format: uuid
+                  title:
+                    type: string
+                    nullable: true
+                  status:
+                    type: string
+                    enum:
+                      - DRAFT
+                      - PUBLISHED
+                      - CLOSED
+                  version:
+                    type: integer
+                    minimum: 0
+                  closeReason:
+                    type: string
+                    nullable: true
+            total:
+              type: integer
+              minimum: 0
+            page:
+              type: integer
+              minimum: 1
+            limit:
+              type: integer
+              minimum: 1
+              maximum: 50
+  responses:
+    ValidationError:
+      description: Validation failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    UnauthorizedError:
+      description: Authentication failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    ConflictError:
+      description: Conflict or stale version
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    NotFoundError:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'

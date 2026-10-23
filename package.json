@@ -1,0 +1,69 @@
+{
+  "name": "recruitment-management-system",
+  "version": "0.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=24.15 <25",
+    "npm": ">=11 <12"
+  },
+  "packageManager": "npm@11.19.0",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev:api": "npm run dev --workspace @rms/api",
+    "dev:worker": "npm run dev --workspace @rms/worker",
+    "dev:web": "npm run dev --workspace @rms/web",
+    "typecheck": "tsc -p tsconfig.backend.json --noEmit && npm run typecheck --workspace @rms/web",
+    "lint": "eslint apps libs tests --max-warnings=0",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "build": "npm run build --workspaces --if-present",
+    "test:unit:ci": "jest --config jest.config.cjs --ci --coverage",
+    "test:integration:ci": "jest --config jest.integration.config.cjs --runInBand --ci",
+    "test:contract:ci": "jest --config jest.contract.config.cjs --runInBand --ci",
+    "typecheck:contracts:public": "tsc -p tsconfig.contract-public.json --noEmit",
+    "test:web:ci": "npm run test:ci --workspace @rms/web",
+    "test:e2e": "playwright test",
+    "db:validate": "prisma validate",
+    "db:generate": "prisma generate",
+    "db:migrate:dev": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
+    "db:studio": "prisma studio",
+    "infra:up": "docker compose up -d --wait",
+    "infra:down": "docker compose down",
+    "infra:config": "docker compose config --quiet",
+    "verify:evidence": "node scripts/evidence/verify-evidence.mjs",
+    "verify:migrations": "node scripts/database/verify-migrations.mjs",
+    "test:evidence": "node --test scripts/evidence/verify-evidence.test.mjs",
+    "evidence:manifest": "node scripts/evidence/write-manifest.mjs",
+    "db:seed": "tsx prisma/seed.ts"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.0",
+    "@nestjs/testing": "11.2.7",
+    "@playwright/test": "^1.56.0",
+    "@types/cookie-parser": "1.4.10",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^24.0.0",
+    "@types/supertest": "^6.0.3",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "eslint": "^9.39.0",
+    "eslint-plugin-jest": "^29.0.0",
+    "fast-xml-parser": "5.11.2",
+    "globals": "^16.0.0",
+    "jest": "^29.7.0",
+    "jest-junit": "^16.0.0",
+    "prettier": "^3.6.0",
+    "prisma": "6.19.0",
+    "supertest": "^7.1.0",
+    "ts-jest": "^29.4.0",
+    "tsx": "^4.20.0",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.46.0"
+  },
+  "prisma": {
+    "schema": "prisma/schema.prisma"
+  }
+}

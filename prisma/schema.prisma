@@ -1,0 +1,499 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==========================================
+// BE1: Identity & Access Management (UC04)
+// ==========================================
+
+model UserAccount {
+  id            String    @id @default(uuid()) @db.Uuid
+  email         String    @unique @db.VarChar(255)
+  passwordHash  String    @map("password_hash") @db.VarChar(255)
+  fullName      String    @map("full_name") @db.VarChar(120)
+  status        String    @default("ACTIVE") @db.VarChar(20)
+  lockedReason  String?   @map("locked_reason") @db.VarChar(500)
+  emailVerifiedAt DateTime? @map("email_verified_at") @db.Timestamptz(6)
+  version       Int       @default(0)
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  roles              UserRole[]
+  sessions           AuthSession[]
+  tokens             AuthToken[]
+  createdCompanies   Company[]           @relation("CompanyCreator")
+  memberships        CompanyMembership[]
+  createdJobs        JobPost[]           @relation("JobCreator")
+
+  @@map("user_account")
+}
+
+model UserRole {
+  userId    String      @map("user_id") @db.Uuid
+  role      String      @db.VarChar(50)
+  createdAt DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  user      UserAccount @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@id([userId, role])
+  @@map("user_role")
+}
+
+model AuthSession {
+  id         String      @id @default(uuid()) @db.Uuid
+  userId     String      @map("user_id") @db.Uuid
+  tokenHash  String      @unique @map("token_hash") @db.VarChar(255)
+  csrfHash   String      @map("csrf_hash") @db.VarChar(255)
+  expiresAt  DateTime    @map("expires_at") @db.Timestamptz(6)
+  revokedAt  DateTime?   @map("revoked_at") @db.Timestamptz(6)
+  lastSeenAt DateTime    @default(now()) @map("last_seen_at") @db.Timestamptz(6)
+  createdAt  DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt  DateTime    @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user       UserAccount @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([userId, revokedAt, expiresAt])
+  @@map("auth_session")
+}
+
+model AuthToken {
+  id            String      @id @default(uuid()) @db.Uuid
+  userId        String      @map("user_id") @db.Uuid
+  purpose       String      @db.VarChar(50)
+  tokenHash     String      @unique @map("token_hash") @db.VarChar(255)
+  expiresAt     DateTime    @map("expires_at") @db.Timestamptz(6)
+  consumedAt    DateTime?   @map("consumed_at") @db.Timestamptz(6)
+  invalidatedAt DateTime?   @map("invalidated_at") @db.Timestamptz(6)
+  createdAt     DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime    @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user          UserAccount @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([userId, purpose, consumedAt, invalidatedAt, expiresAt])
+  @@map("auth_token")
+}
+
+// ==========================================
+// BE1: Company & Memberships (UC11)
+// ==========================================
+
+model Company {
+  id              String              @id @default(uuid()) @db.Uuid
+  name            String              @db.VarChar(255)
+  taxCode         String              @unique @map("tax_code") @db.VarChar(50)
+  address         String              @db.VarChar(500)
+  website         String?             @db.VarChar(255)
+  description     String?             @db.Text
+  approvalStatus  String              @default("PENDING") @map("approval_status") @db.VarChar(50)
+  rejectionReason String?             @map("rejection_reason") @db.VarChar(500)
+  createdBy       String              @map("created_by") @db.Uuid
+  version         Int                 @default(0)
+  createdAt       DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime            @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  creator         UserAccount         @relation("CompanyCreator", fields: [createdBy], references: [id], onDelete: Restrict)
+  memberships     CompanyMembership[]
+  jobs            JobPost[]
+
+  @@map("company")
+}
+
+model CompanyMembership {
+  companyId   String      @map("company_id") @db.Uuid
+  userId      String      @map("user_id") @db.Uuid
+  role        String      @db.VarChar(50)
+  permissions String[]    @default([])
+  active      Boolean     @default(true)
+  version     Int         @default(0)
+  createdAt   DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime    @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  company     Company     @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  user        UserAccount @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@id([companyId, userId])
+  @@index([userId, active])
+  @@map("company_membership")
+}
+
+// ==========================================
+// BE1: Jobs & Skills (UC01, UC05)
+// ==========================================
+
+model JobPost {
+  id            String      @id @default(uuid()) @db.Uuid
+  companyId     String      @map("company_id") @db.Uuid
+  createdBy     String      @map("created_by") @db.Uuid
+  title         String?     @db.VarChar(150)
+  description   String?     @db.Text
+  location      String?     @db.VarChar(255)
+  headcount     Int?
+  jobType       String?     @map("job_type") @db.VarChar(50)
+  workplaceMode String?     @map("workplace_mode") @db.VarChar(50)
+  salaryMin     Decimal?    @map("salary_min") @db.Decimal(15, 2)
+  salaryMax     Decimal?    @map("salary_max") @db.Decimal(15, 2)
+  currency      String?     @db.VarChar(10)
+  deadline      DateTime?   @db.Timestamptz(6)
+  status        String      @default("DRAFT") @db.VarChar(50)
+  publishedAt   DateTime?   @map("published_at") @db.Timestamptz(6)
+  closedAt      DateTime?   @map("closed_at") @db.Timestamptz(6)
+  closeReason   String?     @map("close_reason") @db.VarChar(500)
+  version       Int         @default(0)
+  createdAt     DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime    @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  company       Company     @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  creator       UserAccount @relation("JobCreator", fields: [createdBy], references: [id], onDelete: Restrict)
+  skills        JobSkill[]
+
+  @@index([companyId, status])
+  @@index([status, deadline])
+  @@map("job_post")
+}
+
+model Skill {
+  id        String      @id @default(uuid()) @db.Uuid
+  name      String      @unique @db.VarChar(100)
+  category  String?     @db.VarChar(100)
+  active    Boolean     @default(true)
+  createdAt DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime    @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  jobs      JobSkill[]
+
+  @@map("skill")
+}
+
+model JobSkill {
+  jobId     String   @map("job_id") @db.Uuid
+  skillId   String   @map("skill_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  job       JobPost  @relation(fields: [jobId], references: [id], onDelete: Restrict)
+  skill     Skill    @relation(fields: [skillId], references: [id], onDelete: Restrict)
+
+  @@id([jobId, skillId])
+  @@map("job_skill")
+}
+
+// BE2 models; cross-owner FKs, checks and triggers are in the BE2 SQL migration.
+model CandidateProfile {
+  userId    String   @id @map("user_id") @db.Uuid
+  phone     String?  @db.VarChar(20)
+  headline  String?  @db.VarChar(160)
+  summary   String?
+  location  String?  @db.VarChar(160)
+  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+  version   Int      @default(0)
+
+  @@map("candidate_profile")
+}
+
+model CandidateSkill {
+  candidateId String @map("candidate_id") @db.Uuid
+  skillId     String @map("skill_id") @db.Uuid
+
+  @@id([candidateId, skillId])
+  @@map("candidate_skill")
+}
+
+model CvVersion {
+  id                String    @id @db.Uuid
+  candidateId       String    @map("candidate_id") @db.Uuid
+  versionNo         Int       @map("version_no")
+  originalName      String    @map("original_name") @db.VarChar(255)
+  objectKey         String    @unique @map("object_key") @db.VarChar(500)
+  sizeBytes         BigInt?   @map("size_bytes")
+  mimeType          String?   @map("mime_type") @db.VarChar(80)
+  checksumSha256    String?   @map("checksum_sha256") @db.Char(64)
+  status            String    @db.VarChar(24)
+  scanAttemptCount  Int       @default(0) @map("scan_attempt_count")
+  scanLockedUntil   DateTime? @map("scan_locked_until") @db.Timestamptz(6)
+  scanNextRetryAt   DateTime? @map("scan_next_retry_at") @db.Timestamptz(6)
+  scanReason        String?   @map("scan_reason") @db.VarChar(500)
+  uploadExpiresAt   DateTime  @map("upload_expires_at") @db.Timestamptz(6)
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  readyAt           DateTime? @map("ready_at") @db.Timestamptz(6)
+  deletedAt         DateTime? @map("deleted_at") @db.Timestamptz(6)
+  storageVersionId  String?   @map("storage_version_id") @db.VarChar(255)
+  uploadAttemptId   String?   @map("upload_attempt_id") @db.Uuid
+  leaseToken        String?   @map("lease_token") @db.Uuid
+  deleteRequestedAt DateTime? @map("delete_requested_at") @db.Timestamptz(6)
+  version           Int       @default(0)
+
+  @@unique([id, candidateId])
+  @@unique([candidateId, versionNo])
+  @@index([candidateId, createdAt(sort: Desc), id])
+  @@index([status, scanNextRetryAt, scanLockedUntil])
+  @@map("cv_version")
+}
+
+model Application {
+  id                  String    @id @db.Uuid
+  jobId               String    @map("job_id") @db.Uuid
+  candidateId         String    @map("candidate_id") @db.Uuid
+  originalCvVersionId String    @map("original_cv_version_id") @db.Uuid
+  currentCvVersionId  String    @map("current_cv_version_id") @db.Uuid
+  candidateSnapshot   Json      @map("candidate_snapshot") @db.JsonB
+  status              String    @db.VarChar(24)
+  coverLetter         String?   @map("cover_letter")
+  resultMessage       String?   @map("result_message")
+  resultPublishedAt   DateTime? @map("result_published_at") @db.Timestamptz(6)
+  submittedAt         DateTime  @default(now()) @map("submitted_at") @db.Timestamptz(6)
+  updatedAt           DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)
+  version             Int       @default(0)
+
+  @@unique([id, candidateId])
+  @@unique([candidateId, jobId])
+  @@index([jobId, status, submittedAt(sort: Desc), id])
+  @@index([candidateId, submittedAt(sort: Desc), id])
+  @@map("application")
+}
+
+model ApplicationHistory {
+  id               String    @id @db.Uuid
+  applicationId    String    @map("application_id") @db.Uuid
+  candidateId      String    @map("candidate_id") @db.Uuid
+  actorId          String?   @map("actor_id") @db.Uuid
+  actorType        String    @map("actor_type") @db.VarChar(10)
+  eventType        String    @map("event_type") @db.VarChar(40)
+  fromStatus       String?   @map("from_status") @db.VarChar(24)
+  toStatus         String    @map("to_status") @db.VarChar(24)
+  oldCvId          String?   @map("old_cv_id") @db.Uuid
+  newCvId          String?   @map("new_cv_id") @db.Uuid
+  reason           String?
+  publicMessage    String?   @map("public_message") @db.VarChar(3000)
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  aggregateVersion Int       @map("aggregate_version")
+
+  @@index([applicationId, createdAt, id])
+  @@map("application_history")
+}
+
+model CvChangeRequest {
+  id                          String    @id @db.Uuid
+  applicationId               String    @map("application_id") @db.Uuid
+  candidateId                 String    @map("candidate_id") @db.Uuid
+  newCvId                     String    @map("new_cv_id") @db.Uuid
+  baseCvVersionId             String    @map("base_cv_version_id") @db.Uuid
+  applicationVersionAtRequest Int       @map("application_version_at_request")
+  status                      String    @db.VarChar(16)
+  requestedAt                 DateTime  @default(now()) @map("requested_at") @db.Timestamptz(6)
+  reviewedBy                  String?   @map("reviewed_by") @db.Uuid
+  reviewedAt                  DateTime? @map("reviewed_at") @db.Timestamptz(6)
+  reason                      String?
+  cancelledAt                 DateTime? @map("cancelled_at") @db.Timestamptz(6)
+  version                     Int       @default(0)
+
+  @@index([applicationId, requestedAt(sort: Desc), id])
+  @@map("cv_change_request")
+}
+
+model SavedJob {
+  candidateId String   @map("candidate_id") @db.Uuid
+  jobId       String   @map("job_id") @db.Uuid
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@id([candidateId, jobId])
+  @@index([candidateId, createdAt(sort: Desc), jobId])
+  @@map("saved_job")
+}
+
+model IdempotencyRecord {
+  id           String    @id @db.Uuid
+  userId       String    @map("user_id") @db.Uuid
+  operation    String    @db.VarChar(80)
+  key          String    @db.VarChar(100)
+  requestHash  String    @map("request_hash") @db.Char(64)
+  resourceId   String?   @map("resource_id") @db.Uuid
+  status       String    @db.VarChar(16)
+  responseCode Int?      @map("response_code") @db.SmallInt
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  expiresAt    DateTime  @map("expires_at") @db.Timestamptz(6)
+  completedAt  DateTime? @map("completed_at") @db.Timestamptz(6)
+
+  @@unique([userId, operation, key])
+  @@index([status, expiresAt])
+  @@map("idempotency_record")
+}
+
+// ==========================================
+// BE3: Interview, Evaluation, Notification, Outbox, Audit (UC03, UC08, UC09, UC13, UC15)
+// ==========================================
+
+model Interview {
+  id                  String                 @id @default(uuid()) @db.Uuid
+  applicationId       String                 @map("application_id") @db.Uuid
+  createdBy           String                 @map("created_by") @db.Uuid
+  startAt             DateTime               @map("start_at") @db.Timestamptz(6)
+  endAt               DateTime               @map("end_at") @db.Timestamptz(6)
+  status              String                 @db.VarChar(16)
+  roomKey             String                 @unique @map("room_key") @db.VarChar(150)
+  providerRoomId      String?                @map("provider_room_id") @db.VarChar(255)
+  cancelReason        String?                @map("cancel_reason")
+  outcomeReason       String?                @map("outcome_reason") @db.VarChar(1000)
+  replacesInterviewId String?                @map("replaces_interview_id") @db.Uuid
+  expiresAt           DateTime               @map("expires_at") @db.Timestamptz(6)
+  accessGeneration    Int                    @default(0) @map("access_generation")
+  roomAccessState     String                 @default("ACTIVE") @map("room_access_state") @db.VarChar(20)
+  completedAt         DateTime?              @map("completed_at") @db.Timestamptz(6)
+  cancelledAt         DateTime?              @map("cancelled_at") @db.Timestamptz(6)
+  cancelledBy         String?                @map("cancelled_by") @db.Uuid
+  version             Int                    @default(0)
+  createdAt           DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime               @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  participants        InterviewParticipant[]
+  reservations        InterviewReservation[]
+  evaluations         Evaluation[]
+
+  @@index([applicationId, status])
+  @@index([startAt, endAt])
+  @@index([replacesInterviewId])
+  @@map("interview")
+}
+
+model InterviewParticipant {
+  interviewId          String    @map("interview_id") @db.Uuid
+  userId               String    @map("user_id") @db.Uuid
+  participantRole      String    @map("participant_role") @db.VarChar(16)
+  response             String    @default("PENDING") @db.VarChar(12)
+  respondedAt          DateTime? @map("responded_at") @db.Timestamptz(6)
+  attendance           String    @default("UNKNOWN") @db.VarChar(12)
+  attendanceReason     String?   @map("attendance_reason") @db.VarChar(1000)
+  attendanceRecordedBy String?   @map("attendance_recorded_by") @db.Uuid
+  attendanceRecordedAt DateTime? @map("attendance_recorded_at") @db.Timestamptz(6)
+  version              Int       @default(0)
+
+  interview            Interview @relation(fields: [interviewId], references: [id], onDelete: Restrict)
+
+  @@id([interviewId, userId])
+  @@unique([interviewId, userId, participantRole])
+  @@index([userId, interviewId])
+  @@map("interview_participant")
+}
+
+model InterviewReservation {
+  interviewId   String    @map("interview_id") @db.Uuid
+  userId        String    @map("user_id") @db.Uuid
+  startAt       DateTime  @map("start_at") @db.Timestamptz(6)
+  endAt         DateTime  @map("end_at") @db.Timestamptz(6)
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  releasedAt    DateTime? @map("released_at") @db.Timestamptz(6)
+  releaseReason String?   @map("release_reason") @db.VarChar(100)
+
+  interview     Interview @relation(fields: [interviewId], references: [id], onDelete: Restrict)
+
+  @@id([interviewId, userId])
+  @@index([userId, startAt, endAt])
+  @@map("interview_reservation")
+}
+
+model Evaluation {
+  id                 String    @id @default(uuid()) @db.Uuid
+  interviewId        String    @map("interview_id") @db.Uuid
+  interviewerId      String    @map("interviewer_id") @db.Uuid
+  participantRole    String    @default("INTERVIEWER") @map("participant_role") @db.VarChar(16)
+  technicalScore     Int       @map("technical_score") @db.SmallInt
+  communicationScore Int       @map("communication_score") @db.SmallInt
+  fitScore           Int       @map("fit_score") @db.SmallInt
+  recommendation     String    @db.VarChar(16)
+  internalNote       String    @map("internal_note")
+  submittedAt        DateTime  @default(now()) @map("submitted_at") @db.Timestamptz(6)
+  updatedAt          DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  version            Int       @default(0)
+
+  interview          Interview @relation(fields: [interviewId], references: [id], onDelete: Restrict)
+
+  @@unique([interviewId, interviewerId])
+  @@index([interviewId, submittedAt])
+  @@map("evaluation")
+}
+
+model OutboxEvent {
+  id               String          @id @default(uuid()) @db.Uuid
+  aggregateType    String          @map("aggregate_type") @db.VarChar(40)
+  aggregateId      String          @map("aggregate_id") @db.Uuid
+  eventType        String          @map("event_type") @db.VarChar(60)
+  payload          Json            @db.JsonB
+  status           String          @default("PENDING") @db.VarChar(16)
+  attemptCount     Int             @default(0) @map("attempt_count")
+  nextRetryAt      DateTime        @default(now()) @map("next_retry_at") @db.Timestamptz(6)
+  lockedUntil      DateTime?       @map("locked_until") @db.Timestamptz(6)
+  lastErrorCode    String?         @map("last_error_code") @db.VarChar(80)
+  createdAt        DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  processedAt      DateTime?       @map("processed_at") @db.Timestamptz(6)
+  leaseToken       String?         @map("lease_token") @db.Uuid
+  schemaVersion    Int             @default(1) @map("schema_version")
+  aggregateVersion Int             @default(0) @map("aggregate_version")
+
+  notifications    Notification[]
+  emailDeliveries  EmailDelivery[]
+
+  @@index([status, nextRetryAt, lockedUntil])
+  @@index([aggregateType, aggregateId])
+  @@map("outbox_event")
+}
+
+model Notification {
+  id         String      @id @default(uuid()) @db.Uuid
+  userId     String      @map("user_id") @db.Uuid
+  eventId    String      @map("event_id") @db.Uuid
+  title      String      @db.VarChar(160)
+  content    String      @db.VarChar(1000)
+  targetType String      @map("target_type") @db.VarChar(24)
+  targetId   String      @map("target_id") @db.Uuid
+  createdAt  DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  readAt     DateTime?   @map("read_at") @db.Timestamptz(6)
+
+  event      OutboxEvent @relation(fields: [eventId], references: [id], onDelete: Restrict)
+
+  @@unique([userId, eventId])
+  @@index([userId, readAt, createdAt(sort: Desc), id])
+  @@map("notification")
+}
+
+model EmailDelivery {
+  id                String      @id @default(uuid()) @db.Uuid
+  eventId           String      @map("event_id") @db.Uuid
+  userId            String      @map("user_id") @db.Uuid
+  templateCode      String      @map("template_code") @db.VarChar(60)
+  status            String      @default("PENDING") @db.VarChar(16)
+  providerMessageId String?     @map("provider_message_id") @db.VarChar(255)
+  attemptCount      Int         @default(0) @map("attempt_count")
+  sentAt            DateTime?   @map("sent_at") @db.Timestamptz(6)
+  lastErrorCode     String?     @map("last_error_code") @db.VarChar(80)
+  lockedUntil       DateTime?   @map("locked_until") @db.Timestamptz(6)
+  leaseToken        String?     @map("lease_token") @db.Uuid
+  nextRetryAt       DateTime    @default(now()) @map("next_retry_at") @db.Timestamptz(6)
+  createdAt         DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  recipientEmail    String      @map("recipient_email") @db.VarChar(254)
+
+  event             OutboxEvent @relation(fields: [eventId], references: [id], onDelete: Restrict)
+
+  @@unique([eventId, userId, templateCode])
+  @@index([status, nextRetryAt, lockedUntil])
+  @@map("email_delivery")
+}
+
+model AuditLog {
+  id         String   @id @default(uuid()) @db.Uuid
+  actorId    String?  @map("actor_id") @db.Uuid
+  action     String   @db.VarChar(60)
+  entityType String   @map("entity_type") @db.VarChar(40)
+  entityId   String   @map("entity_id") @db.Uuid
+  reason     String?  @db.VarChar(1000)
+  traceId    String   @map("trace_id") @db.Uuid
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([entityType, entityId, createdAt(sort: Desc)])
+  @@index([actorId, createdAt(sort: Desc)])
+  @@index([traceId])
+  @@map("audit_log")
+}
+

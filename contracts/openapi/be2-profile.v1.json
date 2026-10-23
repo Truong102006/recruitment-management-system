@@ -1,0 +1,146 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "BE2 candidate profile contract",
+    "version": "1.0.0",
+    "description": "UC12 wire contract. BE1 session/Origin/CSRF guard and Nest route binding are present; BE2 database migration and BE3 Outbox remain pending."
+  },
+  "paths": {
+    "/api/candidate/profile": {
+      "get": {
+        "summary": "Get the current candidate profile",
+        "security": [{ "sessionCookie": [] }],
+        "responses": {
+          "200": {
+            "description": "Current profile",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ProfileResponse" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "patch": {
+        "summary": "Update the current candidate profile",
+        "security": [{ "sessionCookie": [] }],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-CSRF-Token",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateProfileRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated profile",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ProfileResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/Error" },
+          "401": { "$ref": "#/components/responses/Error" },
+          "403": { "$ref": "#/components/responses/Error" },
+          "409": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "sessionCookie": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "__Host-recruitment_session"
+      }
+    },
+    "schemas": {
+      "Uuid": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "Profile": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "email",
+          "phone",
+          "headline",
+          "summary",
+          "location",
+          "skillIds",
+          "version"
+        ],
+        "properties": {
+          "name": { "type": "string", "maxLength": 120 },
+          "email": { "type": "string", "format": "email" },
+          "phone": { "type": "string", "nullable": true, "maxLength": 20 },
+          "headline": { "type": "string", "nullable": true, "maxLength": 160 },
+          "summary": { "type": "string", "nullable": true, "maxLength": 3000 },
+          "location": { "type": "string", "nullable": true, "maxLength": 160 },
+          "skillIds": { "type": "array", "items": { "$ref": "#/components/schemas/Uuid" } },
+          "version": { "type": "integer", "minimum": 0 }
+        }
+      },
+      "UpdateProfileRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["version"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1, "maxLength": 120 },
+          "phone": { "type": "string", "nullable": true, "maxLength": 20 },
+          "headline": { "type": "string", "nullable": true, "maxLength": 160 },
+          "summary": { "type": "string", "nullable": true, "maxLength": 3000 },
+          "location": { "type": "string", "nullable": true, "maxLength": 160 },
+          "skillIds": {
+            "type": "array",
+            "maxItems": 50,
+            "items": { "$ref": "#/components/schemas/Uuid" }
+          },
+          "version": { "type": "integer", "minimum": 0 }
+        }
+      },
+      "ProfileResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["data"],
+        "properties": {
+          "data": { "$ref": "#/components/schemas/Profile" }
+        }
+      },
+      "ApiError": {
+        "type": "object",
+        "required": ["code", "message", "traceId"],
+        "properties": {
+          "code": { "type": "string" },
+          "message": { "type": "string" },
+          "traceId": { "type": "string" }
+        }
+      }
+    },
+    "responses": {
+      "Error": {
+        "description": "Standard API error",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ApiError" }
+          }
+        }
+      }
+    }
+  }
+}

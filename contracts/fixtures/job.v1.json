@@ -1,0 +1,33 @@
+{
+  "data": {
+    "id": "30000000-0000-4000-8000-000000000001",
+    "companyId": "20000000-0000-4000-8000-000000000001",
+    "companyName": "Acme Recruitment Corp",
+    "title": "Senior Backend Engineer (NestJS / PostgreSQL)",
+    "description": "We are seeking a senior backend engineer to join our high-scale recruitment platform team.",
+    "location": "Ho Chi Minh City",
+    "headcount": 3,
+    "jobType": "FULL_TIME",
+    "workplaceMode": "HYBRID",
+    "salary": {
+      "min": 25000000,
+      "max": 50000000,
+      "currency": "VND"
+    },
+    "deadline": "2026-12-31T23:59:59.000Z",
+    "publishedAt": "2026-10-22T08:00:00.000Z",
+    "status": "PUBLISHED",
+    "skillIds": ["40000000-0000-4000-8000-000000000001"],
+    "skills": [
+      {
+        "id": "40000000-0000-4000-8000-000000000001",
+        "name": "Node.js",
+        "category": "Backend",
+        "active": true
+      }
+    ],
+    "version": 1,
+    "createdAt": "2026-10-22T08:00:00.000Z",
+    "updatedAt": "2026-10-22T08:00:00.000Z"
+  }
+}
