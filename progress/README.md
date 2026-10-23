@@ -92,6 +92,7 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 | DOC-04        | Sổ tiến độ chung / BE2 + Codex; cả nhóm cập nhật                                  | DONE        | File này và hướng dẫn liên quan trong commit chứa báo cáo; kiểm tra tài liệu, không phải test ứng dụng                                                                                                            |
 | DOC-05        | Kế hoạch triển khai toàn bộ BE3 / Codex hỗ trợ BE3, chưa xác nhận người phụ trách | DONE        | [Kế hoạch 8 pha](../plans/261022-1652-be3-complete-implementation/plan.md), [rà soát](../plans/261022-1652-be3-complete-implementation/reports/plan-review.md); Đã tích hợp main; 6 UC chưa triển khai            |
 | DOC-06        | Kế hoạch triển khai toàn bộ BE1 / Codex hỗ trợ BE1, chưa xác nhận người phụ trách | DONE        | [Kế hoạch 8 pha](../plans/261022-1711-be1-complete-implementation/plan.md), [rà soát](../plans/261022-1711-be1-complete-implementation/reports/plan-review.md); Đã tích hợp main; 5 UC chưa triển khai            |
+| DOC-07        | Tài liệu bàn giao FE2 & Runbook Video / Antigravity hỗ trợ FE2                    | DONE        | [Bàn giao FE2](../Docs/fe2-handoff.md), commit chứa báo cáo này; đối chiếu 15 màn hình UI13–UI28, 19 test case FE23–FE41, hướng dẫn vận hành Jitsi & tích hợp backend                                             |
 | BE-FOUNDATION | Bootstrap NestJS / BE1                                                            | IN_PROGRESS | API bootstrap đã tích hợp main PR #1; clean CI build/API tests đạt. Runtime liên nhóm và HTTPS/FE acceptance chưa nghiệm thu.                                                                                     |
 | DB-01         | Prisma/migration/seed / mỗi BE sở hữu phần mình                                   | IN_PROGRESS | 9 bảng BE1 + additive email_verified_at; PostgreSQL constraints/migration smoke đạt local. Chưa gộp main; thiếu owner schema/runtime permission/historical upgrade.                                               |
 | CLOUD-DB-01   | Shared PostgreSQL cloud / Codex BE1                                               | DONE        | Runtime cloud/test local configuration and team instructions integrated through PR #3 at `80cd120`; guard 3/3 and hosted CI pass. Credentials remain ignored.                                                     |
@@ -136,6 +137,26 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 - Bước kế tiếp của BE1: nhận và bind runtime ports BE2/BE3; chạy actual cross-owner/provider/HTTPS acceptance, CI GitHub/negative controls/load/restore/runtime DB permissions và xử lý dependency audit theo owner. Source và gate local đã có bằng chứng; chưa gộp main.
 
 ## Nhật ký báo cáo
+
+### 2026-10-23 23:30 (Asia/Saigon) — FE2 — Ban hành Tài liệu Bàn giao Phân hệ FE2 & Runbook Video (DOC-07)
+
+- Mã báo cáo: 20261023-2330-FE2-handoff-doc
+- Người thực hiện / AI hỗ trợ: Antigravity (hỗ trợ FE2).
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: DOC-07; UI13–UI23, UI25–UI28; FE23–FE41; Mục 9.4 Báo cáo SE113; Mục 7.2 Đặc tả hệ thống; Runbook Video Jitsi/WebRTC.
+- Trạng thái: DONE (phạm vi nhánh `feat/fe2-implementation`).
+- Nhánh / commit / PR / tích hợp main: `feat/fe2-implementation`; commit chứa báo cáo này; chưa gộp main.
+- Đã hoàn thành:
+  - Soạn thảo và ban hành tài liệu chính thức `Docs/fe2-handoff.md` theo yêu cầu mục 9.4 Báo cáo SE113.
+  - Bảng đối chiếu chi tiết 15 màn hình UI13–UI28, RBAC và các test case FE23–FE41 đã kiểm chứng thành công.
+  - Hướng dẫn vận hành phòng phỏng vấn trực tuyến Jitsi/WebRTC (Runbook Video UI15): cơ chế sinh link, biên giờ vào phòng (-10m/+30m), cấp quyền mic/cam, thoát phòng an toàn.
+  - Hướng dẫn cấu hình tích hợp với Backend thật (BE1, BE2, BE3), cookie session, CSRF token và cơ chế tự động fallback DevMockStore khi chạy độc lập.
+  - Phân định ranh giới rõ ràng với FE1 để giữ nguyên tắc Zero-Collision: FE2 bàn giao các thành phần dùng chung (DataTable, Calendar, Dialog, Badge); FE1 quản lý UI01–UI12, UI24, UI29 cùng các test case FE37, FE22, FE42.
+- File / bằng chứng: `Docs/fe2-handoff.md`, `progress/README.md`.
+- Kiểm tra đã chạy: `npm run format:check` (code 0), kiểm tra liên kết Markdown và tính toàn vẹn tài liệu.
+- Kiểm tra chưa chạy / coverage: Thay đổi tài liệu, không phát sinh thêm code runtime/test.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không thay đổi contract; cung cấp tài liệu hướng dẫn bàn giao cho cả nhóm.
+- Phần còn thiếu / blocker: Toàn bộ mã nguồn, kiểm thử, responsive, accessibility và tài liệu bàn giao của FE2 đã hoàn thiện 100%. Sẵn sàng mở PR gộp main.
+- Bước tiếp theo: Tạo Pull Request (PR) hợp nhất `feat/fe2-implementation` vào `main`.
 
 ### 2026-10-23 23:15 (Asia/Saigon) — FE2 — Hoàn thành Pha 6 Tối ưu Responsive, Accessibility (A11y) & Kiểm thử Luồng FE23–FE41
 
