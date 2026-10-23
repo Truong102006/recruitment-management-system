@@ -113,6 +113,14 @@ export interface UpdateCandidateProfileRequest {
   version: number;
 }
 
+export interface SavedJobDto {
+  jobId: string;
+  savedAt: string;
+  available: boolean;
+  acceptingApplications: boolean;
+  title: string | null;
+}
+
 // ==========================================
 // BE1 Public Contracts: Identity & Auth
 // ==========================================

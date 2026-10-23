@@ -571,6 +571,8 @@ Mỗi mutation bao gồm kiểm tra quyền hiện tại, validation và transac
 
 ### 3.1.14 UC14 Lưu tin quan tâm
 
+**Hiện trạng triển khai BE2 (23/10/2026):** repository/service đã có thao tác lưu/xóa idempotent và trang danh sách. Danh sách dùng `JobVisibilityPort` của BE1 để trả placeholder (`available=false`, `title=null`) khi tin không còn được phép hiển thị. Chưa đăng ký route HTTP hoặc kiểm PostgreSQL; đây chưa phải nghiệm thu UC14.
+
 **Mục tiêu và kích hoạt:** Ghi nhận tin quan tâm mà không tạo bản ghi trùng. Lưu, bỏ lưu hoặc mở danh sách tin đã lưu.
 
 **Dữ liệu vào và đầu ra:** jobId và session ứng viên. Đầu ra: Một savedJob hoặc đã bỏ lưu; không lộ tin bị hạn chế.

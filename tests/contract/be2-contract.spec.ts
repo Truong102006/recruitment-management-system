@@ -250,6 +250,30 @@ describe('BE2 event producer contract for BE3', () => {
   });
 });
 
+describe('UC14 saved job wire contract', () => {
+  it('hides restricted job details and validates paging shape', () => {
+    const page = {
+      data: [
+        {
+          jobId: fixture.data.jobId,
+          savedAt: fixture.data.updatedAt,
+          available: false,
+          acceptingApplications: false,
+          title: null,
+        },
+      ],
+      meta: { page: 1, pageSize: 20, total: 1 },
+    };
+    expect(validate('SavedJobPage', page)).toBe(true);
+    expect(
+      validate('SavedJobPage', {
+        ...page,
+        data: [{ ...page.data[0], title: 'private', internalNote: 'secret' }],
+      }),
+    ).toBe(false);
+  });
+});
+
 it('all optional wiring stubs fail closed rather than pretending the business implementation exists', async () => {
   for (const port of Object.values(unimplementedBe2Ports())) {
     for (const method of Object.values(port)) {

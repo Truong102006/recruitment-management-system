@@ -231,6 +231,36 @@
         "version": { "$ref": "#/definitions/Version" }
       }
     },
+    "SavedJobDto": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["jobId", "savedAt", "available", "acceptingApplications", "title"],
+      "properties": {
+        "jobId": { "$ref": "#/definitions/Uuid" },
+        "savedAt": { "$ref": "#/definitions/Timestamp" },
+        "available": { "type": "boolean" },
+        "acceptingApplications": { "type": "boolean" },
+        "title": { "type": ["string", "null"], "maxLength": 150 }
+      }
+    },
+    "SavedJobPage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["data", "meta"],
+      "properties": {
+        "data": { "type": "array", "items": { "$ref": "#/definitions/SavedJobDto" } },
+        "meta": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["page", "pageSize", "total"],
+          "properties": {
+            "page": { "type": "integer", "minimum": 1 },
+            "pageSize": { "type": "integer", "minimum": 1, "maximum": 100 },
+            "total": { "type": "integer", "minimum": 0 }
+          }
+        }
+      }
+    },
     "ApiError": {
       "type": "object",
       "additionalProperties": false,
