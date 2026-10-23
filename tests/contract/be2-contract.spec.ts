@@ -213,6 +213,8 @@ describe('BE2 event producer contract for BE3', () => {
     'application.submitted': { applicationId: id },
     'application.status_changed': { applicationId: id },
     'application.cv_replaced': { applicationId: id },
+    'application.cv_change_requested': { applicationId: id },
+    'application.cv_change_rejected': { applicationId: id },
     'application.withdrawn': { applicationId: id },
     'application.result_published': { applicationId: id },
     'saved_job.created': { candidateId: id, jobId: fixture.data.jobId },

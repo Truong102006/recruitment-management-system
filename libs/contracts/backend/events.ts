@@ -5,6 +5,8 @@ export interface Be2EventPayloads {
   'application.submitted': { applicationId: string };
   'application.status_changed': { applicationId: string };
   'application.cv_replaced': { applicationId: string };
+  'application.cv_change_requested': { applicationId: string };
+  'application.cv_change_rejected': { applicationId: string };
   'application.withdrawn': { applicationId: string };
   'application.result_published': { applicationId: string };
   'saved_job.created': { candidateId: string; jobId: string };

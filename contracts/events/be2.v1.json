@@ -24,6 +24,8 @@
         "application.submitted",
         "application.status_changed",
         "application.cv_replaced",
+        "application.cv_change_requested",
+        "application.cv_change_rejected",
         "application.withdrawn",
         "application.result_published",
         "saved_job.created",
@@ -66,6 +68,8 @@
             "application.submitted",
             "application.status_changed",
             "application.cv_replaced",
+            "application.cv_change_requested",
+            "application.cv_change_rejected",
             "application.withdrawn",
             "application.result_published"
           ]
