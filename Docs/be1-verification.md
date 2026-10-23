@@ -1,5 +1,17 @@
 # Kiểm chứng BE1 — 23/10/2026 00:28 Asia/Saigon
 
+## Cập nhật tích hợp — 23/10/2026 10:07 Asia/Saigon
+
+Truong102006 / BE1 / Codex đã push từng đợt 12 commit trên `feat/be1-reviewed-delivery` và merge [PR #1](https://github.com/Truong102006/recruitment-management-system/pull/1) vào main bằng merge commit `ae869e70479f741596c58268002372315698911d`. Đã fetch và xác minh ancestry trên origin/main; giữ toàn bộ model, code và lịch sử BE2 mới. Các đoạn dưới là snapshot local trước khi xuất bản, không thay thế kết quả cập nhật này.
+
+[CI push](https://github.com/Truong102006/recruitment-management-system/actions/runs/39893005258) và [CI PR](https://github.com/Truong102006/recruitment-management-system/actions/runs/39893010843) đều đạt backend + quality-gate trên clean checkout Ubuntu/Node24.15/PostgreSQL16.6: npm ci, Prisma generate/validate, typecheck/lint/build, migration smoke/deploy, 316 unit tests / 35 suites, 108 integration tests / 13 suites, 23 contract tests / 2 suites (đã tính trong integration), 8 evidence-tool tests, manifest/evidence verification và upload artifact. Coverage tập source cấu hình: **92,45% dòng / 76,93% nhánh**. Artifact tên `backend-<github.sha>` có JUnit, coverage-summary, migration result và manifest tương ứng run.
+
+Hai lỗi tích hợp đã sửa bằng commit riêng: fake Outbox của hai test BE2 phải chấp nhận union BE1/BE2 event; inventory JUnit phải dùng tên suite đầu file BE2 mới là `UC12 profile wire contract`. Không hạ threshold hoặc bỏ qua check. Local integration lần chạy mới thất bại vì Docker daemon dừng và DB5432 không truy cập được; hosted PostgreSQL chạy đủ và đạt. Local unit316/contract23/evidence8, typecheck/lint/build/generate/validate đạt.
+
+BE1 toàn bộ vẫn **IN_PROGRESS**: BE2/BE3 runtime bindings, provider/Jitsi/HTTPS, FE-E2E, load/restore, runtime DB role, branch protection và dependency High/Critical remediation chưa nghiệm thu. BE2 source có thêm trên main nhưng SQL BE2 vẫn pending; không suy ra runtime đã bind. 24 file cá nhân/định dạng/BE3 ngoài phạm vi vẫn giữ local, không đưa vào PR. Không deploy.
+
+## Snapshot kiểm chứng local trước xuất bản
+
 Người thực hiện: Codex hỗ trợ BE1. Nhánh `feat/be1-implementation`, HEAD tham chiếu `46b7e19`; source kiểm thử có thay đổi chưa commit, chưa gộp main. Không có PR/CI URL mới. Manifest local dùng HEAD thật để kiểm artifact, **không chứng minh thay đổi working tree thuộc commit đó**. Môi trường local Windows/PowerShell, Node24.21.0, npm11.19.0, Prisma6.19.0 và PostgreSQL thật.
 
 | Lệnh thực chạy                                                                                                                                                            | Kết quả cuối                                                                          |
