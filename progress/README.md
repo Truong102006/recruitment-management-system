@@ -69,11 +69,12 @@ Các công việc trên nhánh cá nhân chưa được báo cáo vào đây ch�
 
 Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; không đánh dấu cả nhóm UI hoàn thành nếu mới xong một màn.
 
-| Mã         | Phạm vi                                                                                       | Phụ trách | Trạng thái trên main | Bằng chứng / phần còn thiếu                                                                                                 |
-| ---------- | --------------------------------------------------------------------------------------------- | --------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| FE1        | UI01–UI12, UI24, UI29: tìm việc, auth, ứng viên, CV, hồ sơ, tin lưu, thông báo, lỗi chung     | FE1       | TODO                 | Có cấu hình React/Vite; React entry, app/router còn trống                                                                   |
-| FE2        | UI13–UI23, UI25–UI28: lịch/video, doanh nghiệp, tin, hồ sơ, đánh giá/kết quả, thống kê, admin | FE2       | TODO                 | Chưa có màn hình hoặc E2E                                                                                                   |
-| FE2-PHASE1 | Nền tảng kiến trúc FE2: Tokens, Router modular, HTTP client, CompanyContext, Mock layer       | FE2       | DONE (trên nhánh)    | 21 tests đạt; coverage 97,56% dòng / 92,09% nhánh; build/lint/typecheck pass trên `feat/fe2-implementation`. Chưa gộp main. |
+| Mã         | Phạm vi                                                                                       | Phụ trách | Trạng thái trên main | Bằng chứng / phần còn thiếu                                                                                                         |
+| ---------- | --------------------------------------------------------------------------------------------- | --------- | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| FE1        | UI01–UI12, UI24, UI29: tìm việc, auth, ứng viên, CV, hồ sơ, tin lưu, thông báo, lỗi chung     | FE1       | TODO                 | Có cấu hình React/Vite; React entry, app/router còn trống                                                                           |
+| FE2        | UI13–UI23, UI25–UI28: lịch/video, doanh nghiệp, tin, hồ sơ, đánh giá/kết quả, thống kê, admin | FE2       | TODO                 | Chưa có màn hình hoặc E2E                                                                                                           |
+| FE2-PHASE1 | Nền tảng kiến trúc FE2: Tokens, Router modular, HTTP client, CompanyContext, Mock layer       | FE2       | DONE (trên nhánh)    | 21 tests đạt; coverage 97,56% dòng / 92,09% nhánh; build/lint/typecheck pass trên `feat/fe2-implementation`. Chưa gộp main.         |
+| FE2-PHASE2 | Thành phần dùng chung FE2: DataTable generic, Calendar/Agenda, Dialog, StatusBadge            | FE2       | DONE (trên nhánh)    | 42 tests đạt; coverage 95,51% dòng / 88,41% nhánh; typecheck/lint/build/format clean trên `feat/fe2-implementation`. Chưa gộp main. |
 
 ### Tài liệu và hạ tầng chung
 
@@ -131,6 +132,41 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 - Bước kế tiếp của BE1: nhận và bind runtime ports BE2/BE3; chạy actual cross-owner/provider/HTTPS acceptance, CI GitHub/negative controls/load/restore/runtime DB permissions và xử lý dependency audit theo owner. Source và gate local đã có bằng chứng; chưa gộp main.
 
 ## Nhật ký báo cáo
+
+### 2026-10-23 20:20 (Asia/Saigon) — FE2 — Hoàn thành Pha 2 các component dùng chung
+
+- Mã báo cáo: 20261023-2020-FE2-phase2-done
+- Người thực hiện / AI hỗ trợ: Antigravity (hỗ trợ FE2).
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: FE2-PHASE2; DataTable generic, Calendar/Agenda, Modal/Dialog, ConfirmDialog, Pagination, StatusBadge; phục vụ UI13, UI16, UI17, UI19, UI20, UI25, UI26, UI28.
+- Trạng thái: DONE (phạm vi nhánh `feat/fe2-implementation`).
+- Nhánh / commit / PR / tích hợp main: `feat/fe2-implementation`; commit chứa báo cáo này; chưa gộp main.
+- Đã hoàn thành: Xây dựng hoàn chỉnh DataTable generic (sort, filter, search, selection, pagination, responsive card view); xây dựng InterviewCalendar (2 chế độ xem Month calendar và Agenda timeline, lọc theo ngày, badge trạng thái); xây dựng Dialog & ConfirmDialog (focus trap, Escape key, backdrop click, a11y); xây dựng StatusBadge chuẩn màu + text cho mọi trạng thái; xây dựng Pagination linh hoạt.
+- File / bằng chứng: apps/web/src/components/ui/status-badge.tsx, status-badge.test.tsx; apps/web/src/components/ui/dialog.tsx, dialog.test.tsx; apps/web/src/components/ui/pagination.tsx, pagination.test.tsx; apps/web/src/components/data-table/data-table.tsx, data-table.test.tsx; apps/web/src/components/calendar/interview-calendar.tsx, interview-calendar.test.tsx.
+- Kiểm tra đã chạy:
+  - `npm run typecheck`: đạt (tsc backend + web clean 0 lỗi).
+  - `npm run lint`: đạt (eslint apps libs tests --max-warnings=0 clean).
+  - `npm run format:check`: đạt (All matched files use Prettier code style).
+  - `npm run test:web:ci`: đạt 12 suites, 42/42 tests passed (100% pass); coverage dòng 95,51%, coverage nhánh 88,41% (vượt xa chỉ tiêu 80% / 70%).
+  - `npm run build`: đạt (build thành công cả @rms/api, @rms/web, @rms/worker).
+- Kiểm tra chưa chạy / coverage: Chưa chạy Playwright E2E cho UI hoàn chỉnh vì các màn hình nghiệp vụ cụ thể sẽ thực hiện từ Pha 3–6.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không sửa đổi DB/API; các component được thiết kế generic để FE1 có thể tái sử dụng trực tiếp cho UI10, UI11, UI12 mà không phải viết lại.
+- Phần còn thiếu / blocker: Không có blocker.
+- Bước tiếp theo: Bắt đầu Pha 3 (triển khai các màn hình Doanh nghiệp & Tin tuyển dụng UI16, UI17, UI18 kết nối trực tiếp với backend BE1 trên main).
+
+### 2026-10-23 20:15 (Asia/Saigon) — FE2 — Bắt đầu Pha 2 các component dùng chung
+
+- Mã báo cáo: 20261023-2015-FE2-phase2-start
+- Người thực hiện / AI hỗ trợ: Antigravity (hỗ trợ FE2).
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: FE2-PHASE2; DataTable generic, Calendar/Agenda, Modal/Dialog, StatusBadge; phục vụ UI13, UI16, UI17, UI19, UI20, UI25, UI26, UI28.
+- Trạng thái: IN_PROGRESS
+- Nhánh / commit / PR / tích hợp main: `feat/fe2-implementation`; commit chứa báo cáo này; chưa gộp main.
+- Đã hoàn thành: Hoàn tất Pha 1 và sửa route layout lịch phỏng vấn (commit `c69ca7d`); bắt đầu triển khai các component dùng chung cho FE2.
+- File / bằng chứng: Cập nhật progress/README.md; fe2-implementation-plan.md.
+- Kiểm tra đã chạy: 21 tests pass, coverage 97,7% lines / 93,92% branches; build/lint pass.
+- Kiểm tra chưa chạy / coverage: Chưa chạy test cho các component Pha 2 vì đang viết code.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không ảnh hưởng đến DB/API; component được thiết kế generic để FE1 có thể tái sử dụng.
+- Phần còn thiếu / blocker: Đang viết DataTable, Calendar/Agenda, Dialog và test Vitest.
+- Bước tiếp theo: Hoàn thành code và bộ test component cho Pha 2.
 
 ### 2026-10-23 19:40 (Asia/Saigon) — FE2 — Hoàn thành Pha 1 nền tảng kiến trúc FE2
 
