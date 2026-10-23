@@ -921,6 +921,8 @@ Không phải module nào cũng cần đủ tất cả thư mục; cấu trúc p
 
 **BE2: thay CV bước 7 (23/10/2026):** `CvChangeWorkflowService` dùng rule BR07–BR08, khóa user/company/application/CV, giữ original bất biến, thay current ở SUBMITTED hoặc tạo PENDING ở SCREENING; recruiter duyệt/từ chối với cả applicationVersion và requestVersion. History/Outbox/idempotency cùng transaction. Hai event bổ sung `application.cv_change_requested` và `application.cv_change_rejected` chỉ mang applicationId, cần BE3 cập nhật consumer schema v1 khi nối. Mới có unit/contract test, chưa có route/provider BE3/PostgreSQL integration nên UC06 vẫn IN_PROGRESS.
 
+**BE2: xét duyệt/rút bước 8 (23/10/2026):** `ReviewApplicationWorkflowService` chỉ chuyển SUBMITTED→SCREENING→SHORTLISTED theo rule; rời SCREENING hủy đề nghị CV PENDING cùng transaction. Rút hồ sơ từ trạng thái chưa kết thúc yêu cầu `InterviewLifecyclePort.cancelOpenForApplication` của BE3 trong cùng transaction trước khi ghi WITHDRAWN, History và Outbox; lỗi BE3 rollback. `ApplicationReadService` lọc candidate/recruiter trước khi truy vấn DTO/history công khai. Chưa có BE3 implementation, controller, migration hay DB/API/concurrency test nên UC07 vẫn IN_PROGRESS.
+
 ## 4.4 Transaction khóa và thao tác đồng thời
 
 Thứ tự khóa chung là user_account theo UUID tăng dần, company, job_post, application, interview và cv_version. Trong mỗi nhóm cũng sắp UUID tăng dần. Trước transaction phải thu thập toàn bộ ID liên quan; sau khóa kiểm lại danh sách và version. Nếu participant hoặc phạm vi đã đổi, rollback và đọc lại, không lấy thêm khóa user sau khi đã khóa interview. Membership mutation phải khóa user mục tiêu rồi company; xác nhận lịch phải khóa cùng company để không lọt qua việc thu hồi membership.

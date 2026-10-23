@@ -93,6 +93,7 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 | BE2-STEP2     | Nền transaction và hợp đồng tích hợp / BE2 + Codex                                | DONE        | Đã gộp `main` tại `62215fc`; [bàn giao](../Docs/be2-step2-handoff.md), 23 unit + 11 contract test đạt. DONE chỉ cho phạm vi nền bước 2, không phải UC                                                             |
 | STORAGE-01    | Storage CV và scanner / BE2                                                       | IN_PROGRESS | Có port và service/repository quarantine/quét/xóa, unit test; còn provider PDF/scanner, object store, worker/reconciliation, API và test PostgreSQL                                                               |
 | BE2-CV-07     | Thay CV đã nộp / BE2 + Codex                                                      | DONE        | Workflow/repository cho thay trực tiếp, đề nghị, duyệt/từ chối, idempotency, history/outbox; 3 unit + 13 contract đạt trên `feat/be2-remaining-work`. UC06 tổng thể còn IN_PROGRESS. |
+| BE2-APP-08    | Xem, xét duyệt và rút hồ sơ / BE2 + Codex                                        | DONE        | Workflow review/withdraw và query scope/history; 5 unit đạt trên `feat/be2-remaining-work`. Chỉ DONE cho code độc lập; UC07 vẫn IN_PROGRESS vì thiếu BE3/API/DB test. |
 | WORKER-01     | Outbox/email/worker / BE3; idempotency/transaction do BE2 phối hợp                | TODO        | Chưa triển khai                                                                                                                                                                                                   |
 | VIDEO-01      | Jitsi và thu hồi quyền phòng / BE3                                                | TODO        | Chưa tích hợp/kiểm provider thật                                                                                                                                                                                  |
 | QA-01         | Unit/integration/API/concurrency/FE/E2E / từng owner                              | IN_PROGRESS | Main PR #1: hosted 35 suites/316 unit, 13 suites/108 integration (gồm23 contract), evidence8 đạt; coverage92,45% dòng/76,93% nhánh. FE-E2E/runtime/provider còn thiếu. [Bằng chứng](../Docs/be1-verification.md). |
@@ -131,6 +132,21 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 - Bước kế tiếp của BE1: nhận và bind runtime ports BE2/BE3; chạy actual cross-owner/provider/HTTPS acceptance, CI GitHub/negative controls/load/restore/runtime DB permissions và xử lý dependency audit theo owner. Source và gate local đã có bằng chứng; chưa gộp main.
 
 ## Nhật ký báo cáo
+
+### 2026-10-23 12:00 (Asia/Saigon) — BE2 — Bước 8 xét duyệt và rút hồ sơ
+
+- Mã báo cáo: 20261023-1200-BE2-xet-duyet-rut
+- Người thực hiện / AI hỗ trợ: Người phụ trách BE2 (GitHub repository Truong102006) / Codex; chưa xác nhận tên thật.
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: BE2-APP-08, UC07, BR08–BR09, TC19/TC43, EC05/EC08–EC09/EC32–EC33 ở phạm vi unit.
+- Trạng thái: DONE — workflow/query độc lập; UC07 tổng thể IN_PROGRESS vì BE3 chưa có và chưa có API/DB test.
+- Nhánh / commit / PR / tích hợp main: `feat/be2-remaining-work` / commit chứa báo cáo này / chưa có PR / Chưa gộp main tại thời điểm báo cáo.
+- Đã hoàn thành: Review theo cạnh trạng thái, hủy đề nghị CV khi rời SCREENING; withdraw gọi BE3 hủy lịch trong cùng transaction trước ghi WITHDRAWN; query danh sách/chi tiết/history theo candidate hoặc company scope, map DTO công khai.
+- File / bằng chứng: `apps/api/src/modules/application/services/review-application-workflow.service.ts`, `services/application-read.service.ts`, `repositories/application-query.repository.ts` và test tương ứng.
+- Kiểm tra đã chạy: Jest 5/5 unit ở hai suite mới; ESLint/Prettier file bước 8 đạt trên Windows/Node 24.
+- Kiểm tra chưa chạy / coverage: PostgreSQL/API/concurrency và BE3 thật chưa chạy; coverage chưa đo; toàn suite chờ gate cuối.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không đổi SQL/endpoint; xác định `InterviewLifecyclePort.cancelOpenForApplication` phải cùng transaction, recheck lock scope và rollback khi lỗi. FE dùng DTO candidate hiện có sau khi route được nối.
+- Phần còn thiếu / blocker: BE3 lifecycle/outbox thật, module/controller/guard, migration BE2 và integration test.
+- Bước tiếp theo: Commit bước 8; triển khai UC14 lưu tin quan tâm.
 
 ### 2026-10-23 11:57 (Asia/Saigon) — BE2 — Bước 7 thay CV đã nộp
 
