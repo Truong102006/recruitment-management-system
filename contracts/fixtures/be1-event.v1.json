@@ -1,0 +1,14 @@
+{
+  "eventId": "50000000-0000-4000-8000-000000000001",
+  "eventType": "auth.verification_requested",
+  "schemaVersion": 1,
+  "aggregateId": "10000000-0000-4000-8000-000000000001",
+  "aggregateVersion": 0,
+  "occurredAt": "2026-10-22T08:00:00.000Z",
+  "payload": {
+    "userId": "10000000-0000-4000-8000-000000000001",
+    "email": "candidate@example.com",
+    "tokenId": "60000000-0000-4000-8000-000000000001",
+    "expiresAt": "2026-10-23T08:00:00.000Z"
+  }
+}

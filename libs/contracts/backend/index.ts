@@ -5,8 +5,12 @@ import type {
   CandidateSnapshot,
   ResultStatus,
 } from '../public';
-export type { TransactionContext } from '../../platform/database/unit-of-work';
+export type {
+  TransactionContext,
+  TransactionContext as Tx,
+} from '../../platform/database/unit-of-work';
 export type { Be2Event, Be2EventPayloads } from './events';
+export type { Be1Event, Be1EventPayloads } from './be1-events';
 
 export interface Actor {
   readonly userId: string;
@@ -142,6 +146,86 @@ export interface SkillCatalogPort {
   assertActiveSkills(skillIds: readonly string[], tx: Tx): Promise<readonly string[]>;
 }
 
+// BE1 Admin & supporting ports
+export interface IdentityAdminPort {
+  lockUser(userId: string, reason: string, lockedBy: string, tx: Tx): Promise<void>;
+  unlockUser(userId: string, tx: Tx): Promise<void>;
+  countActiveAdmins(tx: Tx): Promise<number>;
+}
+
+/** BE3 persists this record in the caller's transaction; no sensitive payloads. */
+export interface AuditWriterPort {
+  write(
+    input: {
+      readonly action: string;
+      readonly actorId: string;
+      readonly resourceId: string;
+      readonly reason: string;
+    },
+    tx: Tx,
+  ): Promise<void>;
+}
+
+export interface CompanyAdminPort {
+  reviewCompany(
+    companyId: string,
+    status: 'APPROVED' | 'REJECTED',
+    reason: string | undefined,
+    expectedVersion: number,
+    tx: Tx,
+  ): Promise<void>;
+  suspendCompany(companyId: string, reason: string, expectedVersion: number, tx: Tx): Promise<void>;
+  unsuspendCompany(companyId: string, expectedVersion: number, tx: Tx): Promise<void>;
+}
+
+export interface JobAdminPort {
+  closeJob(jobId: string, reason: string, expectedVersion: number, tx: Tx): Promise<void>;
+}
+
+export interface JobReportingFactsPort {
+  getJobFacts(
+    companyId: string,
+    tx: Tx,
+  ): Promise<{
+    readonly totalJobs: number;
+    readonly publishedJobs: number;
+    readonly closedJobs: number;
+  }>;
+}
+
+export interface AuthMailMaterialPort {
+  decryptMaterial(encryptedEnvelope: string): Promise<{
+    readonly token: string;
+    readonly email: string;
+    readonly purpose: 'VERIFY_EMAIL' | 'RESET_PASSWORD';
+  }>;
+}
+
+// Required BE3 providers for BE1 integration
+export interface InterviewAdminPort {
+  securityCancel(
+    interviewId: string,
+    reason: string,
+    expectedVersion: number,
+    tx: Tx,
+  ): Promise<{ readonly cancelled: boolean; readonly currentVersion: number }>;
+}
+
+export interface InterviewSecurityPort {
+  revokeForUser(
+    userId: string,
+    tx: Tx,
+  ): Promise<{ readonly revokedInterviewsCount: number; readonly currentGeneration: number }>;
+  revokeForCompany(
+    companyId: string,
+    tx: Tx,
+  ): Promise<{ readonly revokedInterviewsCount: number; readonly currentGeneration: number }>;
+}
+
+export interface InterviewMembershipPort {
+  assertNoUnresolvedProposedOrConfirmed(userId: string, companyId: string, tx: Tx): Promise<void>;
+}
+
 // Required BE3 providers. Workflows must gather all lock IDs before locking rows.
 export interface InterviewLifecyclePort {
   getLockScope(
@@ -163,21 +247,33 @@ export interface InterviewLifecyclePort {
   getEvidence(applicationId: string, tx: Tx): Promise<InterviewEvidence>;
 }
 export interface OutboxPort {
-  append(event: import('./events').Be2Event, tx: Tx): Promise<void>;
+  append(
+    event: import('./events').Be2Event | import('./be1-events').Be1Event,
+    tx: Tx,
+  ): Promise<void>;
 }
 
 /** Tokens are stable for Nest useFactory/useExisting bindings; interfaces alone erase at runtime. */
 export const PORTS = Object.freeze({
+  audit: Symbol.for('rms.AuditWriter.v1'),
   application: Symbol.for('rms.ApplicationPort.v1'),
   applicationResult: Symbol.for('rms.ApplicationResultPort.v1'),
   applicationConflict: Symbol.for('rms.ApplicationConflictPort.v1'),
   candidateProfile: Symbol.for('rms.CandidateProfilePort.v1'),
   cvSelection: Symbol.for('rms.CvSelectionPort.v1'),
   identityCandidate: Symbol.for('rms.IdentityCandidatePort.v1'),
+  identityAdmin: Symbol.for('rms.IdentityAdminPort.v1'),
   companyAccess: Symbol.for('rms.CompanyAccessPort.v1'),
+  companyAdmin: Symbol.for('rms.CompanyAdminPort.v1'),
   jobApplication: Symbol.for('rms.JobApplicationPort.v1'),
   jobVisibility: Symbol.for('rms.JobVisibilityPort.v1'),
+  jobAdmin: Symbol.for('rms.JobAdminPort.v1'),
+  jobReportingFacts: Symbol.for('rms.JobReportingFactsPort.v1'),
   skillCatalog: Symbol.for('rms.SkillCatalogPort.v1'),
+  authMailMaterial: Symbol.for('rms.AuthMailMaterialPort.v1'),
+  interviewAdmin: Symbol.for('rms.InterviewAdminPort.v1'),
+  interviewSecurity: Symbol.for('rms.InterviewSecurityPort.v1'),
+  interviewMembership: Symbol.for('rms.InterviewMembershipPort.v1'),
   interviewLifecycle: Symbol.for('rms.InterviewLifecyclePort.v1'),
   outbox: Symbol.for('rms.OutboxPort.v1'),
 });

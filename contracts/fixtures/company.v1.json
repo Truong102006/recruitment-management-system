@@ -1,0 +1,15 @@
+{
+  "data": {
+    "id": "20000000-0000-4000-8000-000000000001",
+    "name": "Acme Recruitment Corp",
+    "taxCode": "0123456789",
+    "address": "123 Le Loi, District 1, Ho Chi Minh City",
+    "website": "https://acme.example.com",
+    "description": "Leading technology recruitment firm",
+    "approvalStatus": "APPROVED",
+    "rejectionReason": null,
+    "version": 0,
+    "createdAt": "2026-10-22T08:00:00.000Z",
+    "updatedAt": "2026-10-22T08:00:00.000Z"
+  }
+}
