@@ -205,7 +205,7 @@ describe('application transitions — BR09, BR14, TC19, TC43, TC46', () => {
   });
 
   it.each(['SUBMITTED', 'SCREENING', 'SHORTLISTED', 'INTERVIEW_SCHEDULED', 'INTERVIEWED'] as const)(
-    'allows a published REJECTED from %s only with reason and no open interview',
+    'allows a published REJECTED from %s with reason and no proposed interview',
     (from) => {
       const command: ApplicationTransitionCommand = {
         kind: 'PUBLISH_RESULT',
@@ -222,10 +222,16 @@ describe('application transitions — BR09, BR14, TC19, TC43, TC46', () => {
         publication: { publicMessage: 'Không phù hợp', internalReason: 'Thiếu kinh nghiệm' },
       });
       expect(
+        decideApplicationTransition(state(from), {
+          ...command,
+          evidence: { ...command.evidence, confirmedCount: 1 },
+        }).toStatus,
+      ).toBe('REJECTED');
+      expect(
         codeOf(() =>
           decideApplicationTransition(state(from), {
             ...command,
-            evidence: { ...command.evidence, confirmedCount: 1 },
+            evidence: { ...command.evidence, proposedCount: 1 },
           }),
         ),
       ).toBe('STATE_CONFLICT');

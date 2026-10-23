@@ -95,6 +95,7 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 | BE2-CV-07     | Thay CV đã nộp / BE2 + Codex                                                      | DONE        | Workflow/repository cho thay trực tiếp, đề nghị, duyệt/từ chối, idempotency, history/outbox; 3 unit + 13 contract đạt trên `feat/be2-remaining-work`. UC06 tổng thể còn IN_PROGRESS.                              |
 | BE2-APP-08    | Xem, xét duyệt và rút hồ sơ / BE2 + Codex                                         | DONE        | Workflow review/withdraw và query scope/history; 5 unit đạt trên `feat/be2-remaining-work`. Chỉ DONE cho code độc lập; UC07 vẫn IN_PROGRESS vì thiếu BE3/API/DB test.                                             |
 | BE2-SAVED-09  | Lưu tin quan tâm / BE2 + Codex                                                    | DONE        | Repository/service idempotent, placeholder theo BE1 visibility; 2 unit + 14 contract đạt trên `feat/be2-remaining-work`. UC14 tổng thể còn IN_PROGRESS vì thiếu route/DB test.                                    |
+| BE2-PORT-10   | Port hồ sơ cho BE1/BE3 / BE2 + Codex                                              | DONE        | Application/Result/Conflict port cùng transaction, history/outbox/idempotency; 3 unit mới đạt. DONE cho code độc lập; chờ BE3 runtime/PostgreSQL.                                                                 |
 | WORKER-01     | Outbox/email/worker / BE3; idempotency/transaction do BE2 phối hợp                | TODO        | Chưa triển khai                                                                                                                                                                                                   |
 | VIDEO-01      | Jitsi và thu hồi quyền phòng / BE3                                                | TODO        | Chưa tích hợp/kiểm provider thật                                                                                                                                                                                  |
 | QA-01         | Unit/integration/API/concurrency/FE/E2E / từng owner                              | IN_PROGRESS | Main PR #1: hosted 35 suites/316 unit, 13 suites/108 integration (gồm23 contract), evidence8 đạt; coverage92,45% dòng/76,93% nhánh. FE-E2E/runtime/provider còn thiếu. [Bằng chứng](../Docs/be1-verification.md). |
@@ -133,6 +134,21 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 - Bước kế tiếp của BE1: nhận và bind runtime ports BE2/BE3; chạy actual cross-owner/provider/HTTPS acceptance, CI GitHub/negative controls/load/restore/runtime DB permissions và xử lý dependency audit theo owner. Source và gate local đã có bằng chứng; chưa gộp main.
 
 ## Nhật ký báo cáo
+
+### 2026-10-23 12:06 (Asia/Saigon) — BE2 — Bước 10 port hồ sơ cho BE1 và BE3
+
+- Mã báo cáo: 20261023-1206-BE2-port-ho-so
+- Người thực hiện / AI hỗ trợ: Người phụ trách BE2 (GitHub repository Truong102006) / Codex; chưa xác nhận tên thật.
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: BE2-PORT-10, UC07/08/09/11/16, BR08–BR09, TC19/TC46–TC49 ở phạm vi unit.
+- Trạng thái: DONE — port BE2 độc lập; tích hợp BE3/runtime vẫn IN_PROGRESS.
+- Nhánh / commit / PR / tích hợp main: `feat/be2-remaining-work` / commit chứa báo cáo này / chưa có PR / Chưa gộp main tại thời điểm báo cáo.
+- Đã hoàn thành: Application/Result/Conflict port kiểm recruiter, version, evidence đúng transaction; công bố kết quả ghi message/thời điểm/history/outbox/idempotency; replay không ghi lần hai; rollback khi Outbox lỗi.
+- File / bằng chứng: `apps/api/src/modules/application/services/application-ports.service.ts`, `services/application-ports.service.spec.ts`, `repositories/application-workflow.repository.ts`.
+- Kiểm tra đã chạy: Jest 3/3 unit mới, 3/3 unit thay CV hồi quy, ESLint/Prettier file bước 10 đạt trên Windows/Node 24.
+- Kiểm tra chưa chạy / coverage: PostgreSQL, BE3 integration và runtime DI chưa chạy; coverage chưa đo.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không thêm bảng/endpoint; thêm thao tác SQL result vào repository. BE3 phải truyền evidence của transaction đang mở và hoàn tất lịch trước khi gọi port; BE1 có thể gọi ApplicationConflictPort.
+- Phần còn thiếu / blocker: BE3 lịch/Outbox thật; migration BE2 và test DB.
+- Bước tiếp theo: Commit bước 10; hoàn thiện API/guard/DTO và module binding.
 
 ### 2026-10-23 12:03 (Asia/Saigon) — BE2 — Bước 9 lưu tin quan tâm
 

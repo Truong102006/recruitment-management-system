@@ -109,6 +109,12 @@ function setup(status: ApplicationRow['status']) {
     async changeStatus() {
       throw new Error('unused');
     },
+    async publishResult() {
+      throw new Error('unused');
+    },
+    async publishedAt() {
+      throw new Error('unused');
+    },
     async cancelPendingCv() {
       throw new Error('unused');
     },

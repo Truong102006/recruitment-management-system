@@ -63,6 +63,15 @@ export interface ApplicationWorkflowRepository {
     to: ApplicationStatus,
     tx: TransactionContext,
   ): Promise<void>;
+  publishResult(
+    applicationId: string,
+    version: number,
+    from: ApplicationStatus,
+    to: 'HIRED' | 'REJECTED',
+    message: string,
+    tx: TransactionContext,
+  ): Promise<Date>;
+  publishedAt(applicationId: string, tx: TransactionContext): Promise<Date | null>;
   cancelPendingCv(applicationId: string, tx: TransactionContext): Promise<void>;
   hasOpenApplication(
     candidateId: string,
@@ -253,6 +262,34 @@ export class PrismaApplicationWorkflowRepository implements ApplicationWorkflowR
       [applicationId, version, from, to],
     );
     changed(rows);
+  }
+  async publishResult(
+    applicationId: string,
+    version: number,
+    from: ApplicationStatus,
+    to: 'HIRED' | 'REJECTED',
+    message: string,
+    tx: TransactionContext,
+  ): Promise<Date> {
+    const rows = await this.sql.query<{ result_published_at: Date }>(
+      tx,
+      `UPDATE application SET status = $4, result_message = $5,
+         result_published_at = clock_timestamp(), version = version + 1,
+         updated_at = clock_timestamp()
+       WHERE id = $1::uuid AND version = $2 AND status = $3
+       RETURNING result_published_at`,
+      [applicationId, version, from, to, message],
+    );
+    changed(rows);
+    return rows[0].result_published_at;
+  }
+  async publishedAt(applicationId: string, tx: TransactionContext): Promise<Date | null> {
+    const [row] = await this.sql.query<{ result_published_at: Date | null }>(
+      tx,
+      `SELECT result_published_at FROM application WHERE id = $1::uuid`,
+      [applicationId],
+    );
+    return row?.result_published_at ?? null;
   }
   async cancelPendingCv(applicationId: string, tx: TransactionContext): Promise<void> {
     await this.sql.query(

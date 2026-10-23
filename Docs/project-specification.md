@@ -655,6 +655,8 @@ Mỗi mutation bao gồm kiểm tra quyền hiện tại, validation và transac
 
 ## 3.2 Trạng thái hồ sơ và tác dụng phụ
 
+**Hiện trạng port BE2 (23/10/2026):** `Be2ApplicationPorts` đã hiện thực các cạnh do lịch phỏng vấn và công bố kết quả kích hoạt trong transaction của caller; kiểm lại quyền recruiter từ BE1, version và bằng chứng lịch gắn `tx.id`, ghi history/outbox nguyên tử và idempotency khi công bố. BE3 phải xác nhận/hủy lịch trong cùng transaction trước khi gọi port. Phần này mới có unit test; chưa có provider BE3 hoặc test PostgreSQL nên chưa nghiệm thu UC08/09.
+
 | **Trạng thái hiện tại**  | **Cạnh hợp lệ**                            | **Điều kiện và tác dụng phụ**                                                                                            |
 |--------------------------|--------------------------------------------|--------------------------------------------------------------------------------------------------------------------------|
 | SUBMITTED                | SCREENING REJECTED WITHDRAWN               | Recruiter bắt đầu xét; từ chối chỉ qua UC09; ứng viên tự rút                                                             |
