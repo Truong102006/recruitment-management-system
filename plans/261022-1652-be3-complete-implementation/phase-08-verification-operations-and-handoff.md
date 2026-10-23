@@ -1,8 +1,8 @@
 ---
 phase: 8
-title: "Verification operations and handoff"
+title: 'Verification operations and handoff'
 status: pending
-effort: ""
+effort: ''
 ---
 
 # Phase 8: Verification operations and handoff

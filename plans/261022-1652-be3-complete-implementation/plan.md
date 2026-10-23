@@ -1,15 +1,15 @@
 ---
-title: "Triển khai toàn bộ backend BE3"
-description: "Kế hoạch BE3 từ contract, migration, worker đến lịch, video, đánh giá, kết quả, thống kê và nghiệm thu."
+title: 'Triển khai toàn bộ backend BE3'
+description: 'Kế hoạch BE3 từ contract, migration, worker đến lịch, video, đánh giá, kết quả, thống kê và nghiệm thu.'
 status: pending
 priority: P1
-branch: "main"
+branch: 'main'
 tags: [backend, database, api, infra]
 relatedPlans: [261022-1711-be1-complete-implementation]
 blockedBy: []
 blocks: []
-created: "2026-10-22T09:54:15.670Z"
-createdBy: "ck:plan"
+created: '2026-10-22T09:54:15.670Z'
+createdBy: 'ck:plan'
 source: skill
 ---
 
@@ -25,16 +25,16 @@ Phạm vi giữ đúng yêu cầu: cả 6 UC, 8 bảng BE3, MailPort/VideoPort, 
 
 ## Phases
 
-| Phase | Name | Status |
-|-------|------|--------|
-| 1 | [Contracts and integration gates](./phase-01-contracts-and-integration-gates.md) | Pending |
-| 2 | [Database audit and outbox foundation](./phase-02-database-audit-and-outbox-foundation.md) | Pending |
-| 3 | [Worker mail and notifications](./phase-03-worker-mail-and-notifications.md) | Pending |
-| 4 | [Interview scheduling lifecycle](./phase-04-interview-scheduling-lifecycle.md) | Pending |
-| 5 | [Video join and revocation](./phase-05-video-join-and-revocation.md) | Pending |
-| 6 | [Evaluation completion and results](./phase-06-evaluation-completion-and-results.md) | Pending |
-| 7 | [Recruitment statistics](./phase-07-recruitment-statistics.md) | Pending |
-| 8 | [Verification operations and handoff](./phase-08-verification-operations-and-handoff.md) | Pending |
+| Phase | Name                                                                                       | Status  |
+| ----- | ------------------------------------------------------------------------------------------ | ------- |
+| 1     | [Contracts and integration gates](./phase-01-contracts-and-integration-gates.md)           | Pending |
+| 2     | [Database audit and outbox foundation](./phase-02-database-audit-and-outbox-foundation.md) | Pending |
+| 3     | [Worker mail and notifications](./phase-03-worker-mail-and-notifications.md)               | Pending |
+| 4     | [Interview scheduling lifecycle](./phase-04-interview-scheduling-lifecycle.md)             | Pending |
+| 5     | [Video join and revocation](./phase-05-video-join-and-revocation.md)                       | Pending |
+| 6     | [Evaluation completion and results](./phase-06-evaluation-completion-and-results.md)       | Pending |
+| 7     | [Recruitment statistics](./phase-07-recruitment-statistics.md)                             | Pending |
+| 8     | [Verification operations and handoff](./phase-08-verification-operations-and-handoff.md)   | Pending |
 
 ## Dependencies
 

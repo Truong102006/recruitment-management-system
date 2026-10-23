@@ -32,15 +32,15 @@ docker compose up -d --wait
 
 `.env`/`.env.local` bị Git bỏ qua. Thay credentials local theo nhu cầu; sửa đồng bộ `DATABASE_URL` và biến S3 khi đổi user/password/port. Biến `VITE_*` là công khai, không chứa bí mật.
 
-| Dịch vụ | Địa chỉ local | Ghi chú |
-|---|---|---|
-| PostgreSQL | 127.0.0.1:5432 | DB recruitment, cấu hình trong `.env` |
-| MinIO S3 | http://127.0.0.1:9000 | Chưa tự tạo bucket |
+| Dịch vụ       | Địa chỉ local         | Ghi chú                                            |
+| ------------- | --------------------- | -------------------------------------------------- |
+| PostgreSQL    | 127.0.0.1:5432        | DB recruitment, cấu hình trong `.env`              |
+| MinIO S3      | http://127.0.0.1:9000 | Chưa tự tạo bucket                                 |
 | MinIO console | http://127.0.0.1:9001 | Tạo bucket private `rms-cv` bằng credentials local |
-| Mailpit SMTP | 127.0.0.1:1025 | Email test |
-| Mailpit UI | http://127.0.0.1:8025 | Xem thư khi có producer thực |
-| API dự kiến | http://127.0.0.1:3000 | Chưa có bootstrap |
-| Web dự kiến | http://127.0.0.1:5173 | Chưa có React mount |
+| Mailpit SMTP  | 127.0.0.1:1025        | Email test                                         |
+| Mailpit UI    | http://127.0.0.1:8025 | Xem thư khi có producer thực                       |
+| API dự kiến   | http://127.0.0.1:3000 | Chưa có bootstrap                                  |
+| Web dự kiến   | http://127.0.0.1:5173 | Chưa có React mount                                |
 
 Compose chỉ có PostgreSQL, MinIO, Mailpit, bind loopback và lưu named volumes. Không bật container trong lần tạo khung. Image dùng tag phiên bản; chưa xác minh runtime/digest. Cần khóa digest đã kiểm chứng trước CI/nghiệm thu theo báo cáo.
 
@@ -48,46 +48,46 @@ Scanner/Jitsi mới có biến môi trường mẫu và folder `infra/`, chưa c
 
 ## Quy ước thư mục
 
-| Đường dẫn | Mục đích |
-|---|---|
-| `apps/api/src/modules/` | identity, candidate, company, job, cv, application, interview, evaluation, notification, reporting, admin, audit |
-| Trong mỗi module | File module trống; controllers, services, repositories, dto, policies, rules, mappers, ports, tests |
-| `modules/application/` | File trống theo ví dụ mục 4.3: submit/change/review service, controller, repository, policy, transition rules |
-| `apps/api/src/common/` | Guard/pipe/filter/interceptor/decorator dùng chung |
-| `apps/worker/src/` | Bootstrap/module trống; jobs, consumers, reconciliation, config |
-| `libs/platform/` | Hạ tầng chung; không đặt nghiệp vụ application/interview ở đây |
-| `apps/web/src/app/` | App/router/providers trống và layouts |
-| `apps/web/src/features/` | Auth, profile, CV, jobs, applications, interviews, companies, evaluations, results, saved-jobs, notifications, statistics, admin |
-| `apps/web/src/components/` | UI/layout dùng chung |
-| `apps/web/src/lib/` | HTTP/query/auth; chưa có logic session/CSRF/cache |
-| `prisma/schema.prisma` | Chỉ generator/datasource; chưa có bảng |
-| `prisma/migrations/` | Chờ migration thực |
-| `contracts/openapi/`, `contracts/events/` | Chờ contract thực |
-| `tests/` | Integration/API/concurrency/contract/E2E/fixtures/helpers/performance |
-| `.github/workflows/` | Chờ pipeline sau khi có source và test |
-| `scripts/evidence/`, `scripts/database/` | Chờ công cụ evidence/migration thực |
+| Đường dẫn                                 | Mục đích                                                                                                                         |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `apps/api/src/modules/`                   | identity, candidate, company, job, cv, application, interview, evaluation, notification, reporting, admin, audit                 |
+| Trong mỗi module                          | File module trống; controllers, services, repositories, dto, policies, rules, mappers, ports, tests                              |
+| `modules/application/`                    | File trống theo ví dụ mục 4.3: submit/change/review service, controller, repository, policy, transition rules                    |
+| `apps/api/src/common/`                    | Guard/pipe/filter/interceptor/decorator dùng chung                                                                               |
+| `apps/worker/src/`                        | Bootstrap/module trống; jobs, consumers, reconciliation, config                                                                  |
+| `libs/platform/`                          | Hạ tầng chung; không đặt nghiệp vụ application/interview ở đây                                                                   |
+| `apps/web/src/app/`                       | App/router/providers trống và layouts                                                                                            |
+| `apps/web/src/features/`                  | Auth, profile, CV, jobs, applications, interviews, companies, evaluations, results, saved-jobs, notifications, statistics, admin |
+| `apps/web/src/components/`                | UI/layout dùng chung                                                                                                             |
+| `apps/web/src/lib/`                       | HTTP/query/auth; chưa có logic session/CSRF/cache                                                                                |
+| `prisma/schema.prisma`                    | Chỉ generator/datasource; chưa có bảng                                                                                           |
+| `prisma/migrations/`                      | Chờ migration thực                                                                                                               |
+| `contracts/openapi/`, `contracts/events/` | Chờ contract thực                                                                                                                |
+| `tests/`                                  | Integration/API/concurrency/contract/E2E/fixtures/helpers/performance                                                            |
+| `.github/workflows/`                      | Chờ pipeline sau khi có source và test                                                                                           |
+| `scripts/evidence/`, `scripts/database/`  | Chờ công cụ evidence/migration thực                                                                                              |
 
 `.gitkeep` giữ folder trống trong Git; có thể bỏ khi thêm file thực. Chỉ triển khai policy/rules/port cần thiết, không cần tạo class để lấp đầy folder.
 
 ## Lệnh đã chuẩn bị
 
-| Lệnh tại gốc | Mục đích và điều kiện |
-|---|---|
-| `npm ci` | Cài đúng lockfile |
-| `npm run typecheck` | Kiểm TypeScript BE và FE; file trống không chứng minh nghiệp vụ đúng |
-| `npm run lint` | ESLint; cấm focused/skipped Jest test |
-| `npm run format:check` / `format` | Kiểm/format; bỏ qua báo cáo và đặc tả dài |
-| `npm run dev:api` / `dev:worker` | Watch sau khi có `.env` và bootstrap; file trống hiện không mở server/worker |
-| `npm run dev:web` | Bật Vite sau cài dependency; trang trống do chưa mount React |
-| `npm run build` | Compile workspace; chưa phải ứng dụng chạy được |
-| `npm run db:validate` / `db:generate` | Kiểm schema/sinh client sau khi thêm model và `.env` |
-| `npm run db:migrate:dev` / `db:migrate:deploy` | Tạo/áp dụng migration thực; hiện chưa có |
-| `npm run db:studio` | Xem dữ liệu sau khi có schema/DB |
-| `npm run test:unit:ci` | Jest/JUnit; coverage lines 80%, branches 70% |
-| `npm run test:integration:ci` | Integration/API/concurrency/contract tuần tự |
-| `npm run test:web:ci` | Vitest/JUnit; coverage lines 80%, branches 70% |
-| `npm run test:e2e` | Playwright 360/768/1366 px; cần cài browser và bật ứng dụng thực |
-| `npm run infra:config` / `infra:up` / `infra:down` | Kiểm/bật/tắt hạ tầng local sau khi tạo `.env` |
+| Lệnh tại gốc                                       | Mục đích và điều kiện                                                        |
+| -------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `npm ci`                                           | Cài đúng lockfile                                                            |
+| `npm run typecheck`                                | Kiểm TypeScript BE và FE; file trống không chứng minh nghiệp vụ đúng         |
+| `npm run lint`                                     | ESLint; cấm focused/skipped Jest test                                        |
+| `npm run format:check` / `format`                  | Kiểm/format; bỏ qua báo cáo và đặc tả dài                                    |
+| `npm run dev:api` / `dev:worker`                   | Watch sau khi có `.env` và bootstrap; file trống hiện không mở server/worker |
+| `npm run dev:web`                                  | Bật Vite sau cài dependency; trang trống do chưa mount React                 |
+| `npm run build`                                    | Compile workspace; chưa phải ứng dụng chạy được                              |
+| `npm run db:validate` / `db:generate`              | Kiểm schema/sinh client sau khi thêm model và `.env`                         |
+| `npm run db:migrate:dev` / `db:migrate:deploy`     | Tạo/áp dụng migration thực; hiện chưa có                                     |
+| `npm run db:studio`                                | Xem dữ liệu sau khi có schema/DB                                             |
+| `npm run test:unit:ci`                             | Jest/JUnit; coverage lines 80%, branches 70%                                 |
+| `npm run test:integration:ci`                      | Integration/API/concurrency/contract tuần tự                                 |
+| `npm run test:web:ci`                              | Vitest/JUnit; coverage lines 80%, branches 70%                               |
+| `npm run test:e2e`                                 | Playwright 360/768/1366 px; cần cài browser và bật ứng dụng thực             |
+| `npm run infra:config` / `infra:up` / `infra:down` | Kiểm/bật/tắt hạ tầng local sau khi tạo `.env`                                |
 
 Test runner không bật `passWithNoTests`; chưa có test nên lệnh test sẽ fail do không có ca kiểm thử. Không thêm test rỗng để làm xanh. Fixture, kiểm tra DB/Docker bắt buộc, evidence manifest, chống skip và gate tổng cần triển khai cùng suite thực. Chưa thêm `verify:evidence`/`verify:migrations` vì chưa có implementation.
 

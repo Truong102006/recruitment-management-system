@@ -3385,3 +3385,8 @@ Phạm vi UC01/04/05/10/11, BR15/16/20, TC31–36/55–60. Đây là implementat
 - Demo seed từ chối production và cần SEED_DEMO_PASSWORD riêng (10–72 byte UTF-8), không có mật khẩu mặc định; fixture ACTIVE mới có verified timestamp, upsert không tự xác minh dữ liệu đã tồn tại. Không seed ADMIN mẫu vào production.
 - BE1 không triển khai thay bảng/worker BE2/BE3. Audit/outbox/security cần bind bởi owner cùng opaque Tx. Contract security hiện thiếu discovery/revalidation scope; canonical locks xuyên interview và nghiệm thu new-join-deny/revoke còn gate BE3. Test fake ports không phải integration runtime.
 - verify:evidence kiểm XML thực, inventory bắt buộc theo file/tên suite, tests>0/skipped0, lines≥80/branches≥70 và commit identity. verify:migrations dùng schema UUID riêng, không reset DB. Workflow backend không thay gate FE/E2E; hosted CI/negative controls, DB runtime permissions, load/restore/provider và review liên nhóm cần evidence độc lập. Dependency audit còn High/Critical, chưa đủ điều kiện release.
+
+
+## Cấu hình database cloud và test — 23/10/2026
+
+CLOUD-DB-01/DB-01/QA-01: runtime development có thể dùng Neon PostgreSQL qua DATABASE_URL (direct SSL). Backend Jest bắt buộc dùng PostgreSQL local theo TEST_DATABASE_URL hoặc `.env.test`; setupFiles chung chặn hostname ngoài loopback trước Prisma import để test không ghi database dùng chung. Đây là bổ sung contract môi trường test, không đổi nghiệp vụ/schema báo cáo gốc. Hai migration BE1 được deploy lên Neon rỗng; SQL/model BE2 pending chưa được coi là đã deploy. Xem [hướng dẫn cloud](cloud-database-setup.md).

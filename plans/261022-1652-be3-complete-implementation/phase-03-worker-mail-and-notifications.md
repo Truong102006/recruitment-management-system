@@ -1,8 +1,8 @@
 ---
 phase: 3
-title: "Worker mail and notifications"
+title: 'Worker mail and notifications'
 status: pending
-effort: ""
+effort: ''
 ---
 
 # Phase 3: Worker mail and notifications
@@ -44,14 +44,14 @@ Lát cắt UC15/Outbox/mail/audit operations chạy được với event fixture
 
 ## Ma trận test
 
-| Tình huống | Cần thấy |
-|---|---|
-| Worker chết sau claim | Lease hết hạn phục hồi, count đúng; worker cũ ack không đổi state |
-| SMTP gửi xong crash | Có thể thư lặp, nhưng 1 delivery/notification row |
-| Task persist xong crash | Event retry không sinh task trùng; Outbox DONE độc lập mail SENT |
-| Event lịch/auth cũ | Không gửi invite hủy/token đã vô hiệu; không log bí mật |
-| User B đọc/read của A | 404; total/unread/readAt không thay đổi ngoài scope |
-| Admin retry trái state | 409; không task duplicate; request hợp lệ có audit |
+| Tình huống              | Cần thấy                                                          |
+| ----------------------- | ----------------------------------------------------------------- |
+| Worker chết sau claim   | Lease hết hạn phục hồi, count đúng; worker cũ ack không đổi state |
+| SMTP gửi xong crash     | Có thể thư lặp, nhưng 1 delivery/notification row                 |
+| Task persist xong crash | Event retry không sinh task trùng; Outbox DONE độc lập mail SENT  |
+| Event lịch/auth cũ      | Không gửi invite hủy/token đã vô hiệu; không log bí mật           |
+| User B đọc/read của A   | 404; total/unread/readAt không thay đổi ngoài scope               |
+| Admin retry trái state  | 409; không task duplicate; request hợp lệ có audit                |
 
 ## Success Criteria
 
