@@ -509,6 +509,8 @@ Mỗi mutation bao gồm kiểm tra quyền hiện tại, validation và transac
 
 ### 3.1.12 UC12 Cập nhật hồ sơ cá nhân
 
+**Tình trạng triển khai BE2:** [bàn giao UC12](be2-profile-handoff.md) ghi service, repository, OpenAPI/JSON Schema và kiểm thử với fake transaction. Cập nhật account name qua port BE1, profile/kỹ năng BE2 và event cùng transaction; snapshot application cũ không đổi. Route HTTP, guard/session và migration PostgreSQL thật chưa có nên UC12 chưa nghiệm thu. Quy tắc dưới đây giữ nguyên.
+
 **Mục tiêu và kích hoạt:** Cập nhật profile cho lần nộp tiếp theo. Ứng viên lưu biểu mẫu profile.
 
 **Dữ liệu vào và đầu ra:** Profile DTO, skillIds và version. Đầu ra: Profile mới, không sửa CV/snapshot đã nộp.
@@ -909,7 +911,13 @@ Không phải module nào cũng cần đủ tất cả thư mục; cấu trúc p
 | OutboxPort                     | eventId aggregateId type schemaVersion payload tx             | Chỉ ghi; worker gửi sau commit; payload tối thiểu       |
 | VideoPort StoragePort MailPort | DTO tích hợp không lộ model ORM                               | Timeout rõ; retry và idempotency theo khả năng provider |
 
-**Hợp đồng tích hợp BE2 phiên bản 1:** [be2-integration-contract.md](be2-integration-contract.md) chốt dữ liệu/port giữa BE1–BE2–BE3, ownership và thứ tự migration, chữ ký logic `ApplicationPort`/`ApplicationResultPort`/`InterviewLifecyclePort`, DTO/HTTP BE2 và tên event v1. [Bàn giao bước 2](be2-step2-handoff.md) chỉ vị trí code TypeScript, schema, fixture và phạm vi kiểm chứng. Đã có `UnitOfWork`/driver, interface/stub port, DTO ứng viên, schema event/request và test unit/contract; chưa có API/migration/repository nghiệp vụ hoặc kiểm DB thật. Đây là chi tiết triển khai bổ sung cho mục 4.3, không thay đổi BR01–BR20, cạnh trạng thái ở mục 3.2 hay API đã liệt kê ở mục 7.1. `name` công khai ánh xạ từ cột `user_account.full_name`; header `X-CSRF-Token` là tên kỹ thuật để triển khai yêu cầu CSRF/Origin ở mục 4.6. Khi triển khai hoặc đổi hợp đồng này, phải cập nhật đặc tả, OpenAPI/event schema và test liên quan trong cùng PR.
+**Hợp đồng tích hợp BE2 phiên bản 1:** [be2-integration-contract.md](be2-integration-contract.md) chốt dữ liệu/port giữa BE1–BE2–BE3, ownership và thứ tự migration, chữ ký logic `ApplicationPort`/`ApplicationResultPort`/`InterviewLifecyclePort`, DTO/HTTP BE2 và tên event v1. [Bàn giao nền bước 2](be2-step2-handoff.md), [dữ liệu](be2-data-migration-plan.md), [persistence](be2-persistence-handoff.md) và [UC12](be2-profile-handoff.md) chỉ vị trí code/schema và phạm vi kiểm chứng từng đợt. Đã có `UnitOfWork`/driver, interface/stub port, DTO ứng viên, schema event/request, repository và service nội bộ BE2 cùng test unit/contract; chưa có route API chạy, migration áp dụng hoặc kiểm DB thật. Đây là chi tiết triển khai bổ sung cho mục 4.3, không thay đổi BR01–BR20 hoặc cạnh trạng thái ở mục 3.2. `name` công khai ánh xạ từ cột `user_account.full_name`; header `X-CSRF-Token` là tên kỹ thuật để triển khai yêu cầu CSRF/Origin ở mục 4.6. Khi triển khai hoặc đổi hợp đồng này, phải cập nhật đặc tả, OpenAPI/event schema và test liên quan trong cùng PR.
+
+**BE2: quy tắc nghiệp vụ thuần:** Code tại `apps/api/src/modules/application/rules/` và `policies/` thực hiện các quyết định theo BR07–BR09, BR13–BR14, BR18, mục 3.2 và UC06/07/09 mà không truy cập DB. Kết quả quyết định nêu trạng thái/version kế tiếp và các việc bắt buộc như hủy đề nghị CV hoặc gọi BE3 hủy lịch mở; nó không xác nhận các việc đó đã ghi thành công. Service sau này phải xác thực actor qua BE1, kiểm bằng chứng lịch BE3 trong transaction hiện tại, khóa/đọc lại dữ liệu và ghi application/history/outbox nguyên tử. Mapper ứng viên/profile chỉ chọn field công khai sau khi query đã lọc scope. Đây là cách hiện thực một phần quy tắc báo cáo, không thêm cạnh trạng thái, endpoint hoặc thay đổi DB; UC và test tích hợp vẫn chưa được nghiệm thu.
+
+**BE2: kho CV bước 5 (23/10/2026):** `CvWarehouseService` và `PrismaCvRepository` hiện thực phần BE2 độc lập của upload-init, quota 20 dưới khóa user BE1, attempt riêng, nhận byte có giới hạn, quarantine, Outbox yêu cầu quét, lease quét, READY/REJECTED hoặc retry khi lỗi kỹ thuật, URL tải tối đa 300 giây và xóa hai giai đoạn. `CvSafetyInspector` phải kiểm cấu trúc/mật khẩu/mã độc bằng provider thật trước khi gắn vào worker; `QuarantineStore` phải giữ version bất biến. Chưa có adapter provider, route/guard BE1, worker BE3, migration chạy hoặc test PostgreSQL/API; vì vậy UC06 và STORAGE-01 vẫn đang triển khai. Các interface này không đổi BR06–BR08, đường dẫn mục 7.1 hoặc trạng thái ở mục 3.2.
+
+**BE2: nộp hồ sơ bước 6 (23/10/2026):** `SubmitApplicationWorkflowService` nối khóa user và điều kiện ứng viên của BE1, khóa company/job và điều kiện tin/membership của BE1, kiểm CV READY BE2 rồi lấy snapshot profile BE2 trong transaction của lát cắt persistence bước 3. Idempotency replay chỉ kiểm quyền hiện tại; claim mới mới kiểm điều kiện nộp. Repository ánh xạ đúng ràng buộc `uq_application_candidate_job` thành xung đột, không đổi lỗi DB khác. Port BE1 phải khóa user trước, company/job sau và dùng DB clock sau khóa; không được lấy thêm khóa user sau company/job. Chưa có implementation port BE1/Outbox BE3, route/guard, migration và test DB/concurrency, nên UC02 chưa nghiệm thu. Đây là hiện thực dần mục 3.1.2/4.4, không đổi quy tắc báo cáo.
 
 ## 4.4 Transaction khóa và thao tác đồng thời
 
@@ -929,6 +937,8 @@ READ COMMITTED kết hợp khóa hàng và ràng buộc DB là mức mặc đị
 Điểm chấp nhận deadline là lúc service giữ đủ khóa và kiểm tra điều kiện ngay trước ghi hồ sơ. Dùng clock_timestamp() tại DB thay vì now() của đầu transaction đã phải chờ khóa; không giữ transaction chờ upload, scanner hoặc provider. Test có barrier cần chứng minh hai request thực sự chồng nhau, sau đó kiểm số bản ghi và trạng thái cuối.
 
 ## 4.5 Outbox idempotency và phục hồi worker
+
+**BE2 bước 3:** [bàn giao repository/idempotency](be2-persistence-handoff.md) mô tả adapter SQL và lát cắt ghi application/history/outbox/claim trong cùng `TransactionContext`. Đây mới là code nội bộ kiểm bằng fake transaction; chưa có port BE1/BE3 thật, API hay migration DB chạy được. Quy tắc kiểm quyền hiện tại khi replay và rollback khi ghi lỗi giữ nguyên như các đoạn dưới.
 
 Worker claim batch bằng FOR UPDATE SKIP LOCKED trong transaction ngắn, đặt PROCESSING, locked_until và lease_token duy nhất rồi commit. Lease 120 giây, heartbeat 30 giây. Mọi heartbeat/ack/fail phải WHERE id AND status AND lease_token; worker hết lease không được ghi đè kết quả của worker mới. Scan worker và email worker áp dụng cùng nguyên tắc. Provider vẫn có thể nhận tác dụng phụ từ worker cũ; phải dùng provider idempotency nếu có hoặc chấp nhận at least once đối với email.
 
@@ -1371,6 +1381,8 @@ Hệ thống có 25 bảng, gồm 24 bảng nghiệp vụ và hạ tầng đã x
 | ex_user_time   | exclusion constraint | user_id bằng nhau và khoảng \[start,end) giao nhau bị cấm nếu cả hai active |
 
 ## 5.2 Ràng buộc liên bảng và tính nhất quán
+
+**Triển khai BE2 đang chờ migration nền:** [kế hoạch model và migration BE2](be2-data-migration-plan.md) liệt kê tám model do BE2 sở hữu và SQL FK/CHECK/trigger/chỉ mục ở `prisma/pending/`. Bản SQL chưa được áp dụng vì `user_account`, `skill`, `job_post` của BE1 chưa có migration trên main; nó phải được chuyển thành migration sau BE1 rồi kiểm PostgreSQL thật trước khi coi DB BE2 hoàn thành. Quy tắc và bất biến trong các bảng dưới đây không thay đổi.
 
 | **Mã** | **Bất biến**                                                         | **Nơi bảo vệ và ca kiểm thử**                                                        |
 |--------|----------------------------------------------------------------------|--------------------------------------------------------------------------------------|

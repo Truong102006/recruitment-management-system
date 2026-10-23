@@ -1,6 +1,7 @@
 import type {
   CandidateApplicationDto,
   CandidateHistoryDto,
+  CandidateProfileDto,
 } from '../../../../../../libs/contracts/public';
 
 /**
@@ -40,5 +41,19 @@ export function toCandidateHistory(source: CandidateHistoryDto): CandidateHistor
     publicMessage: source.publicMessage,
     createdAt: source.createdAt,
     aggregateVersion: source.aggregateVersion,
+  };
+}
+
+/** The profile read model may contain internal account fields; return only the public contract. */
+export function toCandidateProfile(source: CandidateProfileDto): CandidateProfileDto {
+  return {
+    name: source.name,
+    email: source.email,
+    phone: source.phone,
+    headline: source.headline,
+    summary: source.summary,
+    location: source.location,
+    skillIds: [...source.skillIds],
+    version: source.version,
   };
 }

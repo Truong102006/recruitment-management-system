@@ -1,8 +1,13 @@
 import type {
   CandidateApplicationDto,
   CandidateHistoryDto,
+  CandidateProfileDto,
 } from '../../../../../../libs/contracts/public';
-import { toCandidateApplication, toCandidateHistory } from './candidate-application.mapper';
+import {
+  toCandidateApplication,
+  toCandidateHistory,
+  toCandidateProfile,
+} from './candidate-application.mapper';
 import fixture from '../../../../../../contracts/fixtures/candidate-application.v1.json';
 
 describe('candidate projection boundary', () => {
@@ -47,5 +52,32 @@ describe('candidate projection boundary', () => {
       createdAt: raw.createdAt,
       aggregateVersion: 1,
     });
+  });
+  it('copies profile skills and drops internal account/membership data', () => {
+    const raw: CandidateProfileDto & { passwordHash: string; membershipId: string } = {
+      name: 'Ứng viên',
+      email: 'candidate@example.test',
+      phone: null,
+      headline: null,
+      summary: null,
+      location: null,
+      skillIds: ['skill-1'],
+      version: 2,
+      passwordHash: 'PRIVATE',
+      membershipId: 'PRIVATE',
+    };
+    const dto = toCandidateProfile(raw);
+    expect(dto.skillIds).not.toBe(raw.skillIds);
+    expect(JSON.stringify(dto)).not.toContain('PRIVATE');
+    expect(Object.keys(dto)).toEqual([
+      'name',
+      'email',
+      'phone',
+      'headline',
+      'summary',
+      'location',
+      'skillIds',
+      'version',
+    ]);
   });
 });
