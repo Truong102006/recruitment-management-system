@@ -34,7 +34,7 @@
 
 ## Tổng quan hiện tại
 
-**2026-10-23 10:58 (Asia/Saigon) - SHIP-CLOUD-01: IN_PROGRESS** - Truong102006 / Codex: publish remaining local changes via `chore/shared-cloud-db-setup`; main integration pending.
+**2026-10-23 11:02 (Asia/Saigon) — SHIP-CLOUD-01: DONE (phạm vi Git)** — Truong102006 / Codex: [PR #3](https://github.com/Truong102006/recruitment-management-system/pull/3) đã merge main tại `80cd120`; ba commit giữ riêng. Đã pull main; bản ghi tích hợp này chờ PR tài liệu trên `docs/cloud-main-integration`.
 
 **23/10/2026 10:07 — SHIP-BE1: DONE (phạm vi Git)** — Truong102006 / BE1, Codex: [PR #1](https://github.com/Truong102006/recruitment-management-system/pull/1) đã merge vào main tại `ae869e70479f741596c58268002372315698911d`, giữ 12 commit nhỏ gồm tích hợp main và hai sửa tương thích. Backend/quality-gate cho push và PR đều đạt. BE1 nghiệp vụ vẫn IN_PROGRESS do còn binding/provider và nghiệm thu toàn hệ thống. Bản ghi tích hợp này trên `docs/be1-main-integration`, chờ PR tài liệu.
 
@@ -88,7 +88,7 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 | DOC-06        | Kế hoạch triển khai toàn bộ BE1 / Codex hỗ trợ BE1, chưa xác nhận người phụ trách | DONE        | [Kế hoạch 8 pha](../plans/261022-1711-be1-complete-implementation/plan.md), [rà soát](../plans/261022-1711-be1-complete-implementation/reports/plan-review.md); Đã tích hợp main; 5 UC chưa triển khai            |
 | BE-FOUNDATION | Bootstrap NestJS / BE1                                                            | IN_PROGRESS | API bootstrap đã tích hợp main PR #1; clean CI build/API tests đạt. Runtime liên nhóm và HTTPS/FE acceptance chưa nghiệm thu.                                                                                     |
 | DB-01         | Prisma/migration/seed / mỗi BE sở hữu phần mình                                   | IN_PROGRESS | 9 bảng BE1 + additive email_verified_at; PostgreSQL constraints/migration smoke đạt local. Chưa gộp main; thiếu owner schema/runtime permission/historical upgrade.                                               |
-| CLOUD-DB-01   | PostgreSQL cloud dùng chung / Codex hỗ trợ BE1                                    | DONE        | Phạm vi cấu hình local: Neon kết nối thật,2 migrations áp dụng,9 bảng BE1 + bảng migration; runtime cloud/test local tách riêng,guard3/3 và DB test local6/6 đạt. Chưa commit/push cấu hình dùng chung.           |
+| CLOUD-DB-01   | Shared PostgreSQL cloud / Codex BE1                                               | DONE        | Runtime cloud/test local configuration and team instructions integrated through PR #3 at `80cd120`; guard 3/3 and hosted CI pass. Credentials remain ignored.                                                     |
 | CONTRACT-01   | Port, DTO, OpenAPI, event schema và contract test / cả ba BE                      | IN_PROGRESS | Đã có phần BE2; BE1 đang triển khai Phase 1 contract, schema và test trên nhánh `feat/be1-implementation`                                                                                                         |
 | BE2-STEP2     | Nền transaction và hợp đồng tích hợp / BE2 + Codex                                | DONE        | Đã gộp `main` tại `62215fc`; [bàn giao](../Docs/be2-step2-handoff.md), 23 unit + 11 contract test đạt. DONE chỉ cho phạm vi nền bước 2, không phải UC                                                             |
 | STORAGE-01    | Storage CV và scanner / BE2                                                       | IN_PROGRESS | Có port và service/repository quarantine/quét/xóa, unit test; còn provider PDF/scanner, object store, worker/reconciliation, API và test PostgreSQL                                                               |
@@ -96,13 +96,13 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 | VIDEO-01      | Jitsi và thu hồi quyền phòng / BE3                                                | TODO        | Chưa tích hợp/kiểm provider thật                                                                                                                                                                                  |
 | QA-01         | Unit/integration/API/concurrency/FE/E2E / từng owner                              | IN_PROGRESS | Main PR #1: hosted 35 suites/316 unit, 13 suites/108 integration (gồm23 contract), evidence8 đạt; coverage92,45% dòng/76,93% nhánh. FE-E2E/runtime/provider còn thiếu. [Bằng chứng](../Docs/be1-verification.md). |
 | CI-01         | Pipeline và evidence gate / BE1 điều phối                                         | IN_PROGRESS | Main PR #1: CI push39893005258 và PR39893010843 đạt backend+quality-gate, gồm fixed inventory/XML/coverage/migration/evidence. Còn full negative-controls hosted, FE-E2E và required branch check.                |
-| SHIP-CLOUD-01 | Publish cloud/test setup and local formatting / Truong102006 + Codex              | IN_PROGRESS | `chore/shared-cloud-db-setup`; review complete, CI and merge pending.                                                                                                                                             |
+| SHIP-CLOUD-01 | Publish cloud/test setup and remaining local formatting / Truong102006 + Codex    | DONE        | PR #3 merged main at `80cd120`; push run 39897893529 and PR run 39897927225 pass; main pulled.                                                                                                                    |
 | SHIP-BE1      | Chia commit, push và merge PR / Truong102006 + Codex                              | DONE        | PR #1 đã merge main tại ae869e7; 12 commit được push từng đợt, bảo toàn source/model/lịch sử BE2. DONE chỉ cho Git publishing.                                                                                    |
 | OPS-01        | Hiệu năng, backup/restore và vận hành / BE3 điều phối, cả nhóm kiểm chứng         | TODO        | Chưa đo/chưa diễn tập                                                                                                                                                                                             |
 
 ## Phối hợp và bước tiếp theo
 
-- SHIP-CLOUD-01 IN_PROGRESS: review secret/diff, split commits, push branch and PR. Blocker: none. Next: hosted CI, merge and pull main.
+- SHIP-CLOUD-01 DONE phạm vi xuất bản: PR #3 đã merge main; CI push/PR đều đạt. Không có blocker Git. Tiếp theo: merge bản ghi tích hợp rồi pull main lần cuối; các hạn chế nghiệp vụ BE1/BE2/BE3 giữ nguyên.
 
 - 23/10/2026 10:48 — CLOUD-DB-01 DONE phạm vi cấu hình: DATABASE_URL runtime là Neon, test dùng local và chặn cloud. Neon ban đầu rỗng,2 migration đã deploy; không chuyển dữ liệu local/seed. Thành viên nhận URL riêng, làm theo Docs/cloud-database-setup.md. Code cấu hình test/docs chưa commit/push; BE2 SQL pending vẫn chưa deploy.
 
@@ -130,6 +130,21 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 - Bước kế tiếp của BE1: nhận và bind runtime ports BE2/BE3; chạy actual cross-owner/provider/HTTPS acceptance, CI GitHub/negative controls/load/restore/runtime DB permissions và xử lý dependency audit theo owner. Source và gate local đã có bằng chứng; chưa gộp main.
 
 ## Nhật ký báo cáo
+
+### 2026-10-23 11:02 (Asia/Saigon) — BE1 — Tích hợp cấu hình cloud/test lên main
+
+- Mã báo cáo: 20261023-1102-BE1-ship-cloud-main
+- Người thực hiện / AI hỗ trợ: Truong102006 / Codex.
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: SHIP-CLOUD-01, CLOUD-DB-01, QA-01; xuất bản các thay đổi local còn lại.
+- Trạng thái: DONE (phạm vi xuất bản Git).
+- Nhánh / commit / PR / tích hợp main: `chore/shared-cloud-db-setup`; `ca87791`, `fc20cf2`, `cc8572d`; [PR #3](https://github.com/Truong102006/recruitment-management-system/pull/3) đã merge main tại `80cd120b4a5847a0a5b50d02881f4a457f3917a8`. Bản ghi này trên `docs/cloud-main-integration`, chưa gộp tại thời điểm viết.
+- Đã hoàn thành: chia ba commit và push từng đợt; tích hợp guard test database local, tài liệu Neon và formatting còn lại; pull main bằng `--ff-only`. Không đưa .env/.env.test lên Git.
+- File / bằng chứng: 25 file trong PR #3; [CI push](https://github.com/Truong102006/recruitment-management-system/actions/runs/39897893529), [CI PR](https://github.com/Truong102006/recruitment-management-system/actions/runs/39897927225).
+- Kiểm tra đã chạy: local guard 3/3, typecheck, lint, lint script, build, diff check và quét chữ ký secret trên toàn bộ file tracked đạt. Hosted CI: 316 unit, 108 integration (có 23 contract), 23 contract chạy riêng, 8 evidence, guard 3/3; migration smoke và evidence gate đạt. Rà liên kết tài liệu không có liên kết mới hỏng.
+- Kiểm tra chưa chạy / coverage: coverage hosted 92,45% dòng / 76,93% nhánh trên tập source cấu hình; không chạy FE/E2E hoặc nghiệm thu toàn hệ thống vì ngoài phạm vi xuất bản.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: test Jest chặn database remote; runtime dùng URL riêng của từng máy. Không đổi schema/API; không chạy migration, seed hay reset cloud trong đợt xuất bản.
+- Phần còn thiếu / blocker: không có blocker Git. Năm ảnh ERD image16–20 thiếu từ trước trên origin/main trong đặc tả; không phát sinh từ PR này. Các thiếu hụt runtime/provider ghi trước vẫn giữ nguyên.
+- Bước tiếp theo: PR bản ghi tích hợp này, chờ CI, merge rồi pull main mới nhất; giữ dữ liệu và file môi trường riêng.
 
 ### 2026-10-23 10:58 (Asia/Saigon) - BE1 - Publish cloud/test configuration
 
