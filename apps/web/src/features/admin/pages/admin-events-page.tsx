@@ -306,10 +306,22 @@ export const AdminEventsPage: React.FC = () => {
 
       {/* Detail Modal */}
       {selectedEvent && (
-        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full p-6 space-y-4">
+        <div
+          className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setSelectedEvent(null);
+          }}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="event-detail-title"
+            className="bg-white rounded-xl shadow-xl max-w-2xl w-full p-6 space-y-4"
+          >
             <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-              <h3 className="font-semibold text-gray-900">Chi tiết Sự kiện Outbox</h3>
+              <h3 id="event-detail-title" className="font-semibold text-gray-900">
+                Chi tiết Sự kiện Outbox
+              </h3>
               <button
                 onClick={() => setSelectedEvent(null)}
                 className="text-gray-400 hover:text-gray-600 p-1 rounded-lg"
@@ -395,9 +407,19 @@ export const AdminEventsPage: React.FC = () => {
 
       {/* Retry Confirmation Modal (FE41) */}
       {retryTargetEvent && (
-        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
-            <h3 className="font-semibold text-gray-900 text-lg">
+        <div
+          className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4"
+          onClick={(e) => {
+            if (e.target === e.currentTarget && !retrying) setRetryTargetEvent(null);
+          }}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="retry-confirm-title"
+            className="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4"
+          >
+            <h3 id="retry-confirm-title" className="font-semibold text-gray-900 text-lg">
               Xác nhận kích hoạt Retry sự kiện
             </h3>
 

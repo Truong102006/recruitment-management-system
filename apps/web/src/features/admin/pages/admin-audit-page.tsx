@@ -272,10 +272,22 @@ export const AdminAuditPage: React.FC = () => {
 
       {/* Metadata Detail Modal */}
       {selectedLog && (
-        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full p-6 space-y-4">
+        <div
+          className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setSelectedLog(null);
+          }}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="audit-modal-title"
+            className="bg-white rounded-xl shadow-xl max-w-2xl w-full p-6 space-y-4"
+          >
             <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-              <h3 className="font-semibold text-gray-900">Chi tiết Nhật ký Audit</h3>
+              <h3 id="audit-modal-title" className="font-semibold text-gray-900">
+                Chi tiết Nhật ký Audit
+              </h3>
               <button
                 onClick={() => setSelectedLog(null)}
                 className="text-gray-400 hover:text-gray-600 p-1 rounded-lg"

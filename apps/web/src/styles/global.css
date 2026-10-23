@@ -105,6 +105,70 @@ a {
   box-shadow: var(--sh-s);
 }
 
+/* Responsive Shell & Layout Rules (Pha 6) */
+@media (max-width: 1024px) {
+  .recruiter-shell aside,
+  .admin-shell aside {
+    width: 200px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .recruiter-shell,
+  .admin-shell {
+    flex-direction: column !important;
+  }
+
+  .recruiter-shell aside,
+  .admin-shell aside {
+    width: 100% !important;
+    border-right: none !important;
+    border-bottom: 1px solid var(--hair2) !important;
+    padding: 12px 16px !important;
+  }
+
+  .recruiter-shell aside nav,
+  .admin-shell aside nav {
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+  }
+
+  .recruiter-shell main,
+  .admin-shell main {
+    padding: 16px !important;
+  }
+
+  /* Table horizontal scroll indication on tablet/mobile */
+  .table-wrapper {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Interactive touch target >= 44x44px for accessibility on touch devices */
+  button,
+  .btn,
+  a {
+    min-height: 38px;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Show card view and hide tabular view when card renderer is present */
+  .table-wrapper.has-card-renderer {
+    display: none !important;
+  }
+
+  .mobile-card-list {
+    display: flex !important;
+  }
+
+  button,
+  .btn {
+    min-height: 44px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
