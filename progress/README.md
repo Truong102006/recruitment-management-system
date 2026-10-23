@@ -135,6 +135,8 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 
 Ghi chú tích hợp cùng đợt: `ba4476c` đã giữ toàn bộ model và lịch sử BE2 từ main. `db:validate`, `db:generate`, lint, build đạt; typecheck phát hiện hai fake Outbox trong test BE2 còn giới hạn Be2Event. Đã đổi kiểu bộ nhớ test theo tham số thực của OutboxPort (union BE1/BE2), không đổi nghiệp vụ; typecheck chạy lại đạt. Unit/coverage đang chạy lại; chờ hosted CI cho commit sửa tương thích.
 
+Cập nhật 10:03: PR [#1](https://github.com/Truong102006/recruitment-management-system/pull/1), commit `c3b297a`. Hosted [run 39892798433](https://github.com/Truong102006/recruitment-management-system/actions/runs/39892798433) đạt 316 unit / 108 integration (gồm 23 contract), typecheck/lint/build/migration; evidence gate phát hiện tên suite BE2 đổi do UC12 describe mới đứng đầu file. Đã cập nhật inventory đúng JUnit name, giữ kiểm tra fail/skip và các suite bắt buộc. Coverage local 92,45% dòng / 76,93% nhánh. Integration local thất bại vì Docker daemon dừng và DB 5432 không truy cập được; hosted PostgreSQL đã chạy đạt, không ghi local pass. Tiếp theo chạy CI lại trước merge.
+
 ### 2026-10-23 00:54 (Asia/Saigon) — BE2 — Nối sự kiện xóa CV với worker
 
 - Mã báo cáo: 20261023-0054-BE2-xoa-cv-worker

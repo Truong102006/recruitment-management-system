@@ -154,7 +154,7 @@
     },
     {
       "file": "tests/contract/be2-contract.spec.ts",
-      "suite": "BE2 wire contracts — Word BR01, BR07, BR13, BR18, BR20"
+      "suite": "UC12 profile wire contract"
     }
   ]
 }
