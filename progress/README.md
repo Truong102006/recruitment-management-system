@@ -138,6 +138,30 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 
 ## Nhật ký báo cáo
 
+### 2026-10-23 23:40 (Asia/Saigon) — FE2 — Sửa lỗi hiển thị giao diện Nhật ký Audit & Sự kiện Outbox lỗi (UI28)
+
+- Mã báo cáo: 20261023-2340-FE2-ui28-css-fix
+- Người thực hiện / AI hỗ trợ: Antigravity (hỗ trợ FE2).
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: UI28 (`AdminAuditPage`, `AdminEventsPage`); FE41; Khắc phục lỗi CSS/SVG hiển thị tràn màn hình do thiếu class Tailwind.
+- Trạng thái: DONE (phạm vi nhánh `feat/fe2-implementation`).
+- Nhánh / commit / PR / tích hợp main: `feat/fe2-implementation`; commit chứa báo cáo này; chưa gộp main.
+- Đã hoàn thành:
+  - Xác nhận hai trang **Nhật ký Audit** (`/admin/audit`) và **Sự kiện Outbox lỗi** (`/admin/events`) thuộc quyền sở hữu của phân hệ **FE2 (UI28)**.
+  - Khắc phục triệt để lỗi icon SVG bị kéo giãn cực đại choán toàn bộ màn hình do trước đó sử dụng class Tailwind (`w-6`, `h-6`) trong khi dự án dùng CSS vanilla Design Tokens.
+  - Chuẩn hóa toàn bộ CSS của cả hai trang theo đúng hệ thống design tokens thống nhất của dự án (`var(--color-bg-surface)`, `var(--color-border)`, `var(--color-text)`, etc.), bổ sung padding, spacing, filter bar và modal `Dialog` chuẩn A11y.
+  - Bảo toàn 100% logic nghiệp vụ, che giấu token/secrets nhạy cảm (FE41) và các `data-testid` phục vụ kiểm thử tự động.
+- File / bằng chứng: `apps/web/src/features/admin/pages/admin-audit-page.tsx`, `apps/web/src/features/admin/pages/admin-events-page.tsx`, `progress/README.md`.
+- Kiểm tra đã chạy:
+  - `npm run test:web:ci`: 30/30 test suites pass, 111/111 tests pass (coverage dòng admin pages đạt 93.8%, branch đạt 78.67%).
+  - `npm run typecheck`: 0 lỗi TypeScript (code 0).
+  - `npm run lint`: 0 lỗi, 0 cảnh báo ESLint (code 0).
+  - `npm run format:check`: 100% tệp tin đạt chuẩn Prettier (code 0).
+  - `npm run build`: Production bundle build thành công (code 0).
+- Kiểm tra chưa chạy / coverage: Toàn bộ kiểm thử và coverage đã đo và pass.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không thay đổi contract; sửa lỗi hiển thị giao diện nội bộ FE2.
+- Phần còn thiếu / blocker: Không còn thiếu sót. Giao diện UI28 hiển thị hoàn hảo và đồng bộ với toàn bộ hệ thống Admin.
+- Bước tiếp theo: Tạo PR tích hợp vào main.
+
 ### 2026-10-23 23:30 (Asia/Saigon) — FE2 — Ban hành Tài liệu Bàn giao Phân hệ FE2 & Runbook Video (DOC-07)
 
 - Mã báo cáo: 20261023-2330-FE2-handoff-doc

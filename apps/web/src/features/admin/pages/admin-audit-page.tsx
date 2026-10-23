@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { adminApi } from '../api/admin.api';
+import { Dialog } from '../../../components/ui/dialog';
 import type { AuditLogItem } from '../../../lib/mocks/dev-mock-store';
 
 export const AdminAuditPage: React.FC = () => {
@@ -31,7 +32,7 @@ export const AdminAuditPage: React.FC = () => {
   }, [entityTypeFilter, searchQuery]);
 
   useEffect(() => {
-    loadAuditLogs();
+    void loadAuditLogs();
   }, [loadAuditLogs]);
 
   const formatDateTime = (isoString: string) => {
@@ -50,14 +51,18 @@ export const AdminAuditPage: React.FC = () => {
     }
   };
 
-  const getActionBadgeColor = (action: string) => {
+  const getActionBadgeStyle = (action: string): React.CSSProperties => {
     if (
       action.includes('SUSPEND') ||
       action.includes('BAN') ||
       action.includes('CLOSE') ||
       action.includes('REJECT')
     ) {
-      return 'bg-red-50 text-red-700 border-red-200';
+      return {
+        background: '#fef2f2',
+        color: '#b91c1c',
+        border: '1px solid #fecaca',
+      };
     }
     if (
       action.includes('APPROVE') ||
@@ -65,114 +70,150 @@ export const AdminAuditPage: React.FC = () => {
       action.includes('UNSUSPEND') ||
       action.includes('RECOVER')
     ) {
-      return 'bg-emerald-50 text-emerald-700 border-emerald-200';
+      return {
+        background: '#ecfdf5',
+        color: '#047857',
+        border: '1px solid #a7f3d0',
+      };
     }
     if (action.includes('RETRY')) {
-      return 'bg-amber-50 text-amber-700 border-amber-200';
+      return {
+        background: '#fffbeb',
+        color: '#b45309',
+        border: '1px solid #fde68a',
+      };
     }
-    return 'bg-blue-50 text-blue-700 border-blue-200';
+    return {
+      background: 'var(--color-primary-subtle)',
+      color: 'var(--color-primary)',
+      border: '1px solid var(--color-border)',
+    };
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6" data-testid="ui28-admin-audit">
+    <div
+      className="admin-audit-page"
+      data-testid="ui28-admin-audit"
+      style={{ maxWidth: '1240px', margin: '0 auto', padding: '1.5rem' }}
+    >
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200 pb-5">
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+          marginBottom: '1.5rem',
+          flexWrap: 'wrap',
+          gap: '1rem',
+        }}
+      >
         <div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold px-2 py-0.5 rounded bg-blue-100 text-blue-700">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+            <span
+              style={{
+                fontSize: '0.75rem',
+                fontWeight: 600,
+                padding: '2px 8px',
+                borderRadius: '4px',
+                background: 'var(--color-primary-subtle)',
+                color: 'var(--color-primary)',
+              }}
+            >
               UI28
             </span>
-            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-              <svg
-                className="w-6 h-6 text-blue-600"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                />
-              </svg>
+            <h1
+              style={{
+                fontSize: '1.75rem',
+                fontWeight: 700,
+                margin: 0,
+                color: 'var(--color-text)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+              }}
+            >
+              <span role="img" aria-label="audit-icon" style={{ fontSize: '1.5rem' }}>
+                📋
+              </span>
               Nhật ký Audit Hệ thống
             </h1>
           </div>
-          <p className="text-sm text-gray-500 mt-1">
+          <p style={{ color: 'var(--color-text-muted)', margin: 0, fontSize: '0.9rem' }}>
             Tra cứu toàn bộ lịch sử thao tác, xác thực danh tính actor, loại đối tượng và mã vết
             traceId.
           </p>
         </div>
 
         <button
-          onClick={() => loadAuditLogs()}
+          type="button"
+          onClick={() => void loadAuditLogs()}
           disabled={loading}
-          className="inline-flex items-center gap-2 px-3.5 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px',
+            padding: '0.55rem 1rem',
+            borderRadius: '6px',
+            border: '1px solid var(--color-border)',
+            background: 'var(--color-bg-surface)',
+            color: 'var(--color-text)',
+            fontSize: '0.85rem',
+            fontWeight: 600,
+            cursor: loading ? 'not-allowed' : 'pointer',
+          }}
         >
-          <svg
-            className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`}
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-            />
-          </svg>
-          Làm mới
+          <span>🔄</span> Làm mới
         </button>
       </div>
 
       {/* Filter Bar */}
-      <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col md:flex-row gap-4 items-center justify-between">
-        <div className="relative flex-1 w-full">
-          <svg
-            className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
+      <div
+        style={{
+          background: 'var(--color-bg-surface)',
+          padding: '1rem',
+          borderRadius: '8px',
+          border: '1px solid var(--color-border)',
+          marginBottom: '1.25rem',
+          display: 'flex',
+          gap: '1rem',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+        }}
+      >
+        <div style={{ flex: 1, minWidth: '280px' }}>
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Tìm theo Actor ID, Entity ID, Trace ID, Hành động..."
-            className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+            style={{
+              width: '100%',
+              padding: '0.5rem 0.8rem',
+              borderRadius: '6px',
+              border: '1px solid var(--color-border)',
+              background: 'var(--color-bg)',
+              color: 'var(--color-text)',
+              fontSize: '0.9rem',
+              boxSizing: 'border-box',
+            }}
           />
         </div>
 
-        <div className="flex items-center gap-3 w-full md:w-auto">
-          <div className="flex items-center gap-2 text-sm text-gray-600">
-            <svg
-              className="w-4 h-4 text-gray-400"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
-              />
-            </svg>
-            <span>Thực thể:</span>
-          </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>Thực thể:</span>
           <select
             value={entityTypeFilter}
             onChange={(e) => setEntityTypeFilter(e.target.value)}
-            className="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white text-gray-700 focus:ring-2 focus:ring-blue-500 outline-none"
+            style={{
+              padding: '0.5rem 0.8rem',
+              borderRadius: '6px',
+              border: '1px solid var(--color-border)',
+              background: 'var(--color-bg-surface)',
+              color: 'var(--color-text)',
+              fontSize: '0.85rem',
+              cursor: 'pointer',
+            }}
           >
             <option value="ALL">Tất cả thực thể</option>
             <option value="COMPANY">COMPANY (Doanh nghiệp)</option>
@@ -186,11 +227,33 @@ export const AdminAuditPage: React.FC = () => {
 
       {/* Error Banner */}
       {error && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm flex items-center justify-between">
+        <div
+          data-testid="error-alert"
+          style={{
+            padding: '0.85rem 1.25rem',
+            background: 'var(--color-danger-subtle)',
+            border: '1px solid var(--color-danger)',
+            borderRadius: '8px',
+            marginBottom: '1rem',
+            color: 'var(--color-danger)',
+            fontSize: '0.9rem',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
           <span>{error}</span>
           <button
-            onClick={() => loadAuditLogs()}
-            className="underline font-semibold hover:text-red-800"
+            type="button"
+            onClick={() => void loadAuditLogs()}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: 'var(--color-danger)',
+              textDecoration: 'underline',
+              cursor: 'pointer',
+              fontWeight: 600,
+            }}
           >
             Thử lại
           </button>
@@ -198,157 +261,335 @@ export const AdminAuditPage: React.FC = () => {
       )}
 
       {/* Table Section */}
-      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200 text-sm">
-            <thead className="bg-gray-50">
+      <div
+        style={{
+          background: 'var(--color-bg-surface)',
+          border: '1px solid var(--color-border)',
+          borderRadius: '8px',
+          overflowX: 'auto',
+          boxShadow: 'var(--sh-s, 0 1px 3px rgba(0,0,0,0.05))',
+        }}
+      >
+        <table
+          role="table"
+          aria-label="Bảng nhật ký audit"
+          style={{
+            width: '100%',
+            borderCollapse: 'collapse',
+            textAlign: 'left',
+            fontSize: '0.875rem',
+          }}
+        >
+          <thead>
+            <tr
+              style={{
+                background: 'var(--color-bg-secondary, #f8fafc)',
+                borderBottom: '1px solid var(--color-border)',
+              }}
+            >
+              <th style={{ padding: '12px 14px', fontWeight: 600, color: 'var(--color-text)' }}>
+                Thời gian
+              </th>
+              <th style={{ padding: '12px 14px', fontWeight: 600, color: 'var(--color-text)' }}>
+                Hành động
+              </th>
+              <th style={{ padding: '12px 14px', fontWeight: 600, color: 'var(--color-text)' }}>
+                Loại thực thể
+              </th>
+              <th style={{ padding: '12px 14px', fontWeight: 600, color: 'var(--color-text)' }}>
+                ID Thực thể
+              </th>
+              <th style={{ padding: '12px 14px', fontWeight: 600, color: 'var(--color-text)' }}>
+                Người thực hiện
+              </th>
+              <th style={{ padding: '12px 14px', fontWeight: 600, color: 'var(--color-text)' }}>
+                Trace ID
+              </th>
+              <th
+                style={{
+                  padding: '12px 14px',
+                  fontWeight: 600,
+                  color: 'var(--color-text)',
+                  textAlign: 'right',
+                }}
+              >
+                Chi tiết
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {loading ? (
               <tr>
-                <th className="px-4 py-3 text-left font-semibold text-gray-700">Thời gian</th>
-                <th className="px-4 py-3 text-left font-semibold text-gray-700">Hành động</th>
-                <th className="px-4 py-3 text-left font-semibold text-gray-700">Loại thực thể</th>
-                <th className="px-4 py-3 text-left font-semibold text-gray-700">ID Thực thể</th>
-                <th className="px-4 py-3 text-left font-semibold text-gray-700">Người thực hiện</th>
-                <th className="px-4 py-3 text-left font-semibold text-gray-700">Trace ID</th>
-                <th className="px-4 py-3 text-right font-semibold text-gray-700">Chi tiết</th>
+                <td
+                  colSpan={7}
+                  style={{
+                    textAlign: 'center',
+                    padding: '2.5rem',
+                    color: 'var(--color-text-muted)',
+                  }}
+                >
+                  Đang tải nhật ký audit...
+                </td>
               </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100 bg-white">
-              {loading ? (
-                <tr>
-                  <td colSpan={7} className="text-center py-12 text-gray-400">
-                    Đang tải nhật ký audit...
+            ) : logs.length === 0 ? (
+              <tr>
+                <td
+                  colSpan={7}
+                  style={{
+                    textAlign: 'center',
+                    padding: '2.5rem',
+                    color: 'var(--color-text-muted)',
+                  }}
+                >
+                  Không tìm thấy bản ghi nhật ký audit nào phù hợp.
+                </td>
+              </tr>
+            ) : (
+              logs.map((log) => (
+                <tr
+                  key={log.id}
+                  style={{
+                    borderBottom: '1px solid var(--color-border)',
+                  }}
+                >
+                  <td style={{ padding: '12px 14px', whiteSpace: 'nowrap' }}>
+                    <div
+                      style={{
+                        fontFamily: 'monospace',
+                        fontSize: '0.8rem',
+                        color: 'var(--color-text-muted)',
+                      }}
+                    >
+                      {formatDateTime(log.createdAt)}
+                    </div>
+                  </td>
+                  <td style={{ padding: '12px 14px', whiteSpace: 'nowrap' }}>
+                    <span
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        padding: '2px 8px',
+                        borderRadius: '4px',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        ...getActionBadgeStyle(log.action),
+                      }}
+                    >
+                      {log.action}
+                    </span>
+                  </td>
+                  <td
+                    style={{
+                      padding: '12px 14px',
+                      whiteSpace: 'nowrap',
+                      fontWeight: 600,
+                      color: 'var(--color-text)',
+                    }}
+                  >
+                    <span
+                      style={{
+                        background: 'var(--color-bg-secondary, #f1f5f9)',
+                        padding: '2px 8px',
+                        borderRadius: '4px',
+                        fontSize: '0.75rem',
+                      }}
+                    >
+                      {log.entityType}
+                    </span>
+                  </td>
+                  <td
+                    style={{
+                      padding: '12px 14px',
+                      whiteSpace: 'nowrap',
+                      fontFamily: 'monospace',
+                      fontSize: '0.8rem',
+                      color: 'var(--color-text-muted)',
+                    }}
+                  >
+                    {log.entityId}
+                  </td>
+                  <td style={{ padding: '12px 14px', whiteSpace: 'nowrap' }}>
+                    <span
+                      style={{
+                        fontWeight: 600,
+                        fontSize: '0.8rem',
+                        color: 'var(--color-text)',
+                      }}
+                    >
+                      {log.actorId}
+                    </span>
+                  </td>
+                  <td
+                    style={{
+                      padding: '12px 14px',
+                      whiteSpace: 'nowrap',
+                      fontFamily: 'monospace',
+                      fontSize: '0.8rem',
+                      color: 'var(--color-text-muted)',
+                    }}
+                  >
+                    {log.traceId.length > 14 ? `${log.traceId.slice(0, 14)}...` : log.traceId}
+                  </td>
+                  <td style={{ padding: '12px 14px', textAlign: 'right', whiteSpace: 'nowrap' }}>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedLog(log)}
+                      style={{
+                        padding: '4px 10px',
+                        borderRadius: '4px',
+                        border: '1px solid var(--color-primary)',
+                        background: 'var(--color-primary-subtle)',
+                        color: 'var(--color-primary)',
+                        fontSize: '0.8rem',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Xem Metadata
+                    </button>
                   </td>
                 </tr>
-              ) : logs.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="text-center py-12 text-gray-500">
-                    Không tìm thấy bản ghi nhật ký audit nào phù hợp.
-                  </td>
-                </tr>
-              ) : (
-                logs.map((log) => (
-                  <tr key={log.id} className="hover:bg-gray-50/80 transition-colors">
-                    <td className="px-4 py-3 text-gray-600 whitespace-nowrap">
-                      <div className="font-mono text-xs">{formatDateTime(log.createdAt)}</div>
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      <span
-                        className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold border ${getActionBadgeColor(
-                          log.action,
-                        )}`}
-                      >
-                        {log.action}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-gray-700 whitespace-nowrap font-medium">
-                      <span className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded text-xs">
-                        {log.entityType}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-gray-600 whitespace-nowrap font-mono text-xs">
-                      {log.entityId}
-                    </td>
-                    <td className="px-4 py-3 text-gray-700 whitespace-nowrap">
-                      <span className="font-medium text-gray-900 text-xs">{log.actorId}</span>
-                    </td>
-                    <td className="px-4 py-3 text-gray-500 whitespace-nowrap font-mono text-xs">
-                      {log.traceId.length > 12 ? `${log.traceId.slice(0, 12)}...` : log.traceId}
-                    </td>
-                    <td className="px-4 py-3 text-right whitespace-nowrap">
-                      <button
-                        onClick={() => setSelectedLog(log)}
-                        className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 font-medium px-2 py-1 rounded hover:bg-blue-50"
-                      >
-                        Xem Metadata
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+              ))
+            )}
+          </tbody>
+        </table>
       </div>
 
       {/* Metadata Detail Modal */}
-      {selectedLog && (
-        <div
-          className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setSelectedLog(null);
-          }}
-        >
+      <Dialog
+        open={Boolean(selectedLog)}
+        onClose={() => setSelectedLog(null)}
+        title="Chi tiết Nhật ký Audit"
+        description="Toàn bộ thông số metadata, actor, thực thể và mã traceId của sự kiện."
+      >
+        {selectedLog && (
           <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="audit-modal-title"
-            className="bg-white rounded-xl shadow-xl max-w-2xl w-full p-6 space-y-4"
+            style={{ display: 'flex', flexDirection: 'column', gap: '1rem', fontSize: '0.9rem' }}
           >
-            <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-              <h3 id="audit-modal-title" className="font-semibold text-gray-900">
-                Chi tiết Nhật ký Audit
-              </h3>
-              <button
-                onClick={() => setSelectedLog(null)}
-                className="text-gray-400 hover:text-gray-600 p-1 rounded-lg"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 text-xs">
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                gap: '0.75rem',
+                background: 'var(--color-bg-secondary, #f8fafc)',
+                padding: '1rem',
+                borderRadius: '8px',
+                border: '1px solid var(--color-border)',
+              }}
+            >
               <div>
-                <span className="text-gray-500 block">Mã ghi nhật ký:</span>
-                <span className="font-mono text-gray-800 font-medium">{selectedLog.id}</span>
-              </div>
-              <div>
-                <span className="text-gray-500 block">Thời gian:</span>
-                <span className="text-gray-800 font-medium">
-                  {formatDateTime(selectedLog.createdAt)}
+                <span
+                  style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', display: 'block' }}
+                >
+                  Mã ghi nhật ký:
                 </span>
+                <span style={{ fontFamily: 'monospace', fontWeight: 600 }}>{selectedLog.id}</span>
               </div>
               <div>
-                <span className="text-gray-500 block">Thực thể & ID:</span>
-                <span className="font-semibold text-gray-800">
+                <span
+                  style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', display: 'block' }}
+                >
+                  Thời gian:
+                </span>
+                <span style={{ fontWeight: 600 }}>{formatDateTime(selectedLog.createdAt)}</span>
+              </div>
+              <div>
+                <span
+                  style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', display: 'block' }}
+                >
+                  Thực thể & ID:
+                </span>
+                <span style={{ fontWeight: 600 }}>
                   {selectedLog.entityType} ({selectedLog.entityId})
                 </span>
               </div>
               <div>
-                <span className="text-gray-500 block">Người thực hiện (Actor):</span>
-                <span className="font-semibold text-gray-800">{selectedLog.actorId}</span>
+                <span
+                  style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', display: 'block' }}
+                >
+                  Người thực hiện (Actor):
+                </span>
+                <span style={{ fontWeight: 600 }}>{selectedLog.actorId}</span>
               </div>
-              <div className="col-span-2">
-                <span className="text-gray-500 block">Mô tả / Diễn giải:</span>
-                <span className="text-gray-800">{selectedLog.details}</span>
+              <div style={{ gridColumn: '1 / -1' }}>
+                <span
+                  style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', display: 'block' }}
+                >
+                  Mô tả / Diễn giải:
+                </span>
+                <span style={{ color: 'var(--color-text)' }}>{selectedLog.details}</span>
               </div>
-              <div className="col-span-2">
-                <span className="text-gray-500 block">Mã vết giao dịch (Trace ID):</span>
-                <span className="font-mono text-gray-700 bg-gray-50 px-2 py-1 rounded block mt-0.5">
+              <div style={{ gridColumn: '1 / -1' }}>
+                <span
+                  style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', display: 'block' }}
+                >
+                  Mã vết giao dịch (Trace ID):
+                </span>
+                <span
+                  style={{
+                    fontFamily: 'monospace',
+                    fontSize: '0.85rem',
+                    background: 'var(--color-bg)',
+                    padding: '4px 8px',
+                    borderRadius: '4px',
+                    display: 'block',
+                    marginTop: '2px',
+                    wordBreak: 'break-all',
+                  }}
+                >
                   {selectedLog.traceId}
                 </span>
               </div>
             </div>
 
             <div>
-              <span className="text-xs font-semibold text-gray-700 block mb-1">
+              <span
+                style={{
+                  fontSize: '0.85rem',
+                  fontWeight: 600,
+                  display: 'block',
+                  marginBottom: '0.4rem',
+                }}
+              >
                 Dữ liệu Metadata:
               </span>
-              <pre className="bg-gray-900 text-gray-100 p-3 rounded-lg text-xs font-mono overflow-x-auto max-h-60">
+              <pre
+                style={{
+                  background: '#0f172a',
+                  color: '#f8fafc',
+                  padding: '1rem',
+                  borderRadius: '8px',
+                  fontSize: '0.8rem',
+                  fontFamily: 'monospace',
+                  overflowX: 'auto',
+                  maxHeight: '240px',
+                  margin: 0,
+                }}
+              >
                 {JSON.stringify(selectedLog.metadata ?? { details: selectedLog.details }, null, 2)}
               </pre>
             </div>
 
-            <div className="flex justify-end pt-2 border-t border-gray-100">
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
               <button
+                type="button"
                 onClick={() => setSelectedLog(null)}
-                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg"
+                style={{
+                  padding: '0.55rem 1.2rem',
+                  borderRadius: '6px',
+                  border: '1px solid var(--color-border)',
+                  background: 'var(--color-bg-surface)',
+                  color: 'var(--color-text)',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
               >
                 Đóng
               </button>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </Dialog>
     </div>
   );
 };
