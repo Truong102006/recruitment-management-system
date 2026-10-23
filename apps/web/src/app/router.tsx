@@ -6,7 +6,10 @@ import { recruiterCompanyRoutes } from '../features/companies/recruiter-company.
 import { recruiterJobsRoutes } from '../features/jobs/recruiter-jobs.routes';
 import { recruiterApplicationsRoutes } from '../features/applications/recruiter-applications.routes';
 import { recruiterStatisticsRoutes } from '../features/statistics/recruiter-statistics.routes';
-import { interviewRoutes } from '../features/interviews/interview.routes';
+import {
+  interviewLayoutRoutes,
+  interviewStandaloneRoutes,
+} from '../features/interviews/interview.routes';
 import { adminRoutes } from '../features/admin/admin.routes';
 
 // Placeholders for FE1 public and candidate routes to guarantee non-breaking integration
@@ -40,16 +43,21 @@ export const router = createBrowserRouter([
     path: '/',
     element: <PublicHomePage />,
   },
-  // FE2: Recruiter Shell & Features (/recruiter/*)
+  // FE2: Recruiter Shell & Features (including Interviews & Evaluations)
   {
-    path: '/recruiter',
     element: <RecruiterLayout />,
     children: [
-      { index: true, element: <Navigate to="/recruiter/jobs" replace /> },
-      ...recruiterCompanyRoutes,
-      ...recruiterJobsRoutes,
-      ...recruiterApplicationsRoutes,
-      ...recruiterStatisticsRoutes,
+      {
+        path: '/recruiter',
+        children: [
+          { index: true, element: <Navigate to="/recruiter/jobs" replace /> },
+          ...recruiterCompanyRoutes,
+          ...recruiterJobsRoutes,
+          ...recruiterApplicationsRoutes,
+          ...recruiterStatisticsRoutes,
+        ],
+      },
+      ...interviewLayoutRoutes,
     ],
   },
   // FE2: Admin Shell & Features (/admin/*)
@@ -61,8 +69,8 @@ export const router = createBrowserRouter([
       ...adminRoutes,
     ],
   },
-  // FE2: Interview & Video Room Routes (/interviews/*)
-  ...interviewRoutes,
+  // FE2: Standalone Video Room (Full-screen WebRTC room, no sidebar)
+  ...interviewStandaloneRoutes,
   // 404 Fallback
   {
     path: '*',

@@ -29,9 +29,17 @@ const InterviewEvaluationPage: React.FC = () => (
   </div>
 );
 
-export const interviewRoutes: RouteObject[] = [
+export const interviewLayoutRoutes: RouteObject[] = [
   { path: '/interviews', element: <InterviewListPage /> },
   { path: '/interviews/:id', element: <InterviewDetailPage /> },
-  { path: '/interviews/:id/room', element: <InterviewRoomPage /> },
   { path: '/interviews/:id/evaluation', element: <InterviewEvaluationPage /> },
+];
+
+export const interviewStandaloneRoutes: RouteObject[] = [
+  { path: '/interviews/:id/room', element: <InterviewRoomPage /> },
+];
+
+export const interviewRoutes: RouteObject[] = [
+  ...interviewLayoutRoutes,
+  ...interviewStandaloneRoutes,
 ];
