@@ -34,71 +34,76 @@
 
 ## Tổng quan hiện tại
 
+**23/10/2026 10:00 — SHIP-BE1: IN_PROGRESS** — Truong102006 / BE1, Codex: đã chia 9 commit và push riêng từng đợt trên `feat/be1-reviewed-delivery`; đang tích hợp 11 commit BE2 từ `origin/main`, chưa gộp main.
+
+**23/10/2026 — cập nhật working tree BE1:** Identity/Company/Job/Admin và CI backend có code, gate local đạt; [kiểm chứng](../Docs/be1-verification.md). Nhánh `feat/be1-implementation`, HEAD tham chiếu `46b7e19`, thay đổi chưa commit/chưa gộp main. Còn runtime BE2/BE3/provider và nghiệm thu CI/operations/dependency audit; không đánh DONE toàn BE1. Đoạn lịch sử bên dưới mô tả baseline đã tích hợp trước đó.
+
 Cập nhật ngày **23/10/2026**: nền BE2, kế hoạch BE1/BE3, quy tắc thuần và các bước BE2 2–6 đã tích hợp trên `main` (`6de3918`, `57bcbbe`, `9ae1f4e`, `3123e75`, `c874fbb`); sửa đường xử lý sự kiện xóa CV tại `eeadd96`. BE2 đạt 91 unit + 13 contract test cho code hiện có. Có model và SQL BE2 chờ bảng nền BE1; chưa có migration PostgreSQL đã áp dụng, route API nghiệp vụ chạy được hoặc pipeline CI. Việc cài dependency và mở Vite ngày 16/10 là ghi nhận lịch sử ở môi trường trước, không xác nhận máy của mọi thành viên đã setup thành công.
 
 Các công việc trên nhánh cá nhân chưa được báo cáo vào đây chưa được xác nhận. Mỗi thành viên cập nhật kết quả của mình kèm bằng chứng; không coi bảng TODO là kết luận người đó chưa làm gì ngoài main.
 
 ### Backend
 
-| Mã | Chức năng | Phụ trách | Trạng thái triển khai trên main | Bằng chứng / phần còn thiếu |
-|---|---|---|---|---|
-| UC01 | Đăng tin tuyển dụng | BE1 | TODO | Chưa có API/test |
+| Mã   | Chức năng                      | Phụ trách | Trạng thái công việc (xem tích hợp) | Bằng chứng / phần còn thiếu                                                                                                                                               |
+| ---- | ------------------------------ | --------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| UC01 | Đăng tin tuyển dụng            | BE1       | IN_PROGRESS                         | Source local: runtime DTO, account→company→job locks, recheck quyền, publish/close Outbox fail-closed; gate local đạt. Chưa gộp main; còn BE2 lifecycle integration/FE.   |
 | UC02 | Nộp CV ứng tuyển | BE2 | IN_PROGRESS | Đã có workflow điều phối và lát cắt ghi trên `main` (`c874fbb`); chưa có BE1/BE3 binding, API/migration/integration test |
-| UC03 | Phỏng vấn trực tuyến | BE3 | TODO | Chưa có API/provider test |
-| UC04 | Đăng ký và xác thực | BE1 | TODO | Chưa có bootstrap/auth/test |
-| UC05 | Tìm kiếm và xem tin | BE1 | TODO | Chưa có API/test |
+| UC03 | Phỏng vấn trực tuyến           | BE3       | TODO                                | Chưa có API/provider test                                                                                                                                                 |
+| UC04 | Đăng ký và xác thực            | BE1       | IN_PROGRESS                         | Source local: durable verification, account/token locks, CSRF/session/Origin và rollback tests đạt. Chưa gộp main; profile/mail runtime và HTTPS browser chưa nghiệm thu. |
+| UC05 | Tìm kiếm và xem tin            | BE1       | IN_PROGRESS                         | Source local: public scope/verified owner/query DTO và validation tests đạt. Chưa gộp main; còn load/FE nghiệm thu.                                                       |
 | UC06 | Quản lý CV và thay CV đã nộp | BE2 | IN_PROGRESS | Có workflow kho CV trên `main` (`3123e75`); còn provider storage/scanner, phần thay CV và API/integration test |
 | UC07 | Xét duyệt và rút hồ sơ | BE2 | TODO | Có DTO/schema, port BE3 và quy tắc chuyển trạng thái/rút hồ sơ thuần; chưa có workflow/API/integration test |
-| UC08 | Quản lý lịch phỏng vấn | BE3 | TODO | Chưa có API/test concurrency |
-| UC09 | Công bố kết quả | BE3 | TODO | Có điểm nối và quy tắc nhận kết quả ở BE2; chưa có workflow/test tích hợp BE3 |
-| UC10 | Quản trị và kiểm duyệt | BE1 | TODO | Chưa có API/test |
-| UC11 | Doanh nghiệp và thành viên | BE1 | TODO | Chưa có API/test |
+| UC08 | Quản lý lịch phỏng vấn         | BE3       | TODO                                | Chưa có API/test concurrency                                                                                                                                              |
+| UC09 | Công bố kết quả                | BE3       | TODO                                | Có điểm nối BE2 trong contract; chưa có workflow/test                                                                                                                     |
+| UC10 | Quản trị và kiểm duyệt         | BE1       | IN_PROGRESS                         | Admin PATCH/read/recovery/last ADMIN/atomic rollback có test PostgreSQL. Chưa gộp main; actual BE3 revoke intent/provider/scope còn thiếu.                                |
+| UC11 | Doanh nghiệp và thành viên     | BE1       | IN_PROGRESS                         | Source local: sorted account locks, verified OWNER, không ADMIN bypass; tests đạt. Chưa gộp main; conflict/schedule runtime BE2/BE3 còn thiếu.                            |
 | UC12 | Hồ sơ cá nhân | BE2 | IN_PROGRESS | Có service/repository BE2, unit/contract test và OpenAPI GET/PATCH; chưa đăng ký route do thiếu guard/port BE1, migration PostgreSQL và API/integration test |
-| UC13 | Đánh giá và hoàn tất phỏng vấn | BE3 | TODO | Chưa có API/test |
-| UC14 | Lưu tin quan tâm | BE2 | TODO | Có contract thiết kế; chưa có API/test |
-| UC15 | Thông báo | BE3 | TODO | Chưa có worker/API/test |
-| UC16 | Thống kê tuyển dụng | BE3 | TODO | Chưa có read model/API/test |
+| UC13 | Đánh giá và hoàn tất phỏng vấn | BE3       | TODO                                | Chưa có API/test                                                                                                                                                          |
+| UC14 | Lưu tin quan tâm               | BE2       | TODO                                | Có contract thiết kế; chưa có API/test                                                                                                                                    |
+| UC15 | Thông báo                      | BE3       | TODO                                | Chưa có worker/API/test                                                                                                                                                   |
+| UC16 | Thống kê tuyển dụng            | BE3       | TODO                                | Chưa có read model/API/test                                                                                                                                               |
 
 ### Frontend
 
 Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; không đánh dấu cả nhóm UI hoàn thành nếu mới xong một màn.
 
-| Mã | Phạm vi | Phụ trách | Trạng thái trên main | Bằng chứng / phần còn thiếu |
-|---|---|---|---|---|
-| FE1 | UI01–UI12, UI24, UI29: tìm việc, auth, ứng viên, CV, hồ sơ, tin lưu, thông báo, lỗi chung | FE1 | TODO | Có cấu hình React/Vite; React entry, app/router còn trống |
-| FE2 | UI13–UI23, UI25–UI28: lịch/video, doanh nghiệp, tin, hồ sơ, đánh giá/kết quả, thống kê, admin | FE2 | TODO | Chưa có màn hình hoặc E2E |
+| Mã  | Phạm vi                                                                                       | Phụ trách | Trạng thái trên main | Bằng chứng / phần còn thiếu                               |
+| --- | --------------------------------------------------------------------------------------------- | --------- | -------------------- | --------------------------------------------------------- |
+| FE1 | UI01–UI12, UI24, UI29: tìm việc, auth, ứng viên, CV, hồ sơ, tin lưu, thông báo, lỗi chung     | FE1       | TODO                 | Có cấu hình React/Vite; React entry, app/router còn trống |
+| FE2 | UI13–UI23, UI25–UI28: lịch/video, doanh nghiệp, tin, hồ sơ, đánh giá/kết quả, thống kê, admin | FE2       | TODO                 | Chưa có màn hình hoặc E2E                                 |
 
 ### Tài liệu và hạ tầng chung
 
-| Mã | Hạng mục / người phụ trách | Trạng thái | Bằng chứng và phạm vi hoàn thành |
-|---|---|---|---|
-| DOC-01 | Đặc tả hệ thống / tác giả chưa được xác nhận trong sổ cũ | DONE | [Đặc tả](../Docs/project-specification.md), commit `ed9fe6d`; không phải kết quả nghiệm thu |
-| SETUP-01 | Khung workspace và cấu hình / theo sổ cũ | DONE | Commit `9cded06`: npm workspaces, API/worker/web, cấu hình công cụ và Compose; source nghiệp vụ trống |
-| LOCAL-01 | Clone dự án / BE2 + Codex | DONE | Đã clone vào `D:\Github Project\He_Thong_Tuyen_Dung`, nhánh main; kiểm trạng thái và file nguồn ngày 19/10 |
-| DOC-02 | Contract tích hợp BE2 / BE2 + Codex | DONE | [Contract v1](../Docs/be2-integration-contract.md), commit `f0dd6e7` trên main; mức thiết kế |
-| DOC-03 | Ghi chú AI BE1/BE3 / BE2 + Codex | DONE | [Ghi chú](../Docs/BE1-BE3_note.md), commit `f0dd6e7` trên main |
-| DOC-04 | Sổ tiến độ chung / BE2 + Codex; cả nhóm cập nhật | DONE | File này và hướng dẫn liên quan trong commit chứa báo cáo; kiểm tra tài liệu, không phải test ứng dụng |
-| DOC-05 | Kế hoạch triển khai toàn bộ BE3 / Codex hỗ trợ BE3, chưa xác nhận người phụ trách | DONE | [Kế hoạch 8 pha](../plans/261022-1652-be3-complete-implementation/plan.md), [rà soát](../plans/261022-1652-be3-complete-implementation/reports/plan-review.md); Đã tích hợp main; 6 UC chưa triển khai |
-| DOC-06 | Kế hoạch triển khai toàn bộ BE1 / Codex hỗ trợ BE1, chưa xác nhận người phụ trách | DONE | [Kế hoạch 8 pha](../plans/261022-1711-be1-complete-implementation/plan.md), [rà soát](../plans/261022-1711-be1-complete-implementation/reports/plan-review.md); Đã tích hợp main; 5 UC chưa triển khai |
-| BE-FOUNDATION | Bootstrap NestJS / BE1 | IN_PROGRESS | Có cấu hình và file bootstrap trống; chưa có server chạy |
-| DB-01 | Prisma, 25 bảng, migration/seed / mỗi BE sở hữu phần mình, BE2 điều phối | IN_PROGRESS | Có tám model BE2 và SQL pending; chưa có migration BE1/BE2 áp dụng hoặc PostgreSQL integration, các bảng BE1/BE3 chưa triển khai |
-| CONTRACT-01 | Port, DTO, OpenAPI, event schema và contract test / cả ba BE | IN_PROGRESS | Đã có phần BE2 và contract test; còn BE1/BE3, OpenAPI đầy đủ, adapter và nghiệm thu liên module |
+| Mã            | Hạng mục / người phụ trách                                                        | Trạng thái  | Bằng chứng và phạm vi hoàn thành                                                                                                                                                                                     |
+| ------------- | --------------------------------------------------------------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| DOC-01        | Đặc tả hệ thống / tác giả chưa được xác nhận trong sổ cũ                          | DONE        | [Đặc tả](../Docs/project-specification.md), commit `ed9fe6d`; không phải kết quả nghiệm thu                                                                                                                          |
+| SETUP-01      | Khung workspace và cấu hình / theo sổ cũ                                          | DONE        | Commit `9cded06`: npm workspaces, API/worker/web, cấu hình công cụ và Compose; source nghiệp vụ trống                                                                                                                |
+| LOCAL-01      | Clone dự án / BE2 + Codex                                                         | DONE        | Đã clone vào `D:\Github Project\He_Thong_Tuyen_Dung`, nhánh main; kiểm trạng thái và file nguồn ngày 19/10                                                                                                           |
+| DOC-02        | Contract tích hợp BE2 / BE2 + Codex                                               | DONE        | [Contract v1](../Docs/be2-integration-contract.md), commit `f0dd6e7` trên main; mức thiết kế                                                                                                                         |
+| DOC-03        | Ghi chú AI BE1/BE3 / BE2 + Codex                                                  | DONE        | [Ghi chú](../Docs/BE1-BE3_note.md), commit `f0dd6e7` trên main                                                                                                                                                       |
+| DOC-04        | Sổ tiến độ chung / BE2 + Codex; cả nhóm cập nhật                                  | DONE        | File này và hướng dẫn liên quan trong commit chứa báo cáo; kiểm tra tài liệu, không phải test ứng dụng                                                                                                               |
+| DOC-05        | Kế hoạch triển khai toàn bộ BE3 / Codex hỗ trợ BE3, chưa xác nhận người phụ trách | DONE        | [Kế hoạch 8 pha](../plans/261022-1652-be3-complete-implementation/plan.md), [rà soát](../plans/261022-1652-be3-complete-implementation/reports/plan-review.md); Đã tích hợp main; 6 UC chưa triển khai               |
+| DOC-06        | Kế hoạch triển khai toàn bộ BE1 / Codex hỗ trợ BE1, chưa xác nhận người phụ trách | DONE        | [Kế hoạch 8 pha](../plans/261022-1711-be1-complete-implementation/plan.md), [rà soát](../plans/261022-1711-be1-complete-implementation/reports/plan-review.md); Đã tích hợp main; 5 UC chưa triển khai               |
+| BE-FOUNDATION | Bootstrap NestJS / BE1                                                            | IN_PROGRESS | Đang bootstrap trên nhánh `feat/be1-implementation` (Phase 2); chưa có server chạy trên main                                                                                                                         |
+| DB-01         | Prisma/migration/seed / mỗi BE sở hữu phần mình                                   | IN_PROGRESS | 9 bảng BE1 + additive email_verified_at; PostgreSQL constraints/migration smoke đạt local. Chưa gộp main; thiếu owner schema/runtime permission/historical upgrade.                                                  |
+| CONTRACT-01   | Port, DTO, OpenAPI, event schema và contract test / cả ba BE                      | IN_PROGRESS | Đã có phần BE2; BE1 đang triển khai Phase 1 contract, schema và test trên nhánh `feat/be1-implementation`                                                                                                            |
 | BE2-STEP2 | Nền transaction và hợp đồng tích hợp / BE2 + Codex | DONE | Đã gộp `main` tại `62215fc`; [bàn giao](../Docs/be2-step2-handoff.md), 23 unit + 11 contract test đạt. DONE chỉ cho phạm vi nền bước 2, không phải UC |
-| BE2-DOMAIN-01 | Quy tắc nghiệp vụ thuần BE2 / BE2 + Codex | DONE | Đã gộp và push `main` tại `f7e8223`; 71 unit + 11 contract test đạt. DONE chỉ cho hàm thuần, không phải UC/API |
-| BE2-DATA-02 | Thiết kế model/ràng buộc và migration BE2 / BE2 + Codex | DONE | Tám model Prisma và SQL chờ tích hợp tại [kế hoạch migration](../Docs/be2-data-migration-plan.md), đã lên `main` tại `6de3918`; DONE chỉ cho bản thiết kế/schema, chưa chạy migration thật vì thiếu BE1 |
-| BE2-REPO-03 | Repository và idempotency trong transaction / BE2 + Codex | DONE | [Bàn giao persistence](../Docs/be2-persistence-handoff.md), lên `main` tại `57bcbbe`: SQL adapter, claim/replay/complete, lát cắt ghi UC02 nội bộ. DONE chỉ cho phần độc lập, chưa có DB/API thật |
-| BE2-PROFILE-04 | Phần BE2 độc lập của UC12 / BE2 + Codex | DONE | [Bàn giao profile](../Docs/be2-profile-handoff.md), lên `main` tại `9ae1f4e`: repository, service profile/skill/version, snapshot và OpenAPI GET/PATCH. UC12 tổng thể vẫn IN_PROGRESS |
 | STORAGE-01 | Storage CV và scanner / BE2 | IN_PROGRESS | Có port và service/repository quarantine/quét/xóa, unit test; còn provider PDF/scanner, object store, worker/reconciliation, API và test PostgreSQL |
-| BE2-CV-05 | Lát cắt độc lập kho CV bước 5 / BE2 + Codex | DONE | Repository/service tại `3123e75`, sửa event worker tại `eeadd96`, đã push `main`; 4 unit CV đạt. Chỉ DONE cho code độc lập, UC06/STORAGE-01 vẫn IN_PROGRESS |
-| BE2-SUBMIT-06 | Điều phối nộp hồ sơ bước 6 / BE2 + Codex | DONE | Workflow nối BE1/BE2 với persistence, ánh xạ UNIQUE và unit test, đã push `main` tại `c874fbb`; chỉ DONE cho phần độc lập, UC02 vẫn IN_PROGRESS |
-| WORKER-01 | Outbox/email/worker / BE3; idempotency/transaction do BE2 phối hợp | TODO | Chưa triển khai |
-| VIDEO-01 | Jitsi và thu hồi quyền phòng / BE3 | TODO | Chưa tích hợp/kiểm provider thật |
-| QA-01 | Unit/integration/API/concurrency/FE/E2E / từng người theo phần mình | IN_PROGRESS | BE2: 91 unit + 13 contract test đạt; coverage mới chưa đo (số 87,68% dòng/85,06% nhánh là lần đo cũ); SQL repository chưa kiểm DB, integration/API/concurrency/FE/E2E chưa chạy |
-| CI-01 | Pipeline và evidence gate / BE1 điều phối, cả nhóm bổ sung | TODO | Chưa có workflow thực thi |
-| OPS-01 | Hiệu năng, backup/restore và vận hành / BE3 điều phối, cả nhóm kiểm chứng | TODO | Chưa đo/chưa diễn tập |
+| WORKER-01     | Outbox/email/worker / BE3; idempotency/transaction do BE2 phối hợp                | TODO        | Chưa triển khai                                                                                                                                                                                                      |
+| VIDEO-01      | Jitsi và thu hồi quyền phòng / BE3                                                | TODO        | Chưa tích hợp/kiểm provider thật                                                                                                                                                                                     |
+| QA-01         | Unit/integration/API/concurrency/FE/E2E / từng owner                              | IN_PROGRESS | BE1 local: 26 suites/248 unit, 13 suites/106 integration (gồm21 contract), evidence8 tests đạt; configured lines91.88%/branches73.60%. FE-E2E/runtime/provider còn thiếu. [Bằng chứng](../Docs/be1-verification.md). |
+| CI-01         | Pipeline và evidence gate / BE1 điều phối                                         | IN_PROGRESS | Workflow backend, fixed inventory/XML/coverage/migration smoke và gate local đạt; chưa có GitHub run/negative controls full, FE-E2E/required branch check.                                                           |
+| OPS-01        | Hiệu năng, backup/restore và vận hành / BE3 điều phối, cả nhóm kiểm chứng         | TODO        | Chưa đo/chưa diễn tập                                                                                                                                                                                                |
 
 ## Phối hợp và bước tiếp theo
 
+- SHIP-BE1 IN_PROGRESS: đã kiểm tra secret signature 178 file, `.env` được ignore; giữ các thay đổi định dạng/cấu hình cá nhân ngoài commit. Đang giải quyết schema/tiến độ với main, tiếp theo chạy gate và mở PR. Blocker: hosted CI chưa chạy; runtime BE2/BE3/provider chưa được nghiệm thu.
+
+- 23/10/2026 00:29 — Codex/BE1: gate local đạt248 unit/106 integration/21 contract (contract đã tính trong integration), coverage91.88%/73.60%, evidence/migration/typecheck/lint/build đạt. Còn runtime BE2/BE3/Jitsi, hosted CI/operations và dependency audit; xem Docs/be1-verification.md. Chưa commit/chưa gộp main.
+
+- 23/10/2026 00:23 — Codex/BE1: UC01/04/05/10/11, QA-01/CI-01 IN_PROGRESS trên `feat/be1-implementation`. Hoàn thiện Admin/security/CI và chạy gate cuối; còn runtime BE2/BE3/provider, CI/operations và dependency audit. Chưa commit/chưa gộp main.
+
+- 22/10/2026: BE1 tạo nhánh `feat/be1-implementation` để thực hiện toàn bộ 8 pha theo kế hoạch `plans/261022-1711-be1-complete-implementation/plan.md`. Bắt đầu từ Phase 1 (Chốt contract, port, schema, OpenAPI, event v1, test contract), tiếp theo là Phase 2 (Bootstrap NestJS & 9 bảng DB migration/seed), rồi lần lượt Phase 3–8.
 - 22/10/2026: DOC-06 đã hoàn thành kế hoạch BE1: 8 pha, inventory file/class/port/API, pseudocode auth/membership/admin, 15 gate A01–A15 và ma trận test. Đã bổ sung liên kết/milestone hai chiều BE3 và quy tắc dùng chung scripts CI/evidence. Đã tích hợp lên main.
 - 22/10/2026: DOC-05 đã hoàn thành kế hoạch BE3: 8 pha, blueprint code/API/transaction, 13 quyết định contract cần chốt, ma trận test và review. Đã tích hợp lên main.
 - Giới hạn tài liệu đã xác minh: đặc tả đang tham chiếu 5 ảnh `Docs/Bao_Cao_SE113_media/image16.png`–`image20.png` chưa có từ HEAD trước thay đổi. Không tạo ảnh thay thế; không coi mọi liên kết đặc tả đạt. Link tiến độ trong phần mở đầu đặc tả đã sửa về sổ chung, giữ sổ cũ làm lịch sử.
@@ -109,9 +114,28 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 - 23/10/2026: BE2 đã push bước 5 kho CV (`3123e75`) và bước 6 điều phối nộp hồ sơ (`c874fbb`) lên `main`. UC02/UC06 vẫn IN_PROGRESS; port BE1/BE3, provider PDF/scanner/S3, migration, route và integration test chưa có. Không dùng fake scanner của unit test ở môi trường vận hành.
 - BE1 cần cung cấp nền Identity/Company/Job/Skill và migration được tham chiếu; BE3 cần cung cấp InterviewLifecycle/Outbox. Đây là phụ thuộc đã biết.
 - Bước kế tiếp của BE2: nối S3/scanner thật, worker/reconciliation và route CV sau khi có guard BE1; nhận migration Identity/Company/Job/Skill và port BE1, viết migration/adapter BE2, kiểm UC02 bằng PostgreSQL/API/concurrency; ghép BE3 Outbox để kiểm rollback và phát event.
-- Bước kế tiếp của BE1: tạo nhánh BE1, bắt đầu pha 1 chốt contract/fixtures, bootstrap + Identity migration để mở khóa BE2 và BE3.
+- Bước kế tiếp của BE1: nhận và bind runtime ports BE2/BE3; chạy actual cross-owner/provider/HTTPS acceptance, CI GitHub/negative controls/load/restore/runtime DB permissions và xử lý dependency audit theo owner. Source và gate local đã có bằng chứng; chưa gộp main.
 
 ## Nhật ký báo cáo
+
+### 2026-10-23 10:00 (Asia/Saigon) — BE1 — Xuất bản từng commit và tích hợp main
+
+- Mã báo cáo: 20261023-1000-BE1-publish-start
+- Người thực hiện / AI hỗ trợ: Truong102006 / BE1 / Codex.
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: SHIP-BE1, UC01/04/05/10/11, CI-01.
+- Trạng thái: IN_PROGRESS.
+- Nhánh / commit / PR / tích hợp main: `feat/be1-reviewed-delivery`; 9 commit `42598ef` đến `961b5f7` đã push từng đợt; chưa có PR; chưa gộp main.
+- Đã hoàn thành: Xác minh account GitHub Truong102006; chia commit dependencies, contract/database, bootstrap, identity, company, job, admin, tests/CI, docs. Tích hợp main mới và giữ source, model cùng nhật ký BE2.
+- File / bằng chứng: `progress/README.md`, `prisma/schema.prisma`; lịch sử nhánh trên GitHub.
+- Kiểm tra đã chạy: `git status --short`, `git diff --stat`, `git fetch origin`, `gh api user`, `git check-ignore .env`; quét 178 file không phát hiện chữ ký token/key thật. PostgreSQL/typecheck đang kiểm lại sau tích hợp.
+- Kiểm tra chưa chạy / coverage: Chưa chạy lại đầy đủ gate sau tích hợp main; chưa đo lại coverage. Kết quả local trước đợt này xem Docs/be1-verification.md.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Hợp nhất additive model BE1 và BE2; SQL BE2 vẫn pending, không tự áp dụng khi chưa được owner kiểm chứng.
+- Phần còn thiếu / blocker: Cần CI GitHub và kiểm tra tương thích BE2 mới. Phụ thuộc runtime/provider, vận hành và dependency audit còn như bàn giao.
+- Bước tiếp theo: Hoàn tất tích hợp main, chạy gate, mở PR và merge nếu CI đạt.
+
+Ghi chú tích hợp cùng đợt: `ba4476c` đã giữ toàn bộ model và lịch sử BE2 từ main. `db:validate`, `db:generate`, lint, build đạt; typecheck phát hiện hai fake Outbox trong test BE2 còn giới hạn Be2Event. Đã đổi kiểu bộ nhớ test theo tham số thực của OutboxPort (union BE1/BE2), không đổi nghiệp vụ; typecheck chạy lại đạt. Unit/coverage đang chạy lại; chờ hosted CI cho commit sửa tương thích.
+
+Cập nhật 10:03: PR [#1](https://github.com/Truong102006/recruitment-management-system/pull/1), commit `c3b297a`. Hosted [run 39892798433](https://github.com/Truong102006/recruitment-management-system/actions/runs/39892798433) đạt 316 unit / 108 integration (gồm 23 contract), typecheck/lint/build/migration; evidence gate phát hiện tên suite BE2 đổi do UC12 describe mới đứng đầu file. Đã cập nhật inventory đúng JUnit name, giữ kiểm tra fail/skip và các suite bắt buộc. Coverage local 92,45% dòng / 76,93% nhánh. Integration local thất bại vì Docker daemon dừng và DB 5432 không truy cập được; hosted PostgreSQL đã chạy đạt, không ghi local pass. Tiếp theo chạy CI lại trước merge.
 
 ### 2026-10-23 00:54 (Asia/Saigon) — BE2 — Nối sự kiện xóa CV với worker
 
@@ -262,6 +286,265 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 - Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không đổi DB, endpoint, DTO hoặc cạnh nghiệp vụ; thêm hàm thuần nội bộ và mô tả cách service phải dùng sau khóa. BE1/BE3 tiếp tục dùng interface hiện có; service BE2 sẽ nối ở bước sau.
 - Phần còn thiếu / blocker: Không có trong phạm vi bước 1; để hoàn thành UC cần adapter DB, quyền BE1 hiện hành và bằng chứng/lệnh hủy lịch BE3 thật.
 - Bước tiếp theo: Kiểm diff, gộp/push main theo yêu cầu; sau đó thực hiện bước 2 tiếp theo trong kế hoạch BE2 khi được giao.
+
+### 2026-10-23 00:29 (Asia/Saigon) — BE1 — Gate backend local đạt và bàn giao điều kiện nghiệm thu
+
+- Mã báo cáo: 20261023-0029-BE1-local-gates-handoff
+- Người thực hiện / AI hỗ trợ: Codex hỗ trợ BE1; chưa xác nhận tên người phụ trách.
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: UC01/04/05/10/11; UI01–06/16–18/26–28 API contracts; BR15/16/18/20; TC31–36/55–60; DB-01/QA-01/CI-01.
+- Trạng thái: IN_PROGRESS toàn BE1; local backend gates PASS, chưa đủ gate nghiệm thu toàn kế hoạch.
+- Nhánh / commit / PR / tích hợp main: `feat/be1-implementation`, HEAD tham chiếu `46b7e19`; source có thay đổi chưa commit, không PR mới/chưa gộp main. Không commit/push/deploy trong phiên này.
+- Đã hoàn thành: Admin canonical API/last ADMIN/audit rollback/sorted locks; durable email verification/CSRF/Origin/fail-closed guards/log redaction; company/job transaction revalidation và không ADMIN bypass; Job decorated DTO chống spoof/giới hạn query; DB clock sau lock; fail-closed owner dependencies; CI backend/evidence inventory/migration smoke; seed chặn production/cần password riêng; runbooks/OpenAPI và đồng bộ cả8 pha. Đính chính các checkmark rộng của pha1–3 chưa đủ bằng chứng, giữ báo cáo lịch sử.
+- File / bằng chứng: [Kiểm chứng cuối](../Docs/be1-verification.md), [handoff](../Docs/be1-handoff.md), [kế hoạch](../plans/261022-1711-be1-complete-implementation/plan.md); source `apps/api/src/modules/`, `common/`, `libs/contracts/`, `prisma/`, `scripts/evidence/`, `.github/workflows/ci.yml`. Artifact local `reports/backend/` và `reports/be1/` bị gitignore; không giả đã xuất bản.
+- Kiểm tra đã chạy: `npm run typecheck`, `typecheck:contracts:public`, `lint`, `build`, `db:validate` PASS; Prisma generate/deploy và isolated-schema migration smoke PASS. `test:unit:ci -- --runInBand`:26 suites/248 tests PASS, configured lines91.88%/branches73.60%. `test:integration:ci`:13 suites/106 tests PASS; `test:contract:ci`:2 suites/21 tests PASS (đã nằm trong106). `test:evidence`:8 PASS; manifest+verify:evidence local PASS; format:check/diff:check PASS; OpenAPI87 local refs PASS; seed guard smoke PASS. PostgreSQL admin race/rollback/verification persistence/observed lock-wait expiry có assertions thực; external ports test doubles được ghi rõ.
+- Kiểm tra chưa chạy / coverage: Không chạy provider Jitsi/FE-E2E/HTTPS browser/hosted CI/full negative controls/load/restore/clean clone độc lập vì thiếu runtime hoặc môi trường liên quan. Coverage đã đo theo cấu hình Jest hiện hữu, không phải toàn backend; không giảm thresholds hoặc thêm exclusions để xanh.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: additive email_verified_at; AuditWriterPort/PORTS.audit; runtime decorated Job DTO; Admin PATCH/recovery companyVersion/reason/version/paging; required port thiếu trả503/rollback; owner verified predicate và canonical locks. Đã cập nhật đặc tả/BE2 contract/OpenAPI; BE2/BE3 phải bind cùng opaque Tx.
+- Phần còn thiếu / blocker: BE2 profile/application/conflict, BE3 audit/outbox/interview/mail/provider runtime + security scope discovery/revalidation; runtime DB role/historical upgrade/peer review/CI/operations. Audit dependencies46 vulnerability (11moderate/33high/2critical), còn điều kiện release không Critical/High. Không tự mở scope BE2/BE3 hoặc nâng major FE/Jest/Prisma để giấu blocker.
+- Bước tiếp theo: Owner cung cấp runtime/credentials/môi trường nghiệm thu; phối hợp các gate nêu trong Docs/be1-verification.md, xử lý audit và review liên nhóm trước khi đề nghị tích hợp/release. Không đánh DONE từ test fake ports.
+
+### 2026-10-23 00:23 (Asia/Saigon) — BE1 — Tiếp tục hoàn thiện Admin, bảo mật và CI
+
+- Mã báo cáo: 20261023-0023-BE1-hoan-thien-bao-mat-ci
+- Người thực hiện / AI hỗ trợ: Codex hỗ trợ BE1; chưa xác nhận tên người phụ trách.
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: UC01/04/05/10/11, BR15/16/20, TC31–36/55–60, QA-01, CI-01, DB-01.
+- Trạng thái: IN_PROGRESS; source đã bổ sung, còn chạy gate cuối và nghiệm thu liên nhóm.
+- Nhánh / commit / PR / tích hợp main: `feat/be1-implementation`; working tree chưa commit/chưa gộp main, giữ thay đổi từ phiên trước.
+- Đã hoàn thành: Admin canonical PATCH/read/recovery, audit/security dependency fail-closed; last ADMIN advisory/sorted locks; durable email verification; Origin exact, bỏ guard token giả, CSRF nhất quán, log redaction; company membership/account locks và OWNER verified; CI backend/evidence inventory/migration smoke/runbooks. Đang hoàn thiện Job runtime DTO và transaction revalidation.
+- File / bằng chứng: `apps/api/src/modules/admin/`, `apps/api/src/modules/identity/`, `apps/api/src/modules/company/`, `apps/api/src/modules/job/`, `prisma/migrations/20261022230000_be1_email_verification/`, `scripts/evidence/`, `.github/workflows/ci.yml`, `Docs/be1-*.md`; `reports/be1/verification-current.md`, `reports/be1/code-review-current.md` (artifact local).
+- Kiểm tra đã chạy: typecheck toàn workspace, lint trước build và build đạt; PostgreSQL integration 13 suites/98 tests đạt trước Job DTO cuối; admin DB/API 8/8 và admin unit 35/35 đạt; migration smoke đạt; evidence-tool 8/8 đạt. Đây là kiểm local, không phải hosted CI.
+- Kiểm tra chưa chạy / coverage: Chờ gate cuối sau Job DTO. Unit cũ 221 tests đạt nhưng branches68.97% <70%, đã thêm test Admin có ý nghĩa và cần đo lại toàn suite. Chưa chạy Jitsi/load/restore/FE-E2E/CI GitHub; thiếu runtime và môi trường owner.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: email_verified_at additive migration; AuditWriterPort/PORTS.audit; verified predicate và thiếu provider trả503; cập nhật đặc tả/contract/OpenAPI. API helper có fake ports rõ ràng, không thay runtime BE2/BE3.
+- Phần còn thiếu / blocker: BE2 profile/conflict/application, BE3 audit/outbox/interview/provider runtime, DB runtime permission/historical upgrade, peer review và nghiệm thu CI/operations; dependency audit còn 33 high/2 critical cần xử lý theo owner. Không được ghi DONE toàn BE1.
+- Bước tiếp theo: Hoàn tất Job validation/revalidation, chạy lại gate, ghi kết quả cuối và bàn giao phần phụ thuộc cùng điều kiện gỡ chặn.
+
+### 2026-10-22 20:45 (Asia/Saigon) — BE1 — Hoàn thành Phase 5 (Jobs Publication, Search, and Skills UC01, UC05), bắt đầu Phase 6 (Admin Moderation & Security Revocation UC10)
+
+- Mã báo cáo: 20261022-2045-BE1-phase-5-hoan-thanh
+- Người thực hiện / AI hỗ trợ: Antigravity AI hỗ trợ kỹ sư BE1 theo yêu cầu người dùng.
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: UC01, UC05; FR02, FR03; BR01, BR02, BR03, BR04, BR13; TC01, TC02, TC03, TC04; FE27, FE28, FE29; plans/261022-1711-be1-complete-implementation (Phase 5 Jobs Publication, Search & Skills hoàn thành; bắt đầu Phase 6 Admin Moderation & Security Revocation UC10).
+- Trạng thái: IN_PROGRESS (Phase 1, 2, 3, 4, 5 DONE; Phase 6 IN_PROGRESS).
+- Nhánh / commit / PR / tích hợp main: Nhánh `feat/be1-implementation` / commit cục bộ / Chưa gộp main.
+- Đã hoàn thành:
+  - Triển khai toàn bộ UC01 và UC05 về Quản lý tin tuyển dụng, Danh mục kỹ năng, Tìm kiếm công khai và Đóng tin:
+    - Domain Rules:
+      - `salary.rules.ts`: Validate cấu trúc lương 3 trường (salaryMin, salaryMax, currency: VND/USD) hoặc để trống cả 3 thành "Thỏa thuận", kiểm tra min <= max, không chấp nhận số âm, hỗ trợ merge patch an toàn.
+      - `publication.rules.ts`: Kiểm tra tiêu đề (5-150 ký tự), mô tả (>= 100 ký tự), địa điểm (>= 2 ký tự), hạn nộp deadline (phải sau thời điểm tham chiếu ít nhất 24h và tối đa 180 ngày), headcount (>= 1), jobType & workplaceMode hợp lệ, công ty phải ở trạng thái APPROVED và có ít nhất 1 active owner (A10 invariant).
+      - `job-update.rules.ts`: Cấm sửa bất kỳ trường nào của tin đã CLOSED (409 Conflict); với tin PUBLISHED: cấm sửa tiêu đề, chỉ tiêu tuyển headcount, jobType, workplaceMode; cho phép sửa mô tả, địa điểm, hạn nộp, lương, kỹ năng; hỗ trợ merge patch cho các trường lương.
+    - Policy:
+      - `job.policy.ts`: Phân quyền quản lý tin doanh nghiệp (chỉ thành viên OWNER hoặc RECRUITER thuộc doanh nghiệp mới được tạo, sửa, publish, close tin; người dùng khác hoặc candidate bị chặn 403 Forbidden).
+    - Mappers & DTOs:
+      - `job.dto.ts`: `CreateJobDto`, `UpdateJobDto`, `PublishJobDto`, `CloseJobDto`, `JobSearchQueryDto`, `JobDetailDto`, `JobSummaryDto`, `SkillDto`.
+      - `job.mapper.ts`: Mapping đầy đủ thực thể Prisma sang DTO, tính toán cờ `isClosed` và `acceptingApplications` dựa trên trạng thái và hạn nộp so với thời điểm tham chiếu.
+    - Repositories:
+      - `prisma-job.repository.ts`: Thao tác CRUD, locking `findByIdWithLock` (bảo vệ optimistic concurrency control với version), liên kết many-to-many qua bảng `job_skill`, quan hệ với company và creator.
+      - `prisma-skill.repository.ts`: Truy vấn danh mục kỹ năng hoạt động, xác thực danh sách `assertAllActive`.
+      - `job-query.repository.ts`: Tìm kiếm công khai có phân trang (page, limit, total, totalPages), lọc đa chiều (q tìm kiếm title/description case-insensitive, companyId, location, jobType, workplaceMode, salaryMin, currency, kỹ năng với chế độ ALL hoặc ANY), bắt buộc gating: tin PUBLISHED, deadline > now, company APPROVED, và company có ít nhất 1 OWNER ACTIVE (A10).
+    - Services:
+      - `create-job.service.ts`: Tạo tin DRAFT với version 0, gán kỹ năng.
+      - `update-job.service.ts`: Cập nhật tin có version check và transaction locking, tăng version lên +1.
+      - `publish-job.service.ts`: Công bố tin từ DRAFT sang PUBLISHED, lưu thời điểm publishedAt, bắn outbox event `job.published` (A11).
+      - `close-job.service.ts`: Đóng tin sang CLOSED kèm lý do đóng, bắn outbox event `job.closed` (A11).
+      - `job-read.service.ts`: Đọc danh sách tin nội bộ công ty (có phân trang), chi tiết tin cho recruiter, và tìm kiếm công khai cho ứng viên/khách vãng lai.
+    - Ports & Adapters (Cross-team integration):
+      - `job-application.adapter.ts` (`JobApplicationPort`): Kiểm tra tư cách nộp đơn `lockForSubmission` có khóa bi quan và transaction, chặn ứng viên nếu tin không PUBLISHED, quá hạn, công ty chưa duyệt, hoặc ứng viên là recruiter/owner của chính công ty (chống gian lận).
+      - `job-visibility.adapter.ts` (`JobVisibilityPort`): Trả về thông tin hiển thị hoặc placeholder cho ứng viên/interviewer.
+      - `job-admin.adapter.ts` (`JobAdminPort`): Cung cấp cho BE1 admin đóng tin diện rộng hoặc kiểm duyệt.
+      - `job-reporting-facts.adapter.ts` (`JobReportingFactsPort`): Cung cấp số liệu tổng quan tin đăng cho BE3 Reporting.
+      - `skill-catalog.adapter.ts` (`SkillCatalogPort`): Cung cấp danh mục skill cho BE2 CV parsing / Profile matching.
+    - Controllers & Endpoints:
+      - `JobsController`: `GET /api/jobs` (công khai), `GET /api/jobs/:id` (công khai), `POST /api/jobs` (tạo nháp), `PATCH /api/jobs/:id` (sửa tin), `POST /api/jobs/:id/publish` (công bố), `POST /api/jobs/:id/close` (đóng tin).
+      - `CompanyJobsController`: `GET /api/companies/:id/jobs`, `GET /api/companies/:id/jobs/:jobId`.
+      - `SkillsController`: `GET /api/skills` (danh mục kỹ năng công khai).
+    - Tests & Verification:
+      - Unit Tests: 20 test suites, 191/191 tests pass, 91.95% line coverage (vượt ngưỡng 90% của dự án).
+      - API Integration Test: `tests/api/be1/jobs.spec.ts` (3/3 tests pass trên PostgreSQL 17) kiểm chứng toàn bộ vòng đời End-to-End từ DRAFT -> Update -> PUBLISH -> Public Search -> Update PUBLISHED -> CLOSE -> Reopening Rejected, cùng kiểm thử 3 Transactional Ports (`JobApplicationPort`, `JobVisibilityPort`, `JobReportingFactsPort`).
+      - Concurrency & Race Condition Test: `tests/concurrency/be1/job-concurrency.spec.ts` (2/2 tests pass trên PostgreSQL 17) kiểm chứng:
+        1. 2 request update đồng thời cùng version: đúng 1 request thành công 200, request còn lại bị 409 Conflict.
+        2. Race condition Publish vs Close đồng thời: đúng 1 thao tác chuyển trạng thái thành công, thao tác còn lại bị 409 Conflict.
+      - Toàn bộ integration test suite (`npm run test:integration:ci`): 10 test suites, 80/80 tests pass.
+      - Contract tests (`npm run test:contract:ci`): 2 test suites, 21/21 tests pass.
+      - Typecheck (`npm run typecheck`, `npm run typecheck:contracts:public`): 0 lỗi.
+      - Linter & Formatter: `npm run lint` đạt 0 lỗi 0 warnings, `npm run format:check` sạch 100%.
+- File / bằng chứng:
+  - `apps/api/src/modules/job/rules/salary.rules.ts`
+  - `apps/api/src/modules/job/rules/publication.rules.ts`
+  - `apps/api/src/modules/job/rules/job-update.rules.ts`
+  - `apps/api/src/modules/job/policies/job.policy.ts`
+  - `apps/api/src/modules/job/dto/job.dto.ts`
+  - `apps/api/src/modules/job/mappers/job.mapper.ts`
+  - `apps/api/src/modules/job/repositories/prisma-job.repository.ts`
+  - `apps/api/src/modules/job/repositories/prisma-skill.repository.ts`
+  - `apps/api/src/modules/job/repositories/job-query.repository.ts`
+  - `apps/api/src/modules/job/services/create-job.service.ts`
+  - `apps/api/src/modules/job/services/update-job.service.ts`
+  - `apps/api/src/modules/job/services/publish-job.service.ts`
+  - `apps/api/src/modules/job/services/close-job.service.ts`
+  - `apps/api/src/modules/job/services/job-read.service.ts`
+  - `apps/api/src/modules/job/ports/job-application.adapter.ts`
+  - `apps/api/src/modules/job/ports/job-visibility.adapter.ts`
+  - `apps/api/src/modules/job/ports/job-admin.adapter.ts`
+  - `apps/api/src/modules/job/ports/job-reporting-facts.adapter.ts`
+  - `apps/api/src/modules/job/ports/skill-catalog.adapter.ts`
+  - `apps/api/src/modules/job/controllers/jobs.controller.ts`
+  - `apps/api/src/modules/job/controllers/company-jobs.controller.ts`
+  - `apps/api/src/modules/job/controllers/skills.controller.ts`
+  - `apps/api/src/modules/job/job.module.ts`
+  - `tests/api/be1/jobs.spec.ts`
+  - `tests/concurrency/be1/job-concurrency.spec.ts`
+  - `apps/api/src/modules/job/tests/services.spec.ts`
+  - `apps/api/src/modules/job/tests/publication.rules.spec.ts`
+  - `apps/api/src/modules/job/tests/salary.rules.spec.ts`
+  - `apps/api/src/modules/job/tests/job-update.rules.spec.ts`
+  - `apps/api/src/modules/job/tests/job.policy.spec.ts`
+  - `apps/api/src/modules/job/tests/branch-coverage.spec.ts`
+- Kiểm tra đã chạy:
+  - `npm run test:unit:ci` — Node 24 / Windows — PASS 20 suites, 191/191 tests, Stmts: 91.71%, Branch: 71.37%, Funcs: 93.95%, Lines: 91.95%.
+  - `npm run test:integration:ci` — PostgreSQL 17 / Windows — PASS 10 suites, 80/80 tests.
+  - `npm run test:contract:ci` — Node 24 / Windows — PASS 2 suites, 21/21 tests.
+  - `npm run typecheck` & `npm run typecheck:contracts:public` — TypeScript 5.9 — PASS, 0 errors.
+  - `npm run lint` — ESLint 9 — PASS, 0 errors, 0 warnings.
+  - `npm run format:check` — Prettier — PASS, all matched files match code style.
+- Kiểm tra chưa chạy / coverage:
+  - Chưa chạy E2E Playwright trên UI web vì FE1/FE2 chưa hoàn thành màn hình tuyển dụng.
+  - Coverage đạt 91.95% line coverage trên toàn bộ backend API module.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác:
+  - Cung cấp sẵn các ports `JobApplicationPort`, `JobVisibilityPort`, `JobReportingFactsPort`, `SkillCatalogPort` cho BE2 (`SubmitApplication`, `CandidateProfile`) và BE3 (`ReportingFacts`, `InterviewMembership`). Không thay đổi contract đã chốt.
+- Phần còn thiếu / blocker:
+  - Blockers phụ thuộc ngoài BE1: BE2 chưa triển khai `ApplicationConflictPort`, BE3 chưa triển khai `InterviewMembershipPort`. BE1 đã dùng stub/optional port an toàn mà không làm gián đoạn luồng nghiệp vụ tin đăng.
+- Bước tiếp theo:
+  - Triển khai Phase 6 (Admin Moderation & Security Revocation UC10): Admin duyệt/từ chối/đình chỉ công ty, khóa/mở khóa tài khoản, đóng tin vi phạm, bảo vệ bất biến LAST ADMIN.
+
+### 2026-10-22 19:55 (Asia/Saigon) — BE1 — Hoàn thành Phase 4 (Company, Memberships, Owner Recovery UC11), bắt đầu Phase 5 (Jobs & Skills UC01, UC05)
+
+- Mã báo cáo: 20261022-1955-BE1-phase-4-hoan-thanh
+- Người thực hiện / AI hỗ trợ: Antigravity AI hỗ trợ kỹ sư BE1 theo yêu cầu người dùng.
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: UC11; FR08; BR01, BR02, BR03, BR15; TC01, TC02, TC03, TC04; EC01, EC02; plans/261022-1711-be1-complete-implementation (Phase 4 Company & Memberships UC11 hoàn thành; bắt đầu Phase 5 Jobs Publication, Search & Skills UC01, UC05).
+- Trạng thái: IN_PROGRESS (Phase 1, 2, 3, 4 DONE; Phase 5 IN_PROGRESS).
+- Nhánh / commit / PR / tích hợp main: Nhánh `feat/be1-implementation` / commit cục bộ / Chưa gộp main.
+- Đã hoàn thành:
+  - Triển khai toàn bộ UC11 Company, Memberships, Multi-tenancy Isolation và Owner Recovery:
+    - Domain Rules: `company.rules.ts` (validate tên doanh nghiệp, mã số thuế taxCode, website, địa chỉ, mô tả, quy tắc chuyển trạng thái PENDING -> APPROVED / REJECTED, và quy tắc sửa đổi), `membership.rules.ts` (quy tắc thêm thành viên RECRUITER/INTERVIEWER, cập nhật quyền, validate vai trò, chặn xóa owner), `owner.rules.ts` (bất biến A10: luôn phải còn ít nhất 1 OWNER khả dụng có `active: true` và `UserAccount.status === ACTIVE` trong doanh nghiệp; chặn deactivation/demotion/removal nếu vi phạm bất biến).
+    - Policy A14: `company.policy.ts` tách biệt ngữ cảnh quản trị thành viên (chỉ OWNER và RECRUITER thuộc chính doanh nghiệp đó mới được quản lý) với ngữ cảnh vận hành tuyển dụng.
+    - DTO & Mappers: `company.dto.ts` (`CreateCompanyDto`, `UpdateCompanyDto`, `ResubmitCompanyDto`, `AddMemberDto`, `UpdateMemberDto`, `TransferOwnerDto`) và `company.mapper.ts`.
+    - Repositories:
+      - `PrismaCompanyRepository`: tìm kiếm có lock `SELECT FOR UPDATE`, tạo mới với version 0, cập nhật với optimistic lock `version = currentVersion + 1`, tìm theo taxCode hoặc slug, `incrementVersion`.
+      - `PrismaCompanyMembershipRepository`: quản lý thành viên, tìm kiếm `findUniqueWithLock`, `findMembersWithUsers`, `updateRoleAndStatus`, `countAvailableOwners`, và `transferOwnerAtomic` (giao dịch nguyên tử luân chuyển OWNER: kiểm tra và tăng version công ty, hạ cấp OWNER cũ xuống RECRUITER, thăng cấp target lên OWNER dưới row lock).
+      - Mở rộng `PrismaUserRepository`: bổ sung `addRole` và `getUserRoles` để cập nhật role toàn cục khi thêm thành viên.
+    - Services:
+      - `CreateCompanyService`: xử lý đăng ký doanh nghiệp mới (chỉ user ACTIVE có role RECRUITER), kiểm tra trùng mã số thuế, tạo Company trạng thái PENDING và tạo CompanyMembership OWNER ban đầu trong một UoW transaction.
+      - `CompanyService`: xem thông tin doanh nghiệp, cập nhật thông tin doanh nghiệp (chỉ OWNER/RECRUITER), resubmit khi bị từ chối, duyệt/từ chối bởi ADMIN.
+      - `CompanyMembershipService`: danh sách thành viên, thêm thành viên (nếu chưa có thì tạo mới, nếu đã có inactive thì reactivate, tự động cấp role INTERVIEWER nếu cần), cập nhật vai trò/trạng thái (kiểm tra bất biến A10 số lượng owner), xóa thành viên (kiểm tra bất biến A10), và luân chuyển OWNER (atomic transfer).
+      - `OwnerRecoveryService`: khôi phục chủ sở hữu khẩn cấp dành cho ADMIN khi toàn bộ OWNER bị khóa/mất khả năng truy cập (A10 recovery).
+    - Port Adapters:
+      - `CompanyAccessAdapter`: thực hiện `CompanyAccessPort` (`assertActiveMember`, `isMember`, `getMembershipRole`, `assertCompanyApproved`).
+      - `CompanyAdminAdapter`: thực hiện `CompanyAdminPort` (`getCompanyDetails`, `isCompanyApproved`, `listPendingCompanies`).
+    - Controllers:
+      - `CompaniesController`: 8 endpoints (`POST /companies`, `GET /companies/me`, `GET /companies/:id`, `PATCH /companies/:id`, `POST /companies/:id/resubmit`, `GET /companies/pending`, `POST /companies/:id/approve`, `POST /companies/:id/reject`).
+      - `MembershipsController`: 5 endpoints (`GET /companies/:id/members`, `POST /companies/:id/members`, `PATCH /companies/:id/members/:userId`, `DELETE /companies/:id/members/:userId`, `POST /companies/:id/transfer-owner`).
+    - Kiểm thử tự động đạt 100%:
+      - Unit tests: 14 test suites, 124/124 tests passed. Độ phủ toàn bộ: Lines 94.71%, Branches 73.33%, Statements 94.75%, Functions 98.13%.
+      - API tests: `tests/api/be1/company.spec.ts` 13/13 tests passed trên PostgreSQL 17 thật (đăng ký công ty, duyệt/từ chối, thêm/sửa/xóa thành viên, kiểm tra quyền OWNER/RECRUITER/INTERVIEWER, chuyển quyền OWNER).
+      - Concurrency race tests: `tests/concurrency/be1/company-concurrency.spec.ts` 3/3 race tests passed (đua tạo công ty trùng TaxCode xử lý 409, đua cập nhật công ty xử lý Optimistic Concurrency 409 qua version, đua chuyển quyền OWNER đồng thời chỉ 1 thành công 1 xung đột).
+      - Integration test suite tổng hợp: `npm run test:integration:ci` đạt 8/8 suites, 75/75 tests passed.
+- File / bằng chứng:
+  - `apps/api/src/modules/company/dto/company.dto.ts`
+  - `apps/api/src/modules/company/rules/` (`company.rules.ts`, `membership.rules.ts`, `owner.rules.ts`)
+  - `apps/api/src/modules/company/policies/company.policy.ts`
+  - `apps/api/src/modules/company/mappers/company.mapper.ts`
+  - `apps/api/src/modules/company/repositories/` (`prisma-company.repository.ts`, `prisma-company-membership.repository.ts`)
+  - `apps/api/src/modules/company/services/` (`create-company.service.ts`, `company.service.ts`, `company-membership.service.ts`, `owner-recovery.service.ts`)
+  - `apps/api/src/modules/company/ports/` (`company-access.adapter.ts`, `company-admin.adapter.ts`)
+  - `apps/api/src/modules/company/controllers/` (`companies.controller.ts`, `memberships.controller.ts`)
+  - `apps/api/src/modules/company/company.module.ts`
+  - `apps/api/src/modules/company/tests/` (`company.rules.spec.ts`, `membership.rules.spec.ts`, `owner.rules.spec.ts`, `company.policy.spec.ts`, `services.spec.ts`, `branch-coverage.spec.ts`)
+  - `tests/api/be1/company.spec.ts`
+  - `tests/concurrency/be1/company-concurrency.spec.ts`
+- Kiểm tra đã chạy:
+  - `npm run test:contract:ci` — Node.js v20.18.0 — 21/21 contract tests passed (100%).
+  - `npm run test:unit:ci` — Jest 29.7.0 — 14/14 suites, 124/124 unit tests passed, Lines 94.71%, Branches 73.33%.
+  - `npm run test:integration:ci` — PostgreSQL 17 docker container `rms-local-postgres-1` trên port 5432 — 8/8 suites, 75/75 tests passed (100%).
+- Kiểm tra chưa chạy / coverage: E2E Frontend (UI14, UI15, UI26) chưa chạy do phạm vi FE2 chưa triển khai.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác:
+  - Mở khóa hoàn toàn `CompanyAccessPort` và `CompanyAdminPort` cho BE2 và BE3.
+  - Cung cấp sẵn cơ chế multi-tenancy và membership xác thực để bảo vệ dữ liệu công ty và phân quyền tuyển dụng.
+- Phần còn thiếu / blocker: Không có blocker nội bộ BE1. Tiếp tục triển khai Phase 5 (Jobs Publication, Search & Skills UC01, UC05).
+- Bước tiếp theo: Bắt đầu Phase 5 theo kế hoạch (Job rules, Salary rules, Skill catalog, Job repository, Job search & publication services, Job ports, Controllers, Unit/Integration/Concurrency tests).
+
+### 2026-10-22 19:28 (Asia/Saigon) — BE1 — Hoàn thành Phase 3 (Auth UC04), bắt đầu Phase 4 (Company UC11)
+
+- Mã báo cáo: 20261022-1928-BE1-phase-3-hoan-thanh
+- Người thực hiện / AI hỗ trợ: Antigravity AI hỗ trợ kỹ sư BE1 theo yêu cầu người dùng.
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: UC04; FR01; BR15, BR18, BR20; TC26, TC31, TC32, TC33, TC34; EC19, EC20, EC23; plans/261022-1711-be1-complete-implementation (Phase 3 Authentication, Sessions & Tokens hoàn thành; bắt đầu Phase 4 Company & Memberships UC11).
+- Trạng thái: IN_PROGRESS (Phase 1, 2, 3 DONE; Phase 4 IN_PROGRESS).
+- Nhánh / commit / PR / tích hợp main: Nhánh `feat/be1-implementation` / commit cục bộ / Chưa gộp main.
+- Đã hoàn thành:
+  - Triển khai toàn bộ UC04 Authentication, Sessions và Tokens:
+    - Rules: `password.rules.ts` (>=10 ký tự, <=72 bytes UTF-8 giới hạn BCrypt, không normalize password), `email.rules.ts` (trim/lowercase, giữ nguyên dot/+tag), `token.rules.ts` (TTL 24h verify / 30m reset, SHA-256, timingSafeEqual), `session.rules.ts` (TTL 24h absolute / 2h idle, CSRF derivation).
+    - Crypto A09: `libs/platform/crypto/token-encryption.ts` với AES-256-GCM, IV ngẫu nhiên 12 bytes, AAD context binding (tokenId, userId, purpose, eventId), chặn sửa ciphertext và swap context giữa events.
+    - Rate limiter A06: `RateLimiterService` sliding window trong bộ nhớ với bounded entries và tự động prune.
+    - Repositories: `PrismaUserRepository`, `PrismaSessionRepository`, `PrismaAuthTokenRepository` với SELECT FOR UPDATE row locking, CAS atomic consumption (`consumeAtomic`), session revocation theo user.
+    - Services: `RegisterService` (BCrypt cost 10 ngoài Tx, role CANDIDATE/RECRUITER allowlist, atomic UoW, CandidateProfilePort hook, encrypted outbox event, bắt P2002 duplicate race trả 202), `SessionService` (constant-time login so sánh dummy hash khi email không tồn tại, deterministic CSRF derivation từ session ID và HMAC secret, session lookup và validate idle/expiry/account status), `AuthTokenService` (CAS verify email, resend verification với token invalidation, forgot password 202 silent, CAS reset password kèm đổi hash, bump version và revoke toàn bộ active sessions).
+    - Port Adapters: `IdentityCandidateAdapter` (thực hiện `IdentityCandidatePort.assertActiveCandidate` và `updateCandidateName`), `AuthMailMaterialAdapter` (thực hiện `AuthMailMaterialPort.decryptMaterial` cho BE3 mail worker).
+    - Controller: `AuthController` với đủ 8 endpoints theo OpenAPI contract (`/auth/register`, `/auth/login`, `/auth/logout`, `/auth/session`, `/auth/verify-email`, `/auth/resend-verification`, `/auth/forgot-password`, `/auth/reset-password`). Hỗ trợ cookie session (`__Host-recruitment_session` / `recruitment_session`), CORS, CSRF header verification trên mutation.
+    - Kiểm thử tự động đầy đủ:
+      - Unit tests: 8 test suites, 61/61 tests passed. Đạt độ phủ coverage: Lines 95.39% (vượt ngưỡng 80%), Branches 76.10% (vượt ngưỡng 70%), Statements 95.54%, Functions 98.50%.
+      - API tests: `tests/api/be1/auth.spec.ts` 16/16 tests passed trên PostgreSQL 17 thật.
+      - Concurrency race tests: `tests/concurrency/be1/auth-concurrency.spec.ts` 3/3 race tests passed (đua đăng ký trùng email đồng thời xử lý duplicate 202, CAS verify email token chỉ 1 thành công 1 lỗi 409, CAS reset password token chỉ 1 thành công 1 lỗi 409).
+      - Integration test suite tổng hợp: `npm run test:integration:ci` đạt 6/6 suites, 56/56 tests passed.
+- File / bằng chứng:
+  - `apps/api/src/modules/identity/rules/` (`password.rules.ts`, `email.rules.ts`, `token.rules.ts`, `session.rules.ts`)
+  - `libs/platform/crypto/` (`token-encryption.ts`, `token-encryption.spec.ts`)
+  - `apps/api/src/modules/identity/repositories/` (`prisma-user.repository.ts`, `prisma-session.repository.ts`, `prisma-auth-token.repository.ts`)
+  - `apps/api/src/modules/identity/services/` (`register.service.ts`, `session.service.ts`, `auth-token.service.ts`)
+  - `apps/api/src/modules/identity/ports/` (`identity-candidate.adapter.ts`, `auth-mail-material.adapter.ts`)
+  - `apps/api/src/modules/identity/controllers/auth.controller.ts`
+  - `apps/api/src/modules/identity/tests/` (`rules.spec.ts`, `services.spec.ts`, `branch-coverage.spec.ts`)
+  - `tests/api/be1/auth.spec.ts`
+  - `tests/concurrency/be1/auth-concurrency.spec.ts`
+- Kiểm tra đã chạy:
+  - `npm run test:unit:ci`: 8 suites, 61 passed, lines 95.39%, branches 76.10%.
+  - `npm run test:integration:ci`: 6 suites, 56 passed.
+  - `npm run test:contract:ci`: 2 suites, 21 passed.
+- Kiểm tra chưa chạy / coverage: Chưa chạy integration với worker BE3 Mailpit thật (sẽ thực hiện khi BE3 hoàn thành mail consumer worker).
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Triển khai hoàn chỉnh toàn bộ endpoint Auth UC04 và cấp `IdentityCandidatePort` cho BE2 và `AuthMailMaterialPort` cho BE3.
+- Phần còn thiếu / blocker: BE2 `CandidateProfilePort` và BE3 `OutboxPort` chưa có runtime production; đã cắm DI ports sẵn sàng gọi khi BE2/BE3 implement.
+- Bước tiếp theo: Bắt đầu Phase 4 (UC11 Companies, Memberships, and Owner Recovery).
+
+### 2026-10-22 19:00 (Asia/Saigon) — BE1 — Hoàn thành Phase 1 & Phase 2, bắt đầu Phase 3 (Auth UC04)
+
+- Mã báo cáo: 20261022-1900-BE1-phase-1-2-hoan-thanh
+- Người thực hiện / AI hỗ trợ: Antigravity AI hỗ trợ kỹ sư BE1 theo yêu cầu người dùng.
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: BE-FOUNDATION, DB-01, CONTRACT-01, QA-01; plans/261022-1711-be1-complete-implementation (Phase 1 Contracts & Phase 2 Bootstrap/DB hoàn thành; bắt đầu Phase 3 UC04).
+- Trạng thái: IN_PROGRESS (Phase 1 & Phase 2 DONE; Phase 3 IN_PROGRESS).
+- Nhánh / commit / PR / tích hợp main: Nhánh `feat/be1-implementation` / commit cục bộ / Chưa gộp main.
+- Đã hoàn thành:
+  - Phase 1: Tạo OpenAPI `contracts/openapi/be1.yaml`, JSON Schema `contracts/schemas/be1.v1.json`, event envelope `contracts/events/be1.v1.json`, fixtures, export public types/DTOs, 8 ports backend BE1/BE2/BE3, bộ 10 contract tests BE1 (`tests/contract/be1-contract.spec.ts`). Chạy `npm run test:contract:ci` đạt 21/21 passed.
+  - Phase 2: Schema Prisma 9 bảng BE1 (`prisma/schema.prisma`), migration `20261022185000_be1_foundation` với check constraints và `ON DELETE RESTRICT`, seed data `prisma/seeds/be1.seed.ts`. Bootstrap NestJS 11 với Config validation, ApiExceptionFilter (error envelope chuẩn, che giấu credential, traceId), ResponseInterceptor (`{ data }`), TraceInterceptor, SessionGuard, OriginGuard, CsrfGuard. Chạy kiểm thử tích hợp trên PostgreSQL 17 thật: `tests/integration/be1/identity-schema.spec.ts` và `tests/api/be1/bootstrap-contract.spec.ts` đạt 37/37 tests pass across 4 suites.
+- File / bằng chứng: `contracts/openapi/be1.yaml`, `contracts/schemas/be1.v1.json`, `contracts/events/be1.v1.json`, `libs/contracts/public/index.ts`, `libs/contracts/backend/`, `tests/contract/be1-contract.spec.ts`, `prisma/schema.prisma`, `prisma/migrations/20261022185000_be1_foundation/`, `apps/api/src/`, `tests/integration/be1/identity-schema.spec.ts`, `tests/api/be1/bootstrap-contract.spec.ts`.
+- Kiểm tra đã chạy:
+  - `npm run typecheck:contracts:public` đạt (0 lỗi).
+  - `npm run test:contract:ci` đạt 21/21 tests (10 BE1 + 11 BE2).
+  - `npm run test:integration:ci` đạt 37/37 tests (4 suites: be1-contract, identity-schema, be2-contract, bootstrap-contract).
+  - Seed DB: `npx tsx prisma/seed.ts` thành công.
+- Kiểm tra chưa chạy / coverage: Chưa chạy full concurrency race tests và Mailpit auth integration (được triển khai ở Phase 3).
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Đã deploy 9 bảng BE1 lên PostgreSQL và cung cấp toàn bộ ports cho BE2/BE3; mở khóa cho BE2 migration Candidate/Application và BE3 Outbox/Interview.
+- Phần còn thiếu / blocker: Backend BE2 `CandidateProfilePort` và BE3 `OutboxPort` chưa có runtime implementation thực; BE1 cung cấp ports và stubs/mocks trong tests, sẵn sàng kết nối khi BE2/BE3 hoàn thành.
+- Bước tiếp theo: Triển khai chi tiết Phase 3 (UC04 Authentication, Sessions, Tokens, Reset, Login, Session Guard, CSRF, Encrypted Mail Material, Rate Limiting).
+
+### 2026-10-22 18:35 (Asia/Saigon) — BE1 — Khởi động triển khai toàn bộ BE1 (Phase 1–8)
+
+- Mã báo cáo: 20261022-1835-BE1-khoi-dong-trien-khai
+- Người thực hiện / AI hỗ trợ: Antigravity AI hỗ trợ kỹ sư BE1 theo yêu cầu người dùng.
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: UC01, UC04, UC05, UC10, UC11; BE-FOUNDATION, DB-01, CONTRACT-01, QA-01, CI-01; plans/261022-1711-be1-complete-implementation (Phases 1–8).
+- Trạng thái: IN_PROGRESS
+- Nhánh / commit / PR / tích hợp main: Nhánh `feat/be1-implementation` / commit chứa báo cáo này / Chưa gộp main.
+- Đã hoàn thành: Đọc AGENTS.md, kế hoạch BE1, kế hoạch BE3, đặc tả hệ thống, hợp đồng tích hợp BE2, ghi chú BE1-BE3. Tạo nhánh riêng `feat/be1-implementation`. Chuyển trạng thái các hạng mục BE1 sang IN_PROGRESS. Bắt đầu Phase 1: Chốt các quyết định A01–A15, xây dựng hợp đồng OpenAPI `contracts/openapi/be1.yaml`, JSON Schema `contracts/schemas/be1.v1.json`, event schemas `contracts/events/be1.v1.json`, ports cho BE1/BE2/BE3, fixture và bộ contract test cho BE1.
+- File / bằng chứng: `progress/README.md`.
+- Kiểm tra đã chạy: `npm run typecheck` đạt 0 lỗi; `npm run test:unit:ci` đạt 23/23 tests (coverage 97.18% dòng, 100% nhánh); `npm run test:contract:ci` đạt 11/11 tests. Docker daemon và Postgres port 5432 sẵn sàng.
+- Kiểm tra chưa chạy / coverage: Chưa chạy integration/concurrency trên PostgreSQL do đang chuẩn bị schema/migration ở Phase 1-2.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Chốt 15 quyết định contract A01–A15 tương thích với BE2 contract và BE3 plan, không sửa breaking contract BE2 đã bàn giao.
+- Phần còn thiếu / blocker: Phụ thuộc runtime: Provider Jitsi và Mailpit thật cần kiểm ở các pha tương ứng; Outbox/Audit BE3 và CandidateProfile BE2 sẽ được kết nối theo port đã chốt; ghi rõ blocker nếu thiếu dependency khi chạy integration.
+- Bước tiếp theo: Hoàn thiện Phase 1 (contracts/schemas/events/ports/tests), tiếp tục Phase 2 (Bootstrap & DB migration/seed) để mở khóa nền tảng cho BE2 và BE3.
 
 ### 2026-10-22 18:18 (Asia/Saigon) — Antigravity — Tích hợp main và đồng bộ kế hoạch BE1/BE3
 

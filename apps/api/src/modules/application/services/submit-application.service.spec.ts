@@ -1,5 +1,4 @@
 import type { OutboxPort } from '../../../../../../libs/contracts/backend';
-import type { Be2Event } from '../../../../../../libs/contracts/backend/events';
 import type {
   TransactionContext,
   TransactionDriver,
@@ -21,7 +20,7 @@ import { SubmitApplicationPersistenceService } from './submit-application.servic
 interface State {
   applications: SubmittedApplication[];
   history: NewApplicationHistory[];
-  events: Be2Event[];
+  events: Parameters<OutboxPort['append']>[0][];
   keys: Record<string, { hash: string; resourceId: string | null }>;
 }
 

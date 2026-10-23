@@ -1,8 +1,8 @@
 ---
 phase: 5
-title: "Jobs publication search and skills"
-status: pending
-effort: ""
+title: 'Jobs publication search and skills'
+status: in-progress
+effort: ''
 ---
 
 # Phase 5: Jobs publication search and skills
@@ -51,3 +51,7 @@ Job mutation services qua UoW/CompanyAccessPort/JobRepository; public query dùn
 ## Risk Assessment
 
 Public query kiểm OWNER available có thể expensive: index/query plan sau fixture, không bỏ predicate để tối ưu. Deadline DB/timezone khác client: ISO offset bắt buộc, timestamptz, UI tự format giờ Việt Nam. Decimal monetary values serialization phải khóa schema, không rounding bằng float tùy ý.
+
+## Đồng bộ kiểm chứng 23/10/2026 — Codex hỗ trợ BE1
+
+Job có DTO runtime, transaction revalidation, DB clock và fail-closed events; còn actual BE2 apply-vs-close/suspend và FE handoff. Pha giữ IN_PROGRESS theo tiêu chí đầy đủ; không coi fake ports là runtime acceptance. Báo cáo lịch sử giữ trong sổ chung. Bằng chứng cuối xem [tiến độ](../../progress/README.md), [bàn giao](../../Docs/be1-handoff.md) và artifact local `reports/be1/final-verification.md`. Chưa commit/chưa gộp main.

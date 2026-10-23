@@ -1,0 +1,67 @@
+name: BE quality
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:16.6
+        env:
+          POSTGRES_USER: rms_test
+          POSTGRES_PASSWORD: ci_fixture_only
+          POSTGRES_DB: rms_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U rms_test -d rms_test"
+          --health-interval 5s --health-timeout 5s --health-retries 12
+    env:
+      NODE_ENV: test
+      DATABASE_URL: postgresql://rms_test:ci_fixture_only@127.0.0.1:5432/rms_test?schema=public
+      MIGRATION_TEST_DATABASE_URL: postgresql://rms_test:ci_fixture_only@127.0.0.1:5432/rms_test?schema=public
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24.15.0
+          cache: npm
+      - run: npm ci
+      - run: npm run db:generate
+      - run: npm run db:validate
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run build
+      - run: npm run test:evidence
+      - run: npm run verify:migrations
+      - run: npm run db:migrate:deploy
+      - run: npm run test:unit:ci -- --runInBand
+      - run: npm run test:integration:ci
+      - run: npm run test:contract:ci
+      - run: npm run evidence:manifest
+      - run: npm run verify:evidence
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: backend-${{ github.sha }}
+          path: |
+            reports/backend/**/junit.xml
+            reports/backend/coverage/coverage-summary.json
+            reports/backend/migrations/result.json
+            reports/backend/evidence.json
+          if-no-files-found: error
+          retention-days: 14
+  quality-gate:
+    if: always()
+    needs: [backend]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require successful backend including evidence verification
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: |
+          node -e 'const jobs=JSON.parse(process.env.RESULTS); if(!Object.keys(jobs).length || Object.values(jobs).some(job=>job.result!=="success")) process.exit(1)'

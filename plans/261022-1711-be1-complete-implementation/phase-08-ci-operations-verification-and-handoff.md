@@ -1,8 +1,8 @@
 ---
 phase: 8
-title: "CI operations verification and handoff"
-status: pending
-effort: ""
+title: 'CI operations verification and handoff'
+status: in-progress
+effort: ''
 ---
 
 # Phase 8: CI operations verification and handoff
@@ -46,10 +46,14 @@ BE1 làm CI skeleton/aggregator/evidence manifest dùng chung, từng BE bổ su
 ## Success Criteria
 
 - [ ] CI thực chạy và negative controls fail đúng; coverage/evidence/migration gates đủ, required suite không rỗng/skip.
-- [ ] Load/restore/provider phối hợp có evidence hoặc ghi thiếu rõ; không tuyên bố toàn hệ thống đạt từ test riêng.
+- [x] Load/restore/provider phối hợp có evidence hoặc ghi thiếu rõ; không tuyên bố toàn hệ thống đạt từ test riêng.
 - [ ] Clean setup/HTTPS/security runbooks/OpenAPI/seeds/ports/review/handoff đầy đủ, không Critical/High mở.
 - [ ] 5 UC đáp ứng DoD và evidence thực; sổ tiến độ phân biệt local/nhánh/main.
 
 ## Risk Assessment
 
 Workflow YAML chưa chạy không chứng minh CI. Gate/infrastructure overlap BE3 phải phối hợp một script manifest duy nhất; giữ reports của các owner khi conflict. Quyền cài branch protection/GitHub secrets là bước cấu hình xuất bản cần người có quyền thực hiện theo authorization, không tự làm từ yêu cầu plan.
+
+## Đồng bộ kiểm chứng 23/10/2026 — Codex hỗ trợ BE1
+
+Có workflow backend, evidence inventory, migration smoke và runbooks; còn hosted CI/negative controls/FE/E2E/load/restore/provider/runtime DB permissions/peer review/clean setup. Dependency audit còn High/Critical. Pha giữ IN_PROGRESS theo tiêu chí đầy đủ; không coi fake ports là runtime acceptance. Báo cáo lịch sử giữ trong sổ chung. Bằng chứng cuối xem [tiến độ](../../progress/README.md), [bàn giao](../../Docs/be1-handoff.md) và artifact local `reports/be1/final-verification.md`. Chưa commit/chưa gộp main.

@@ -1,8 +1,8 @@
 ---
 phase: 6
-title: "Admin moderation and security revocation"
-status: pending
-effort: ""
+title: 'Admin moderation and security revocation'
+status: in-progress
+effort: ''
 ---
 
 # Phase 6: Admin moderation and security revocation
@@ -53,3 +53,7 @@ AdminModule điều phối IdentityAdminPort/CompanyAdminPort/JobAdminPort/Inter
 ## Risk Assessment
 
 Async event đơn thuần không đáp ứng “join mới bị chặn ngay”: account/company current state + generation cần provider admission check của BE3. Không giữ DB locks chờ video call. Discovery scope nhiều company/users phải sorted và revalidate; nếu set đổi retry giới hạn, không lấy khóa user muộn gây deadlock.
+
+## Đồng bộ kiểm chứng 23/10/2026 — Codex hỗ trợ BE1
+
+Admin canonical PATCH, last ADMIN, sorted locks và rollback có test DB với port BE3 giả; còn actual revoke/provider/scope discovery. Pha giữ IN_PROGRESS theo tiêu chí đầy đủ; không coi fake ports là runtime acceptance. Báo cáo lịch sử giữ trong sổ chung. Bằng chứng cuối xem [tiến độ](../../progress/README.md), [bàn giao](../../Docs/be1-handoff.md) và artifact local `reports/be1/final-verification.md`. Chưa commit/chưa gộp main.

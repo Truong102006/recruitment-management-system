@@ -1,0 +1,546 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://rms.example/contracts/be1.v1.json",
+  "title": "BE1 contract v1 — normalized wire payloads for Identity, Company, Job and Admin",
+  "definitions": {
+    "Uuid": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "Version": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "Timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "UserRole": {
+      "type": "string",
+      "enum": ["CANDIDATE", "RECRUITER", "INTERVIEWER", "ADMIN"]
+    },
+    "AccountStatus": {
+      "type": "string",
+      "enum": ["ACTIVE", "LOCKED"]
+    },
+    "CompanyApprovalStatus": {
+      "type": "string",
+      "enum": ["PENDING", "APPROVED", "REJECTED", "SUSPENDED"]
+    },
+    "MembershipRole": {
+      "type": "string",
+      "enum": ["OWNER", "RECRUITER", "INTERVIEWER"]
+    },
+    "MemberPermission": {
+      "type": "string",
+      "enum": ["RECRUITER", "INTERVIEWER"]
+    },
+    "JobPostStatus": {
+      "type": "string",
+      "enum": ["DRAFT", "PUBLISHED", "CLOSED"]
+    },
+    "JobType": {
+      "type": "string",
+      "enum": ["FULL_TIME", "PART_TIME", "CONTRACT", "INTERNSHIP"]
+    },
+    "WorkplaceMode": {
+      "type": "string",
+      "enum": ["ON_SITE", "HYBRID", "REMOTE"]
+    },
+    "Currency": {
+      "type": "string",
+      "enum": ["VND", "USD"]
+    },
+    "SalaryRange": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["min", "max", "currency"],
+      "properties": {
+        "min": { "type": "number", "minimum": 0 },
+        "max": { "type": "number", "minimum": 0 },
+        "currency": { "$ref": "#/definitions/Currency" }
+      }
+    },
+    "RegisterRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["email", "password", "fullName"],
+      "properties": {
+        "email": { "type": "string", "format": "email", "maxLength": 255 },
+        "password": { "type": "string", "minLength": 10, "maxLength": 72 },
+        "fullName": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "role": { "type": "string", "enum": ["CANDIDATE", "RECRUITER"] }
+      }
+    },
+    "RegisterResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["userId", "email", "fullName", "roles", "status", "requiresVerification"],
+      "properties": {
+        "userId": { "$ref": "#/definitions/Uuid" },
+        "email": { "type": "string", "format": "email" },
+        "fullName": { "type": "string" },
+        "roles": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/UserRole" }
+        },
+        "status": { "$ref": "#/definitions/AccountStatus" },
+        "requiresVerification": { "type": "boolean" }
+      }
+    },
+    "LoginRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["email", "password"],
+      "properties": {
+        "email": { "type": "string", "format": "email" },
+        "password": { "type": "string", "minLength": 1 }
+      }
+    },
+    "LoginResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["userId", "email", "fullName", "roles", "status"],
+      "properties": {
+        "userId": { "$ref": "#/definitions/Uuid" },
+        "email": { "type": "string", "format": "email" },
+        "fullName": { "type": "string" },
+        "roles": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/UserRole" }
+        },
+        "status": { "$ref": "#/definitions/AccountStatus" }
+      }
+    },
+    "VerifyEmailRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["token"],
+      "properties": {
+        "token": { "type": "string", "minLength": 16 }
+      }
+    },
+    "ForgotPasswordRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["email"],
+      "properties": {
+        "email": { "type": "string", "format": "email" }
+      }
+    },
+    "ResetPasswordRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["token", "newPassword"],
+      "properties": {
+        "token": { "type": "string", "minLength": 16 },
+        "newPassword": { "type": "string", "minLength": 10, "maxLength": 72 }
+      }
+    },
+    "ResendVerificationRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["email"],
+      "properties": {
+        "email": { "type": "string", "format": "email" }
+      }
+    },
+    "SessionDto": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["userId", "email", "fullName", "roles", "status", "csrfToken"],
+      "properties": {
+        "userId": { "$ref": "#/definitions/Uuid" },
+        "email": { "type": "string", "format": "email" },
+        "fullName": { "type": "string" },
+        "roles": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/UserRole" }
+        },
+        "status": { "$ref": "#/definitions/AccountStatus" },
+        "csrfToken": { "type": "string" }
+      }
+    },
+    "CreateCompanyRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "taxCode", "address"],
+      "properties": {
+        "name": { "type": "string", "minLength": 2, "maxLength": 255 },
+        "taxCode": { "type": "string", "minLength": 5, "maxLength": 50 },
+        "address": { "type": "string", "minLength": 5, "maxLength": 500 },
+        "website": { "type": ["string", "null"], "maxLength": 255 },
+        "description": { "type": ["string", "null"], "maxLength": 5000 }
+      }
+    },
+    "UpdateCompanyRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version"],
+      "properties": {
+        "name": { "type": "string", "minLength": 2, "maxLength": 255 },
+        "address": { "type": "string", "minLength": 5, "maxLength": 500 },
+        "website": { "type": ["string", "null"], "maxLength": 255 },
+        "description": { "type": ["string", "null"], "maxLength": 5000 },
+        "version": { "$ref": "#/definitions/Version" }
+      }
+    },
+    "ResubmitCompanyRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version"],
+      "properties": {
+        "name": { "type": "string", "minLength": 2, "maxLength": 255 },
+        "address": { "type": "string", "minLength": 5, "maxLength": 500 },
+        "website": { "type": ["string", "null"], "maxLength": 255 },
+        "description": { "type": ["string", "null"], "maxLength": 5000 },
+        "version": { "$ref": "#/definitions/Version" }
+      }
+    },
+    "CompanyDto": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "taxCode",
+        "address",
+        "website",
+        "description",
+        "approvalStatus",
+        "rejectionReason",
+        "version",
+        "createdAt",
+        "updatedAt"
+      ],
+      "properties": {
+        "id": { "$ref": "#/definitions/Uuid" },
+        "name": { "type": "string" },
+        "taxCode": { "type": "string" },
+        "address": { "type": "string" },
+        "website": { "type": ["string", "null"] },
+        "description": { "type": ["string", "null"] },
+        "approvalStatus": { "$ref": "#/definitions/CompanyApprovalStatus" },
+        "rejectionReason": { "type": ["string", "null"] },
+        "version": { "$ref": "#/definitions/Version" },
+        "createdAt": { "$ref": "#/definitions/Timestamp" },
+        "updatedAt": { "$ref": "#/definitions/Timestamp" }
+      }
+    },
+    "CompanyMemberDto": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "userId",
+        "email",
+        "fullName",
+        "role",
+        "permissions",
+        "active",
+        "version",
+        "joinedAt"
+      ],
+      "properties": {
+        "userId": { "$ref": "#/definitions/Uuid" },
+        "email": { "type": "string", "format": "email" },
+        "fullName": { "type": "string" },
+        "role": { "$ref": "#/definitions/MembershipRole" },
+        "permissions": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/MemberPermission" }
+        },
+        "active": { "type": "boolean" },
+        "version": { "$ref": "#/definitions/Version" },
+        "joinedAt": { "$ref": "#/definitions/Timestamp" }
+      }
+    },
+    "AddMemberRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["email", "role"],
+      "properties": {
+        "email": { "type": "string", "format": "email" },
+        "role": { "type": "string", "enum": ["RECRUITER", "INTERVIEWER"] },
+        "permissions": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/MemberPermission" }
+        }
+      }
+    },
+    "UpdateMemberRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "companyVersion"],
+      "properties": {
+        "role": { "type": "string", "enum": ["RECRUITER", "INTERVIEWER"] },
+        "permissions": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/MemberPermission" }
+        },
+        "active": { "type": "boolean" },
+        "version": { "$ref": "#/definitions/Version" },
+        "companyVersion": { "$ref": "#/definitions/Version" }
+      }
+    },
+    "TransferOwnerRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["targetUserId", "targetMemberVersion", "companyVersion"],
+      "properties": {
+        "targetUserId": { "$ref": "#/definitions/Uuid" },
+        "targetMemberVersion": { "$ref": "#/definitions/Version" },
+        "companyVersion": { "$ref": "#/definitions/Version" }
+      }
+    },
+    "SkillDto": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "active"],
+      "properties": {
+        "id": { "$ref": "#/definitions/Uuid" },
+        "name": { "type": "string" },
+        "category": { "type": "string" },
+        "active": { "type": "boolean" }
+      }
+    },
+    "CreateJobRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["companyId"],
+      "properties": {
+        "companyId": { "$ref": "#/definitions/Uuid" },
+        "title": { "type": "string", "maxLength": 150 },
+        "description": { "type": "string", "maxLength": 10000 },
+        "location": { "type": "string", "maxLength": 255 },
+        "headcount": { "type": "integer", "minimum": 1, "maximum": 100 },
+        "jobType": { "$ref": "#/definitions/JobType" },
+        "workplaceMode": { "$ref": "#/definitions/WorkplaceMode" },
+        "salary": {
+          "oneOf": [{ "$ref": "#/definitions/SalaryRange" }, { "type": "null" }]
+        },
+        "deadline": { "$ref": "#/definitions/Timestamp" },
+        "skillIds": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/Uuid" }
+        }
+      }
+    },
+    "UpdateJobRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version"],
+      "properties": {
+        "title": { "type": "string", "maxLength": 150 },
+        "description": { "type": "string", "maxLength": 10000 },
+        "location": { "type": "string", "maxLength": 255 },
+        "headcount": { "type": "integer", "minimum": 1, "maximum": 100 },
+        "jobType": { "$ref": "#/definitions/JobType" },
+        "workplaceMode": { "$ref": "#/definitions/WorkplaceMode" },
+        "salary": {
+          "oneOf": [{ "$ref": "#/definitions/SalaryRange" }, { "type": "null" }]
+        },
+        "deadline": { "$ref": "#/definitions/Timestamp" },
+        "skillIds": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/Uuid" }
+        },
+        "version": { "$ref": "#/definitions/Version" }
+      }
+    },
+    "PublishJobRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "deadline"],
+      "properties": {
+        "version": { "$ref": "#/definitions/Version" },
+        "deadline": { "$ref": "#/definitions/Timestamp" }
+      }
+    },
+    "CloseJobRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version"],
+      "properties": {
+        "version": { "$ref": "#/definitions/Version" },
+        "reason": { "type": "string", "maxLength": 500 }
+      }
+    },
+    "JobSummaryDto": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "companyId",
+        "companyName",
+        "title",
+        "location",
+        "jobType",
+        "workplaceMode",
+        "salary",
+        "deadline",
+        "publishedAt",
+        "status",
+        "skillIds",
+        "skills"
+      ],
+      "properties": {
+        "id": { "$ref": "#/definitions/Uuid" },
+        "companyId": { "$ref": "#/definitions/Uuid" },
+        "companyName": { "type": "string" },
+        "title": { "type": "string" },
+        "location": { "type": "string" },
+        "jobType": { "$ref": "#/definitions/JobType" },
+        "workplaceMode": { "$ref": "#/definitions/WorkplaceMode" },
+        "salary": {
+          "oneOf": [{ "$ref": "#/definitions/SalaryRange" }, { "type": "null" }]
+        },
+        "deadline": { "$ref": "#/definitions/Timestamp" },
+        "publishedAt": {
+          "oneOf": [{ "$ref": "#/definitions/Timestamp" }, { "type": "null" }]
+        },
+        "status": { "$ref": "#/definitions/JobPostStatus" },
+        "skillIds": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/Uuid" }
+        },
+        "skills": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/SkillDto" }
+        }
+      }
+    },
+    "JobDetailDto": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "companyId",
+        "companyName",
+        "title",
+        "description",
+        "location",
+        "headcount",
+        "jobType",
+        "workplaceMode",
+        "salary",
+        "deadline",
+        "publishedAt",
+        "status",
+        "skillIds",
+        "skills",
+        "version",
+        "createdAt",
+        "updatedAt"
+      ],
+      "properties": {
+        "id": { "$ref": "#/definitions/Uuid" },
+        "companyId": { "$ref": "#/definitions/Uuid" },
+        "companyName": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "location": { "type": "string" },
+        "headcount": { "type": "integer" },
+        "jobType": { "$ref": "#/definitions/JobType" },
+        "workplaceMode": { "$ref": "#/definitions/WorkplaceMode" },
+        "salary": {
+          "oneOf": [{ "$ref": "#/definitions/SalaryRange" }, { "type": "null" }]
+        },
+        "deadline": { "$ref": "#/definitions/Timestamp" },
+        "publishedAt": {
+          "oneOf": [{ "$ref": "#/definitions/Timestamp" }, { "type": "null" }]
+        },
+        "status": { "$ref": "#/definitions/JobPostStatus" },
+        "skillIds": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/Uuid" }
+        },
+        "skills": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/SkillDto" }
+        },
+        "version": { "$ref": "#/definitions/Version" },
+        "createdAt": { "$ref": "#/definitions/Timestamp" },
+        "updatedAt": { "$ref": "#/definitions/Timestamp" }
+      }
+    },
+    "ReviewCompanyRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "version"],
+      "properties": {
+        "status": { "type": "string", "enum": ["APPROVED", "REJECTED"] },
+        "reason": { "type": "string", "maxLength": 500 },
+        "version": { "$ref": "#/definitions/Version" }
+      }
+    },
+    "SuspendCompanyRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reason", "version"],
+      "properties": {
+        "reason": { "type": "string", "minLength": 1, "maxLength": 500 },
+        "version": { "$ref": "#/definitions/Version" }
+      }
+    },
+    "UnsuspendCompanyRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version"],
+      "properties": {
+        "version": { "$ref": "#/definitions/Version" }
+      }
+    },
+    "AdminUpdateUserStatusRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "version"],
+      "properties": {
+        "status": { "type": "string", "enum": ["ACTIVE", "LOCKED"] },
+        "reason": { "type": "string", "maxLength": 500 },
+        "version": { "$ref": "#/definitions/Version" }
+      }
+    },
+    "RecoverOwnerRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["targetUserId", "targetMemberVersion", "companyVersion", "reason"],
+      "properties": {
+        "targetUserId": { "$ref": "#/definitions/Uuid" },
+        "targetMemberVersion": { "$ref": "#/definitions/Version" },
+        "companyVersion": { "$ref": "#/definitions/Version" },
+        "reason": { "type": "string", "minLength": 1, "maxLength": 500 }
+      }
+    },
+    "EligibleOwnerDto": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["userId", "fullName", "email", "role", "active", "version"],
+      "properties": {
+        "userId": { "$ref": "#/definitions/Uuid" },
+        "fullName": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "role": { "$ref": "#/definitions/MembershipRole" },
+        "active": { "type": "boolean" },
+        "version": { "$ref": "#/definitions/Version" }
+      }
+    },
+    "AdminCloseJobRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "reason"],
+      "properties": {
+        "version": { "$ref": "#/definitions/Version" },
+        "reason": { "type": "string", "minLength": 1, "maxLength": 500 }
+      }
+    },
+    "SecurityCancelInterviewRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "reason"],
+      "properties": {
+        "version": { "$ref": "#/definitions/Version" },
+        "reason": { "type": "string", "minLength": 1, "maxLength": 500 }
+      }
+    }
+  }
+}

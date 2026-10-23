@@ -5,21 +5,9 @@
     "moduleResolution": "Node",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "types": [
-      "node",
-      "jest"
-    ],
+    "types": ["node", "jest"],
     "sourceMap": true
   },
-  "include": [
-    "apps/api/src/**/*.ts",
-    "apps/worker/src/**/*.ts",
-    "libs/**/*.ts",
-    "tests/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "apps/web"
-  ]
+  "include": ["apps/api/src/**/*.ts", "apps/worker/src/**/*.ts", "libs/**/*.ts", "tests/**/*.ts"],
+  "exclude": ["node_modules", "dist", "apps/web"]
 }

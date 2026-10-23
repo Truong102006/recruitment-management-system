@@ -1,0 +1,163 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://rms.example/contracts/events/be1.v1.json",
+  "title": "BE1 producer envelope v1 — Identity, Company and Job events",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "eventType",
+    "schemaVersion",
+    "aggregateId",
+    "aggregateVersion",
+    "occurredAt",
+    "payload"
+  ],
+  "properties": {
+    "eventId": { "type": "string", "format": "uuid" },
+    "eventType": {
+      "type": "string",
+      "enum": [
+        "auth.verification_requested",
+        "auth.password_reset_requested",
+        "user.locked",
+        "company.created",
+        "company.reviewed",
+        "company.suspended",
+        "company.membership_changed",
+        "job.published",
+        "job.closed"
+      ]
+    },
+    "schemaVersion": { "const": 1 },
+    "aggregateId": { "type": "string", "format": "uuid" },
+    "aggregateVersion": { "type": "integer", "minimum": 0 },
+    "occurredAt": { "type": "string", "format": "date-time" },
+    "payload": { "type": "object" }
+  },
+  "oneOf": [
+    {
+      "properties": {
+        "eventType": {
+          "enum": ["auth.verification_requested", "auth.password_reset_requested"]
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["userId", "email", "tokenId", "expiresAt"],
+          "properties": {
+            "userId": { "type": "string", "format": "uuid" },
+            "email": { "type": "string", "format": "email" },
+            "tokenId": { "type": "string", "format": "uuid" },
+            "expiresAt": { "type": "string", "format": "date-time" },
+            "encryptedEnvelope": { "type": "string" }
+          }
+        }
+      }
+    },
+    {
+      "properties": {
+        "eventType": { "const": "user.locked" },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["userId", "reason", "lockedBy"],
+          "properties": {
+            "userId": { "type": "string", "format": "uuid" },
+            "reason": { "type": "string" },
+            "lockedBy": { "type": "string", "format": "uuid" }
+          }
+        }
+      }
+    },
+    {
+      "properties": {
+        "eventType": { "const": "company.created" },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["companyId", "ownerUserId"],
+          "properties": {
+            "companyId": { "type": "string", "format": "uuid" },
+            "ownerUserId": { "type": "string", "format": "uuid" }
+          }
+        }
+      }
+    },
+    {
+      "properties": {
+        "eventType": { "const": "company.reviewed" },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["companyId", "status"],
+          "properties": {
+            "companyId": { "type": "string", "format": "uuid" },
+            "status": { "type": "string", "enum": ["APPROVED", "REJECTED"] },
+            "reason": { "type": "string" }
+          }
+        }
+      }
+    },
+    {
+      "properties": {
+        "eventType": { "const": "company.suspended" },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["companyId", "reason"],
+          "properties": {
+            "companyId": { "type": "string", "format": "uuid" },
+            "reason": { "type": "string" }
+          }
+        }
+      }
+    },
+    {
+      "properties": {
+        "eventType": { "const": "company.membership_changed" },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["companyId", "userId", "role", "active"],
+          "properties": {
+            "companyId": { "type": "string", "format": "uuid" },
+            "userId": { "type": "string", "format": "uuid" },
+            "role": { "type": "string", "enum": ["OWNER", "RECRUITER", "INTERVIEWER"] },
+            "active": { "type": "boolean" }
+          }
+        }
+      }
+    },
+    {
+      "properties": {
+        "eventType": { "const": "job.published" },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["jobId", "companyId", "publishedAt"],
+          "properties": {
+            "jobId": { "type": "string", "format": "uuid" },
+            "companyId": { "type": "string", "format": "uuid" },
+            "publishedAt": { "type": "string", "format": "date-time" }
+          }
+        }
+      }
+    },
+    {
+      "properties": {
+        "eventType": { "const": "job.closed" },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["jobId", "companyId"],
+          "properties": {
+            "jobId": { "type": "string", "format": "uuid" },
+            "companyId": { "type": "string", "format": "uuid" },
+            "reason": { "type": "string" }
+          }
+        }
+      }
+    }
+  ]
+}
