@@ -1,0 +1,160 @@
+{
+  "unit": [
+    {
+      "file": "apps/api/src/modules/admin/tests/admin-last-admin.spec.ts",
+      "suite": "Last available ADMIN invariant"
+    },
+    {
+      "file": "apps/api/src/modules/admin/tests/admin-workflows.spec.ts",
+      "suite": "Admin security workflows"
+    },
+    {
+      "file": "apps/api/src/modules/application/mappers/candidate-application.mapper.spec.ts",
+      "suite": "candidate projection boundary"
+    },
+    {
+      "file": "apps/api/src/modules/company/tests/admin-adapter.spec.ts",
+      "suite": "Company moderation and recovery invariants"
+    },
+    {
+      "file": "apps/api/src/modules/company/tests/branch-coverage.spec.ts",
+      "suite": "Company Branch Coverage Tests (Phase 4)"
+    },
+    {
+      "file": "apps/api/src/modules/company/tests/company.policy.spec.ts",
+      "suite": "CompanyPolicy (Unit)"
+    },
+    {
+      "file": "apps/api/src/modules/company/tests/company.rules.spec.ts",
+      "suite": "CompanyRules (Unit)"
+    },
+    {
+      "file": "apps/api/src/modules/company/tests/membership-locking.spec.ts",
+      "suite": "Membership account lock plan"
+    },
+    {
+      "file": "apps/api/src/modules/company/tests/membership.rules.spec.ts",
+      "suite": "MembershipRules (Unit)"
+    },
+    {
+      "file": "apps/api/src/modules/company/tests/owner.rules.spec.ts",
+      "suite": "OwnerRules (Unit)"
+    },
+    {
+      "file": "apps/api/src/modules/company/tests/services.spec.ts",
+      "suite": "Company Services Unit Tests (Phase 4)"
+    },
+    {
+      "file": "apps/api/src/modules/identity/tests/branch-coverage.spec.ts",
+      "suite": "Branch Coverage Edge Cases (Phase 3)"
+    },
+    {
+      "file": "apps/api/src/modules/identity/tests/dependency-security.spec.ts",
+      "suite": "BE1 required dependency failure safety"
+    },
+    {
+      "file": "apps/api/src/modules/identity/tests/rules.spec.ts",
+      "suite": "Identity Rules (Phase 3)"
+    },
+    {
+      "file": "apps/api/src/modules/identity/tests/services.spec.ts",
+      "suite": "Identity Services Unit Tests (Phase 3)"
+    },
+    {
+      "file": "apps/api/src/modules/job/tests/branch-coverage.spec.ts",
+      "suite": "Job Module Branch Coverage Tests (Phase 5)"
+    },
+    {
+      "file": "apps/api/src/modules/job/tests/job-update.rules.spec.ts",
+      "suite": "JobUpdateRules"
+    },
+    {
+      "file": "apps/api/src/modules/job/tests/job.policy.spec.ts",
+      "suite": "JobPolicy"
+    },
+    {
+      "file": "apps/api/src/modules/job/tests/publication.rules.spec.ts",
+      "suite": "PublicationRules"
+    },
+    {
+      "file": "apps/api/src/modules/job/tests/salary.rules.spec.ts",
+      "suite": "SalaryRules"
+    },
+    {
+      "file": "apps/api/src/modules/job/tests/services.spec.ts",
+      "suite": "Job Services Unit Tests"
+    },
+    {
+      "file": "libs/platform/crypto/token-encryption.spec.ts",
+      "suite": "TokenEncryption (A09)"
+    },
+    {
+      "file": "libs/platform/database/unit-of-work.spec.ts",
+      "suite": "ManagedUnitOfWork (driver contract, not PostgreSQL integration)"
+    },
+    {
+      "file": "libs/platform/idempotency/request-hash.spec.ts",
+      "suite": "idempotency request fingerprint"
+    },
+    {
+      "file": "apps/api/src/modules/job/tests/mutation-security.spec.ts",
+      "suite": "Job mutation authorization inside transaction"
+    }
+  ],
+  "integration": [
+    {
+      "file": "tests/api/be1/admin-api.spec.ts",
+      "suite": "Admin API guards and canonical PATCH"
+    },
+    {
+      "file": "tests/api/be1/auth.spec.ts",
+      "suite": "UC04: Authentication, Sessions, and Tokens API (Phase 3)"
+    },
+    {
+      "file": "tests/api/be1/bootstrap-contract.spec.ts",
+      "suite": "BE1 API Bootstrap Contract & Security Envelope"
+    },
+    {
+      "file": "tests/api/be1/company.spec.ts",
+      "suite": "UC11: Company, Memberships, and Owner Operations (Phase 4)"
+    },
+    {
+      "file": "tests/api/be1/jobs.spec.ts",
+      "suite": "UC01, UC05: Jobs Publication, Search, and Skills (Phase 5 API Integration)"
+    },
+    {
+      "file": "tests/integration/be1/identity-schema.spec.ts",
+      "suite": "BE1 PostgreSQL Identity Schema & Constraints (Integration)"
+    },
+    {
+      "file": "tests/integration/be1/verification-security.spec.ts",
+      "suite": "UC04 durable verification and transactional rollback (PostgreSQL)"
+    },
+    {
+      "file": "tests/concurrency/be1/admin-security.spec.ts",
+      "suite": "Admin PostgreSQL serialization and rollback (external BE3 ports are test doubles)"
+    },
+    {
+      "file": "tests/concurrency/be1/auth-concurrency.spec.ts",
+      "suite": "UC04 Concurrency & Race Tests (Phase 3)"
+    },
+    {
+      "file": "tests/concurrency/be1/company-concurrency.spec.ts",
+      "suite": "Company Concurrency & Race Condition Tests (Phase 4)"
+    },
+    {
+      "file": "tests/concurrency/be1/job-concurrency.spec.ts",
+      "suite": "Job Concurrency & Race Condition Tests (Phase 5)"
+    }
+  ],
+  "contract": [
+    {
+      "file": "tests/contract/be1-contract.spec.ts",
+      "suite": "BE1 wire contracts — UC01, UC04, UC05, UC10, UC11"
+    },
+    {
+      "file": "tests/contract/be2-contract.spec.ts",
+      "suite": "BE2 wire contracts — Word BR01, BR07, BR13, BR18, BR20"
+    }
+  ]
+}
