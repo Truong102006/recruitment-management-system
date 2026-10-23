@@ -6,6 +6,7 @@ import fixture from '../../contracts/fixtures/candidate-application.v1.json';
 import eventFixture from '../../contracts/fixtures/application-submitted.v1.json';
 import openapi from '../../contracts/openapi/be2-foundation.v1.json';
 import profileOpenapi from '../../contracts/openapi/be2-profile.v1.json';
+import runtimeOpenapi from '../../contracts/openapi/be2-runtime.v1.json';
 import {
   APPLICATION_STATUSES,
   type CandidateApplicationDto,
@@ -58,6 +59,34 @@ describe('UC12 profile wire contract', () => {
       required: true,
     });
     expect(path.get.security).toEqual([{ sessionCookie: [] }]);
+  });
+});
+
+describe('BE2 Nest route contract', () => {
+  it('documents every wired path and resolves each BE2 schema reference', () => {
+    expect(Object.keys(runtimeOpenapi.paths).sort()).toEqual(
+      [
+        '/applications',
+        '/applications/{id}',
+        '/applications/{id}/cv-change',
+        '/applications/{id}/history',
+        '/applications/{id}/review',
+        '/applications/{id}/withdraw',
+        '/candidate/profile',
+        '/cv-change/{id}/approve',
+        '/cv-change/{id}/reject',
+        '/jobs/{id}/applications',
+        '/saved-jobs',
+        '/saved-jobs/{jobId}',
+      ].sort(),
+    );
+    const refs =
+      JSON.stringify(runtimeOpenapi).match(
+        /\.\.\/schemas\/be2\.v1\.json#\/definitions\/[A-Za-z]+/g,
+      ) ?? [];
+    for (const ref of refs)
+      expect(ajv.getSchema(`${schema.$id}#/definitions/${ref.split('/').at(-1)}`)).toBeDefined();
+    expect(runtimeOpenapi.paths['/saved-jobs/{jobId}'].put.responses['204']).toBeDefined();
   });
 });
 

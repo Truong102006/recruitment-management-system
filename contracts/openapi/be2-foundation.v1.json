@@ -3,7 +3,7 @@
   "info": {
     "title": "BE2 foundation — submit application contract",
     "version": "1.0.0",
-    "description": "Design contract only. The API is not implemented. This incremental document covers UC02 submit; other routes will be added with their implementations. Payload normalization follows BR18. Permission, CV state, deadline and uniqueness are server/DB rules."
+    "description": "UC02 submit contract. Nest route is registered, but writes return 503 until BE3 Outbox is connected and BE2 migration is deployed. Payload normalization follows BR18. Permission, CV state, deadline and uniqueness are server/DB rules."
   },
   "servers": [{ "url": "/api" }],
   "paths": {

@@ -231,6 +231,12 @@
         "version": { "$ref": "#/definitions/Version" }
       }
     },
+    "CandidateProfileResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["data"],
+      "properties": { "data": { "$ref": "#/definitions/CandidateProfileDto" } }
+    },
     "SavedJobDto": {
       "type": "object",
       "additionalProperties": false,

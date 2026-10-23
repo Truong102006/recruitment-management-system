@@ -96,6 +96,7 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 | BE2-APP-08    | Xem, xét duyệt và rút hồ sơ / BE2 + Codex                                         | DONE        | Workflow review/withdraw và query scope/history; 5 unit đạt trên `feat/be2-remaining-work`. Chỉ DONE cho code độc lập; UC07 vẫn IN_PROGRESS vì thiếu BE3/API/DB test.                                             |
 | BE2-SAVED-09  | Lưu tin quan tâm / BE2 + Codex                                                    | DONE        | Repository/service idempotent, placeholder theo BE1 visibility; 2 unit + 14 contract đạt trên `feat/be2-remaining-work`. UC14 tổng thể còn IN_PROGRESS vì thiếu route/DB test.                                    |
 | BE2-PORT-10   | Port hồ sơ cho BE1/BE3 / BE2 + Codex                                              | DONE        | Application/Result/Conflict port cùng transaction, history/outbox/idempotency; 3 unit mới đạt. DONE cho code độc lập; chờ BE3 runtime/PostgreSQL.                                                                 |
+| BE2-API-11    | API/DTO và binding Nest / BE2 + Codex                                             | IN_PROGRESS | Đang nối module/controller với guard và port BE1; BE3 Outbox/lifecycle chưa có.                                                                                                                                   |
 | WORKER-01     | Outbox/email/worker / BE3; idempotency/transaction do BE2 phối hợp                | TODO        | Chưa triển khai                                                                                                                                                                                                   |
 | VIDEO-01      | Jitsi và thu hồi quyền phòng / BE3                                                | TODO        | Chưa tích hợp/kiểm provider thật                                                                                                                                                                                  |
 | QA-01         | Unit/integration/API/concurrency/FE/E2E / từng owner                              | IN_PROGRESS | Main PR #1: hosted 35 suites/316 unit, 13 suites/108 integration (gồm23 contract), evidence8 đạt; coverage92,45% dòng/76,93% nhánh. FE-E2E/runtime/provider còn thiếu. [Bằng chứng](../Docs/be1-verification.md). |
@@ -134,6 +135,21 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 - Bước kế tiếp của BE1: nhận và bind runtime ports BE2/BE3; chạy actual cross-owner/provider/HTTPS acceptance, CI GitHub/negative controls/load/restore/runtime DB permissions và xử lý dependency audit theo owner. Source và gate local đã có bằng chứng; chưa gộp main.
 
 ## Nhật ký báo cáo
+
+### 2026-10-23 12:17 (Asia/Saigon) — BE2 — Bước 11 API và binding Nest
+
+- Mã báo cáo: 20261023-1217-BE2-api-binding
+- Người thực hiện / AI hỗ trợ: Người phụ trách BE2 (GitHub repository Truong102006) / Codex; chưa xác nhận tên thật.
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: BE2-API-11, UC02/06/07/12/14, FR05–FR08/FR13, BR01/BR07–BR09/BR18–BR20 ở phạm vi binding/API contract.
+- Trạng thái: IN_PROGRESS — route profile/tin lưu/hồ sơ đã đăng ký; route CV và nghiệm thu HTTP còn thiếu.
+- Nhánh / commit / PR / tích hợp main: `feat/be2-remaining-work` / commit chứa báo cáo này / chưa có PR / Chưa gộp main tại thời điểm báo cáo.
+- Đã hoàn thành: `Be2Module` bind UOW/SQL/repository/services, xuất CandidateProfile/CvSelection/Application/Result/Conflict ports; BE1 thấy hai port BE2 trong DI. Controller profile/saved jobs/applications dùng session guard, global Origin/CSRF; lỗi domain/idempotency được ánh xạ HTTP. BE3 thiếu thì write fail closed 503. OpenAPI runtime liệt kê route thực có.
+- File / bằng chứng: `apps/api/src/modules/be2.module.ts`, các controller trong `candidate/` và `application/`, `apps/api/src/common/filters/api-exception.filter.ts`, `contracts/openapi/be2-runtime.v1.json`, `apps/api/src/modules/be2.module.spec.ts`.
+- Kiểm tra đã chạy: `prisma generate` với URL local giả thành công; `tsc -p tsconfig.backend.json --noEmit` đạt; Nest DI boot test đạt 1/1; BE2 contract 15/15 đạt trên Windows/Node 24.
+- Kiểm tra chưa chạy / coverage: HTTP/PostgreSQL/CSRF browser và route CV chưa chạy; coverage chưa đo.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Thêm route Nest và OpenAPI runtime; FE xem OpenAPI, BE1 không cần tự bind port BE2; BE3 đăng ký Outbox/Lifecycle thật qua token đã chốt. Không thay đổi quy tắc Word.
+- Phần còn thiếu / blocker: BE3 runtime, migration BE2, storage/scanner CV thật và HTTP integration test.
+- Bước tiếp theo: Commit riêng phần API; tạo migration BE2 và kiểm tra gate.
 
 ### 2026-10-23 12:06 (Asia/Saigon) — BE2 — Bước 10 port hồ sơ cho BE1 và BE3
 

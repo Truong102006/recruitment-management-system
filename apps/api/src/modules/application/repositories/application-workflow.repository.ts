@@ -281,7 +281,7 @@ export class PrismaApplicationWorkflowRepository implements ApplicationWorkflowR
       [applicationId, version, from, to, message],
     );
     changed(rows);
-    return rows[0].result_published_at;
+    return rows[0]!.result_published_at;
   }
   async publishedAt(applicationId: string, tx: TransactionContext): Promise<Date | null> {
     const [row] = await this.sql.query<{ result_published_at: Date | null }>(

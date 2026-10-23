@@ -655,6 +655,8 @@ Mỗi mutation bao gồm kiểm tra quyền hiện tại, validation và transac
 
 ## 3.2 Trạng thái hồ sơ và tác dụng phụ
 
+**Hiện trạng API BE2 (23/10/2026):** `Be2Module` đã đăng ký route profile, tin lưu và hồ sơ ứng tuyển với guard session/Origin/CSRF của BE1; binding DI của BE1/BE2 đạt unit boot test. Các lệnh ghi cần Outbox hoặc lifecycle BE3 sẽ trả 503 khi provider thiếu. Route CV upload/list/download/delete, storage/scanner thật, migration DB và HTTP integration test còn thiếu; xem [OpenAPI runtime](../contracts/openapi/be2-runtime.v1.json). Chưa nghiệm thu UC02/06/07/12/14.
+
 **Hiện trạng port BE2 (23/10/2026):** `Be2ApplicationPorts` đã hiện thực các cạnh do lịch phỏng vấn và công bố kết quả kích hoạt trong transaction của caller; kiểm lại quyền recruiter từ BE1, version và bằng chứng lịch gắn `tx.id`, ghi history/outbox nguyên tử và idempotency khi công bố. BE3 phải xác nhận/hủy lịch trong cùng transaction trước khi gọi port. Phần này mới có unit test; chưa có provider BE3 hoặc test PostgreSQL nên chưa nghiệm thu UC08/09.
 
 | **Trạng thái hiện tại**  | **Cạnh hợp lệ**                            | **Điều kiện và tác dụng phụ**                                                                                            |

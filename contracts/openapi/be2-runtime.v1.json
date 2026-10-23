@@ -1,0 +1,344 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "BE2 API routes wired to Nest",
+    "version": "1.0.0",
+    "description": "Route contract for UC02/06/07/12/14. Writes requiring BE3 Outbox or InterviewLifecycle return 503 until those providers are connected. CV storage/scanner routes are not wired yet."
+  },
+  "servers": [{ "url": "/api" }],
+  "components": {
+    "securitySchemes": {
+      "session": { "type": "apiKey", "in": "cookie", "name": "recruitment_session" }
+    },
+    "parameters": {
+      "id": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string", "format": "uuid" }
+      },
+      "jobId": {
+        "name": "jobId",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "string", "format": "uuid" }
+      },
+      "csrf": {
+        "name": "X-CSRF-Token",
+        "in": "header",
+        "required": true,
+        "schema": { "type": "string" }
+      },
+      "key": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": { "type": "string", "minLength": 1, "maxLength": 100 }
+      }
+    },
+    "responses": {
+      "Error": {
+        "description": "Public error envelope",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "../schemas/be2.v1.json#/definitions/ApiError" }
+          }
+        }
+      },
+      "NoContent": { "description": "Operation completed idempotently" }
+    }
+  },
+  "security": [{ "session": [] }],
+  "paths": {
+    "/candidate/profile": {
+      "get": {
+        "operationId": "getCandidateProfile",
+        "responses": {
+          "200": {
+            "description": "Candidate profile",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "../schemas/be2.v1.json#/definitions/CandidateProfileResponse" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "patch": {
+        "operationId": "patchCandidateProfile",
+        "parameters": [{ "$ref": "#/components/parameters/csrf" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "../schemas/be2.v1.json#/definitions/UpdateCandidateProfileRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated profile",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "../schemas/be2.v1.json#/definitions/CandidateProfileResponse" }
+              }
+            }
+          },
+          "409": { "$ref": "#/components/responses/Error" },
+          "503": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/saved-jobs": {
+      "get": {
+        "operationId": "listSavedJobs",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 1, "default": 1 }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 1, "maximum": 100, "default": 20 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paged saved jobs with redacted unavailable jobs",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "../schemas/be2.v1.json#/definitions/SavedJobPage" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/saved-jobs/{jobId}": {
+      "put": {
+        "operationId": "saveJob",
+        "parameters": [
+          { "$ref": "#/components/parameters/jobId" },
+          { "$ref": "#/components/parameters/csrf" }
+        ],
+        "responses": {
+          "204": { "$ref": "#/components/responses/NoContent" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "503": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "delete": {
+        "operationId": "unsaveJob",
+        "parameters": [
+          { "$ref": "#/components/parameters/jobId" },
+          { "$ref": "#/components/parameters/csrf" }
+        ],
+        "responses": {
+          "204": { "$ref": "#/components/responses/NoContent" },
+          "503": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/jobs/{id}/applications": {
+      "post": {
+        "operationId": "submitApplication",
+        "parameters": [
+          { "$ref": "#/components/parameters/id" },
+          { "$ref": "#/components/parameters/key" },
+          { "$ref": "#/components/parameters/csrf" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "../schemas/be2.v1.json#/definitions/SubmitApplicationRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Current candidate application",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/be2.v1.json#/definitions/CandidateApplicationResponse"
+                }
+              }
+            }
+          },
+          "409": { "$ref": "#/components/responses/Error" },
+          "503": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/applications": {
+      "get": {
+        "operationId": "listApplications",
+        "description": "Candidate scope by default; companyId selects recruiter company scope after BE1 authorization.",
+        "parameters": [
+          { "name": "companyId", "in": "query", "schema": { "type": "string", "format": "uuid" } },
+          { "name": "page", "in": "query", "schema": { "type": "integer", "minimum": 1 } },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 1, "maximum": 100 }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Scoped page of public application DTOs" },
+          "403": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/applications/{id}": {
+      "get": {
+        "operationId": "getApplication",
+        "parameters": [
+          { "$ref": "#/components/parameters/id" },
+          { "name": "companyId", "in": "query", "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Scoped application",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../schemas/be2.v1.json#/definitions/CandidateApplicationResponse"
+                }
+              }
+            }
+          },
+          "404": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/applications/{id}/history": {
+      "get": {
+        "operationId": "getApplicationHistory",
+        "parameters": [
+          { "$ref": "#/components/parameters/id" },
+          { "name": "companyId", "in": "query", "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "responses": {
+          "200": { "description": "Public history without internal reasons" },
+          "404": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/applications/{id}/cv-change": {
+      "post": {
+        "operationId": "requestCvChange",
+        "parameters": [
+          { "$ref": "#/components/parameters/id" },
+          { "$ref": "#/components/parameters/key" },
+          { "$ref": "#/components/parameters/csrf" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "../schemas/be2.v1.json#/definitions/ChangeCvRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Direct replacement or pending review request" },
+          "409": { "$ref": "#/components/responses/Error" },
+          "503": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/cv-change/{id}/approve": {
+      "post": {
+        "operationId": "approveCvChange",
+        "parameters": [
+          { "$ref": "#/components/parameters/id" },
+          { "$ref": "#/components/parameters/csrf" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "../schemas/be2.v1.json#/definitions/ReviewCvChangeRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Approved request and versioned application" },
+          "409": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/cv-change/{id}/reject": {
+      "post": {
+        "operationId": "rejectCvChange",
+        "parameters": [
+          { "$ref": "#/components/parameters/id" },
+          { "$ref": "#/components/parameters/csrf" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "../schemas/be2.v1.json#/definitions/RejectCvChangeRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Rejected request and versioned application" },
+          "409": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/applications/{id}/review": {
+      "post": {
+        "operationId": "reviewApplication",
+        "parameters": [
+          { "$ref": "#/components/parameters/id" },
+          { "$ref": "#/components/parameters/csrf" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "../schemas/be2.v1.json#/definitions/ReviewApplicationRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "New application status/version" },
+          "409": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/applications/{id}/withdraw": {
+      "post": {
+        "operationId": "withdrawApplication",
+        "parameters": [
+          { "$ref": "#/components/parameters/id" },
+          { "$ref": "#/components/parameters/csrf" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "../schemas/be2.v1.json#/definitions/WithdrawApplicationRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Withdrawn after BE3 cancelled open interviews in the same transaction"
+          },
+          "409": { "$ref": "#/components/responses/Error" },
+          "503": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    }
+  }
+}

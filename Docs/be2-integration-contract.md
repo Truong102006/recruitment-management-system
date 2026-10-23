@@ -84,7 +84,7 @@ Với `reason=RESULT_REJECTED`, BE3 phải từ chối công bố nếu còn l�
 
 ## 5. API và DTO mà BE1/BE3/FE cần dựa vào
 
-UC12 đã có service/repository BE2 độc lập và [bàn giao profile](be2-profile-handoff.md) cùng [OpenAPI riêng](../contracts/openapi/be2-profile.v1.json). GET/PATCH chưa được đăng ký vào Nest vì guard/session/CSRF của BE1 và migration thật chưa có; FE dùng contract và fixture, không coi endpoint đã hoạt động.
+UC12 có service/repository và [bàn giao profile](be2-profile-handoff.md) cùng [OpenAPI riêng](../contracts/openapi/be2-profile.v1.json). GET/PATCH đã đăng ký trong `Be2Module` với session/Origin/CSRF guard BE1. Migration BE2 và Outbox BE3 chưa có ở runtime; GET cần bảng BE2, PATCH trả 503 khi thiếu Outbox. FE dùng contract/fixture cho đến khi test HTTP trên PostgreSQL đạt.
 
 Base path `/api`, UUID và ISO8601 có offset, response thành công `{ data, meta? }`; lỗi `{ code, message, fieldErrors?, traceId }`. DTO đầu ra tách `CandidateApplicationDto` và `RecruiterApplicationDto`; không trả Prisma record trực tiếp. Danh sách lọc scope ngay trong query, kể cả `total`.
 
@@ -98,7 +98,7 @@ Base path `/api`, UUID và ISO8601 có offset, response thành công `{ data, me
 | `POST /applications/:id/review`; `POST /applications/:id/withdraw`                                                      | Recruiter; chủ hồ sơ                          | Review chỉ `SCREENING`/`SHORTLISTED` theo cạnh hợp lệ; withdraw có expectedVersion và hủy lịch nguyên tử.                                       |
 | `PUT/DELETE /saved-jobs/:jobId`; `GET /saved-jobs`                                                                      | Candidate                                     | PUT/DELETE idempotent, trả 204; danh sách phân trang và không lộ tin bị hạn chế.                                                                |
 
-Đường dẫn và mã HTTP trên lấy từ mục 7.1 của đặc tả. OpenAPI hiện tại `contracts/openapi/be2-foundation.v1.json` chỉ bao phủ lệnh nộp hồ sơ UC02; JSON Schema `contracts/schemas/be2.v1.json` bao phủ một số request và DTO ứng viên, chưa bao phủ toàn bộ API/DTO recruiter. Khi triển khai phải mở rộng OpenAPI và khóa DTO bằng contract test. BE1/BE3/FE không suy `INTERVIEW_SCHEDULED` từ participant ACCEPTED trước khi lịch được CONFIRMED. Client không có endpoint PATCH status tự do. Header `X-CSRF-Token` trong OpenAPI là quyết định tích hợp với session/Origin của BE1, không đổi quy tắc bảo mật trong báo cáo.
+Đường dẫn và mã HTTP trên lấy từ mục 7.1 của đặc tả. [OpenAPI runtime BE2](../contracts/openapi/be2-runtime.v1.json) liệt kê các route Nest đã đăng ký và trạng thái phụ thuộc; [OpenAPI nền UC02](../contracts/openapi/be2-foundation.v1.json) và [UC12](../contracts/openapi/be2-profile.v1.json) là hợp đồng cũ. JSON Schema `contracts/schemas/be2.v1.json` bao phủ request và DTO công khai hiện có, chưa có DTO recruiter riêng cho ghi chú nội bộ. BE1/BE3/FE không suy `INTERVIEW_SCHEDULED` từ participant ACCEPTED trước khi lịch được CONFIRMED. Client không có endpoint PATCH status tự do. Header `X-CSRF-Token` dùng guard session/Origin của BE1.
 
 ## 6. Idempotency, Outbox và lỗi tích hợp
 

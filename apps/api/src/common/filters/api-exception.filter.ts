@@ -8,6 +8,9 @@ import {
 } from '@nestjs/common';
 import { Response, Request } from 'express';
 import { DomainError } from '../../../../../libs/platform/errors/domain.error';
+import { ApplicationRuleError } from '../../modules/application/rules/application-rule.error';
+import { IdempotencyError } from '../../../../../libs/platform/idempotency/sql-idempotency-store';
+import { CvInputError } from '../../modules/cv/cv-warehouse.service';
 
 interface CustomRequest extends Request {
   traceId?: string;
@@ -32,7 +35,32 @@ export class ApiExceptionFilter implements ExceptionFilter {
     let message = 'An unexpected error occurred';
     let fieldErrors: Record<string, string[]> | undefined = undefined;
 
-    if (exception instanceof DomainError) {
+    if (exception instanceof ApplicationRuleError) {
+      code = exception.code;
+      message = exception.message;
+      status =
+        exception.code === 'VALIDATION_FAILED'
+          ? HttpStatus.BAD_REQUEST
+          : exception.code === 'ACTION_FORBIDDEN'
+            ? HttpStatus.FORBIDDEN
+            : exception.code === 'RESOURCE_NOT_FOUND'
+              ? HttpStatus.NOT_FOUND
+              : HttpStatus.CONFLICT;
+    } else if (exception instanceof IdempotencyError) {
+      status = exception.code === 'INVALID_REQUEST' ? HttpStatus.BAD_REQUEST : HttpStatus.CONFLICT;
+      code = exception.code === 'KEY_CONFLICT' ? 'IDEMPOTENCY_CONFLICT' : exception.code;
+      message =
+        exception.code === 'REQUEST_IN_PROGRESS'
+          ? 'Request is in progress'
+          : 'Idempotency request conflict';
+    } else if (exception instanceof CvInputError) {
+      status =
+        exception.code === 'FILE_TOO_LARGE'
+          ? HttpStatus.PAYLOAD_TOO_LARGE
+          : HttpStatus.UNSUPPORTED_MEDIA_TYPE;
+      code = exception.code;
+      message = exception.message;
+    } else if (exception instanceof DomainError) {
       status = exception.statusCode;
       code = exception.code;
       message = exception.message;
@@ -85,6 +113,7 @@ export class ApiExceptionFilter implements ExceptionFilter {
         default:
           code = `HTTP_${status}`;
       }
+      if (status === HttpStatus.SERVICE_UNAVAILABLE) code = 'DEPENDENCY_UNAVAILABLE';
     } else if (exception instanceof Error) {
       // Driver errors may contain credentials, token material or user data.
       this.logger.error(`Unhandled error [${traceId}]`);
