@@ -17,4 +17,4 @@ Phạm vi: model và SQL cho tám bảng do BE2 sở hữu. Nguồn yêu cầu l
 
 ## Giới hạn đã biết
 
-BE1 foundation/email verification đã có trên main. Prisma Client BE2 đã generate và schema validate trên máy BE2; migration BE2 chưa được chạy trên PostgreSQL tại máy này. CI với PostgreSQL cô lập phải xác nhận deploy, FK, trigger, index và test adapter trước khi coi DB BE2 hoàn thành. Không chạy migration mới trên Neon dùng chung trong bước kiểm thử.
+BE1 foundation/email verification đã có trên main. Prisma Client BE2 đã generate và schema validate trên máy BE2; migration BE2 chưa được chạy trên PostgreSQL tại máy này. [CI nhánh BE2 run 39905484135](https://github.com/Truong102006/recruitment-management-system/actions/runs/39905484135) đã đạt backend/quality-gate với PostgreSQL cô lập, gồm deploy, FK, trigger, index và adapter test. Không chạy migration mới trên Neon dùng chung trong bước kiểm thử.

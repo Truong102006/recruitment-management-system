@@ -1392,7 +1392,7 @@ Hệ thống có 25 bảng, gồm 24 bảng nghiệp vụ và hạ tầng đã x
 
 ## 5.2 Ràng buộc liên bảng và tính nhất quán
 
-**Triển khai DB BE2 (23/10/2026):** [kế hoạch model và migration BE2](be2-data-migration-plan.md) liệt kê tám model do BE2 sở hữu. SQL FK/CHECK/trigger/chỉ mục đã chuyển từ `prisma/pending/` sang migration BE2 sau hai migration BE1. Chưa có kết quả deploy/test PostgreSQL tại máy này hoặc áp dụng DB dùng chung; phải kiểm trên PostgreSQL cô lập trước khi coi DB BE2 hoàn thành. Quy tắc và bất biến trong các bảng dưới đây không thay đổi.
+**Triển khai DB BE2 (23/10/2026):** [kế hoạch model và migration BE2](be2-data-migration-plan.md) liệt kê tám model do BE2 sở hữu. SQL FK/CHECK/trigger/chỉ mục đã chuyển từ `prisma/pending/` sang migration BE2 sau hai migration BE1. [CI nhánh BE2](https://github.com/Truong102006/recruitment-management-system/actions/runs/39905484135) đã deploy và kiểm trên PostgreSQL cô lập; chưa áp dụng DB dùng chung hoặc nghiệm thu HTTP/BE3. Quy tắc và bất biến trong các bảng dưới đây không thay đổi.
 
 | **Mã** | **Bất biến**                                                         | **Nơi bảo vệ và ca kiểm thử**                                                        |
 |--------|----------------------------------------------------------------------|--------------------------------------------------------------------------------------|

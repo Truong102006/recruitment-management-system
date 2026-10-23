@@ -97,7 +97,7 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 | BE2-SAVED-09  | Lưu tin quan tâm / BE2 + Codex                                                    | DONE        | Repository/service idempotent, placeholder theo BE1 visibility; 2 unit + 14 contract đạt trên `feat/be2-remaining-work`. UC14 tổng thể còn IN_PROGRESS vì thiếu route/DB test.                                    |
 | BE2-PORT-10   | Port hồ sơ cho BE1/BE3 / BE2 + Codex                                              | DONE        | Application/Result/Conflict port cùng transaction, history/outbox/idempotency; 3 unit mới đạt. DONE cho code độc lập; chờ BE3 runtime/PostgreSQL.                                                                 |
 | BE2-API-11    | API/DTO và binding Nest / BE2 + Codex                                             | IN_PROGRESS | Route profile/tin lưu/ứng tuyển đã bind BE1, DI boot/tsc/contract đạt; CV API và HTTP PostgreSQL còn thiếu.                                                                                                       |
-| BE2-QA-12     | Migration và kiểm thử tích hợp / BE2 + Codex                                      | IN_PROGRESS | Đang đưa SQL BE2 vào migration sau hai migration BE1 và bổ sung gate kiểm chứng.                                                                                                                                  |
+| BE2-QA-12     | Migration và kiểm thử tích hợp / BE2 + Codex                                      | IN_PROGRESS | CI branch `602d1d6` backend/quality-gate đạt, gồm migration PostgreSQL và adapter test; còn HTTP/BE3/CV provider nghiệm thu.                                                                                      |
 | WORKER-01     | Outbox/email/worker / BE3; idempotency/transaction do BE2 phối hợp                | TODO        | Chưa triển khai                                                                                                                                                                                                   |
 | VIDEO-01      | Jitsi và thu hồi quyền phòng / BE3                                                | TODO        | Chưa tích hợp/kiểm provider thật                                                                                                                                                                                  |
 | QA-01         | Unit/integration/API/concurrency/FE/E2E / từng owner                              | IN_PROGRESS | Main PR #1: hosted 35 suites/316 unit, 13 suites/108 integration (gồm23 contract), evidence8 đạt; coverage92,45% dòng/76,93% nhánh. FE-E2E/runtime/provider còn thiếu. [Bằng chứng](../Docs/be1-verification.md). |
@@ -136,6 +136,21 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 - Bước kế tiếp của BE1: nhận và bind runtime ports BE2/BE3; chạy actual cross-owner/provider/HTTPS acceptance, CI GitHub/negative controls/load/restore/runtime DB permissions và xử lý dependency audit theo owner. Source và gate local đã có bằng chứng; chưa gộp main.
 
 ## Nhật ký báo cáo
+
+### 2026-10-23 12:26 (Asia/Saigon) — BE2 — CI PostgreSQL cho migration và adapter
+
+- Mã báo cáo: 20261023-1226-BE2-ci-postgresql
+- Người thực hiện / AI hỗ trợ: Người phụ trách BE2 (GitHub repository Truong102006) / Codex; chưa xác nhận tên thật.
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: BE2-QA-12, DB-01, TC19/TC43/TC52 ở phạm vi migration và test adapter.
+- Trạng thái: DONE — migration và bộ test đã viết trong CI; BE2-QA-12 tổng thể vẫn IN_PROGRESS vì chưa có HTTP/BE3/CV provider nghiệm thu.
+- Nhánh / commit / PR / tích hợp main: `feat/be2-remaining-work` / `602d1d6` / chưa có PR / Chưa gộp main tại thời điểm báo cáo.
+- Đã hoàn thành: Push sáu commit BE2; GitHub Actions backend và quality-gate thành công với migration deploy, integration/contract/unit và evidence gate theo pipeline.
+- File / bằng chứng: [GitHub Actions run 39905484135](https://github.com/Truong102006/recruitment-management-system/actions/runs/39905484135), `prisma/migrations/20261023121800_be2_candidate_application/migration.sql`, `tests/integration/be2/application-schema.spec.ts`.
+- Kiểm tra đã chạy: CI `backend` success và `quality-gate` success trên commit `602d1d6`; local 330 unit đạt, coverage 91,28% dòng/74,16% nhánh, tsc/lint/build/Prisma validate đạt.
+- Kiểm tra chưa chạy / coverage: HTTP BE2 trên provider/BE3 thật, CV storage/scanner, browser và cloud DB chưa chạy; coverage BE2 riêng chưa đo.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Migration BE2 đã được kiểm trên PostgreSQL cô lập của CI; chưa deploy Neon dùng chung. BE3 cần migration BE2 trước khi thêm FK; FE chỉ tích hợp các endpoint đã có trong OpenAPI runtime sau khi provider được nối.
+- Phần còn thiếu / blocker: BE3 Outbox/InterviewLifecycle, CV storage/scanner và HTTP tích hợp trọn luồng.
+- Bước tiếp theo: Commit bản ghi CI, đưa nhánh BE2 lên main theo yêu cầu, kiểm CI main và cập nhật trạng thái tích hợp.
 
 ### 2026-10-23 12:21 (Asia/Saigon) — BE2 — Bước 12 migration và kiểm thử tích hợp
 
