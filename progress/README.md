@@ -34,7 +34,7 @@
 
 ## Tổng quan hiện tại
 
-**23/10/2026 10:03 — SHIP-BE1: IN_PROGRESS** — Truong102006 / BE1, Codex: đã chia 9 commit và push riêng từng đợt trên `feat/be1-reviewed-delivery`; đang tích hợp 11 commit BE2 từ `origin/main`, chưa gộp main.
+**23/10/2026 10:00 — SHIP-BE1: IN_PROGRESS** — Truong102006 / BE1, Codex: đã chia 9 commit và push riêng từng đợt trên `feat/be1-reviewed-delivery`; đang tích hợp 11 commit BE2 từ `origin/main`, chưa gộp main.
 
 **23/10/2026 — cập nhật working tree BE1:** Identity/Company/Job/Admin và CI backend có code, gate local đạt; [kiểm chứng](../Docs/be1-verification.md). Nhánh `feat/be1-implementation`, HEAD tham chiếu `46b7e19`, thay đổi chưa commit/chưa gộp main. Còn runtime BE2/BE3/provider và nghiệm thu CI/operations/dependency audit; không đánh DONE toàn BE1. Đoạn lịch sử bên dưới mô tả baseline đã tích hợp trước đó.
 
@@ -118,9 +118,9 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 
 ## Nhật ký báo cáo
 
-### 2026-10-23 10:03 (Asia/Saigon) — BE1 — Xuất bản từng commit và tích hợp main
+### 2026-10-23 10:00 (Asia/Saigon) — BE1 — Xuất bản từng commit và tích hợp main
 
-- Mã báo cáo: 20261023-1003-BE1-publish-start
+- Mã báo cáo: 20261023-1000-BE1-publish-start
 - Người thực hiện / AI hỗ trợ: Truong102006 / BE1 / Codex.
 - Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: SHIP-BE1, UC01/04/05/10/11, CI-01.
 - Trạng thái: IN_PROGRESS.
@@ -132,6 +132,8 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 - Thay đổi DB / API / contract và ảnh hưởng đến người khác: Hợp nhất additive model BE1 và BE2; SQL BE2 vẫn pending, không tự áp dụng khi chưa được owner kiểm chứng.
 - Phần còn thiếu / blocker: Cần CI GitHub và kiểm tra tương thích BE2 mới. Phụ thuộc runtime/provider, vận hành và dependency audit còn như bàn giao.
 - Bước tiếp theo: Hoàn tất tích hợp main, chạy gate, mở PR và merge nếu CI đạt.
+
+Ghi chú tích hợp cùng đợt: `ba4476c` đã giữ toàn bộ model và lịch sử BE2 từ main. `db:validate`, `db:generate`, lint, build đạt; typecheck phát hiện hai fake Outbox trong test BE2 còn giới hạn Be2Event. Đã đổi kiểu bộ nhớ test theo tham số thực của OutboxPort (union BE1/BE2), không đổi nghiệp vụ; typecheck chạy lại đạt. Unit/coverage đang chạy lại; chờ hosted CI cho commit sửa tương thích.
 
 ### 2026-10-23 00:54 (Asia/Saigon) — BE2 — Nối sự kiện xóa CV với worker
 

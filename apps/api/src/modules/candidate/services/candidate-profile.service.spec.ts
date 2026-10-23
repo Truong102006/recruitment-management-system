@@ -4,7 +4,6 @@ import type {
   OutboxPort,
   SkillCatalogPort,
 } from '../../../../../../libs/contracts/backend';
-import type { Be2Event } from '../../../../../../libs/contracts/backend/events';
 import type { TransactionDriver } from '../../../../../../libs/platform/database/unit-of-work';
 import { ManagedUnitOfWork } from '../../../../../../libs/platform/database/unit-of-work';
 import type {
@@ -20,7 +19,7 @@ const actor: Actor = { userId: 'candidate-1', sessionId: 'session-1', roles: ['C
 interface State {
   name: string;
   profile: CandidateProfileRow;
-  events: Be2Event[];
+  events: Parameters<OutboxPort['append']>[0][];
   submittedSnapshot: { name: string };
 }
 
