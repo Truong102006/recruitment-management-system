@@ -1,5 +1,6 @@
 module.exports = {
   testEnvironment: 'node',
+  setupFiles: ['<rootDir>/scripts/database/test-environment.cjs'],
   cacheDirectory: '<rootDir>/reports/.jest-cache',
   testMatch: [
     '<rootDir>/apps/api/src/**/*.spec.ts',

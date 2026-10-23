@@ -36,6 +36,7 @@ jobs:
       - run: npm run typecheck
       - run: npm run lint
       - run: npm run build
+      - run: node --test scripts/database/test-environment.test.cjs
       - run: npm run test:evidence
       - run: npm run verify:migrations
       - run: npm run db:migrate:deploy
