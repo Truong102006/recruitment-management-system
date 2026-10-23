@@ -1,8 +1,8 @@
 ---
 phase: 2
-title: "Database audit and outbox foundation"
+title: 'Database audit and outbox foundation'
 status: pending
-effort: ""
+effort: ''
 ---
 
 # Phase 2: Database audit and outbox foundation
@@ -43,13 +43,13 @@ Migration A (đề xuất D03): Outbox + Audit sau user_account; Migration B: In
 
 ## Ma trận test
 
-| Test | Assertion chính |
-|---|---|
-| EC18 | Candidate không insert được evaluation, kể cả SQL trực tiếp |
-| TC14/15 EC12 | 15/120m hợp lệ, overlap bị DB chặn, lịch nối tiếp hợp lệ |
-| EC11/17 | Chỉ một replacement PENDING dạng PROPOSED, một candidate/lịch |
-| EC25/32 | CHECK lease/state; audit runtime append-only |
-| Rollback | Lỗi Outbox/Audit rollback business mutation; không event mồ côi |
+| Test         | Assertion chính                                                 |
+| ------------ | --------------------------------------------------------------- |
+| EC18         | Candidate không insert được evaluation, kể cả SQL trực tiếp     |
+| TC14/15 EC12 | 15/120m hợp lệ, overlap bị DB chặn, lịch nối tiếp hợp lệ        |
+| EC11/17      | Chỉ một replacement PENDING dạng PROPOSED, một candidate/lịch   |
+| EC25/32      | CHECK lease/state; audit runtime append-only                    |
+| Rollback     | Lỗi Outbox/Audit rollback business mutation; không event mồ côi |
 
 ## Success Criteria
 

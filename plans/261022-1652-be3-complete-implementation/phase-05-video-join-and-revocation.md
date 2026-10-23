@@ -1,8 +1,8 @@
 ---
 phase: 5
-title: "Video join and revocation"
+title: 'Video join and revocation'
 status: pending
-effort: ""
+effort: ''
 ---
 
 # Phase 5: Video join and revocation

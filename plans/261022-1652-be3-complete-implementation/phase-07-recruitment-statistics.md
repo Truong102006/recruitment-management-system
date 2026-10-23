@@ -1,8 +1,8 @@
 ---
 phase: 7
-title: "Recruitment statistics"
+title: 'Recruitment statistics'
 status: pending
-effort: ""
+effort: ''
 ---
 
 # Phase 7: Recruitment statistics

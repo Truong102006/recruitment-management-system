@@ -1,8 +1,8 @@
 ---
 phase: 1
-title: "Contracts and integration gates"
+title: 'Contracts and integration gates'
 status: pending
-effort: ""
+effort: ''
 ---
 
 # Phase 1: Contracts and integration gates

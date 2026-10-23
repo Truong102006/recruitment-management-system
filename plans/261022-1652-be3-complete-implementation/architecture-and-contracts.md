@@ -28,39 +28,39 @@ Worker bootstrap tạo application context và chỉ import các module nghiệp
 
 Các đường dẫn dưới đây là tương đối với root repository. Tên file mới là thiết kế dự kiến, không khẳng định đã tồn tại. Không xóa file sản phẩm ở đợt lập kế hoạch.
 
-| Khu vực | File giữ chỗ cần điền / file dự kiến tạo | Trách nhiệm |
-|---|---|---|
-| Interview | `apps/api/src/modules/interview/interview.module.ts`; `controllers/interviews.controller.ts`, `services/{propose-interview,respond-interview,reschedule-interview,cancel-interview,join-interview}.service.ts` | UC08/UC03, orchestration một transaction |
-| Interview rules | `policies/interview.policy.ts`, `rules/{schedule,join-access}.rules.ts`, `repositories/{interview,prisma-interview}.repository.ts`, `ports/interview-lifecycle.port.ts` | Scope, time window, reservation, cancellation/revocation |
-| Evaluation | `apps/api/src/modules/evaluation/evaluation.module.ts`; `controllers/{evaluations,interview-completion,results}.controller.ts`; `services/{evaluate,record-attendance,complete-interview,mark-interviewed,publish-result}.service.ts` | UC13/UC09; application ghi qua BE2 |
-| Evaluation rules | `rules/{evaluation,attendance,completion,result}.rules.ts`, `policies/evaluation.policy.ts`, `repositories/prisma-evaluation.repository.ts`, `ports/evaluation-read.port.ts` | Phiếu riêng tư; completion/result evidence |
-| Notification | `apps/api/src/modules/notification/notification.module.ts`; `controllers/{notifications,event-operations}.controller.ts`, `services/notification.service.ts`, `repositories/{prisma-outbox,prisma-notification,prisma-email}.repository.ts`, `ports/outbox.port.ts` | Outbox/delivery/notification và admin event operations |
-| Audit | `apps/api/src/modules/audit/audit.module.ts`; `controllers/audit-query.controller.ts`, `services/{audit-writer,audit-query}.service.ts`, `policies/audit-read.policy.ts`, `repositories/prisma-audit.repository.ts` | Writer dùng chung và API audit đã làm sạch |
-| Reporting | `apps/api/src/modules/reporting/reporting.module.ts`; `controllers/statistics.controller.ts`, `services/recruitment-statistics.service.ts`, `rules/cohort.rules.ts`, `policies/reporting.policy.ts` | Tổng hợp qua read ports BE1/BE2; không lấy repository nội bộ |
-| Integration | `libs/platform/mail/{mail.port,smtp-mail.adapter}.ts`, `libs/platform/video/{video.port,jitsi-video.adapter}.ts`; domain DTO/mappers ở module tương ứng | Adapter ngoài DB, timeout, redaction |
-| Worker | `apps/worker/src/{main,worker.module}.ts`; `jobs/{outbox-dispatcher,email-delivery,expire-proposals,revoke-room}.job.ts`, `consumers/event-consumer.registry.ts`, `reconciliation/reservation-reconciliation.ts` | Scheduler/polling, graceful shutdown, lease/reconcile |
-| Shared, phối hợp | `libs/platform/database/`, `libs/platform/clock/`, `apps/api/src/app.module.ts`, `prisma/schema.prisma`, `.env.example`, workspace build config | BE2 sở hữu UoW/Tx; BE1 bootstrap; BE3 chỉ nối DI/config đã thống nhất |
-| Contracts/tests | `contracts/openapi/be3.yaml`, `contracts/events/*.v1.schema.json`; module `*.spec.ts`, `tests/{integration,api,concurrency,contract}/be3/` | Request/response/event schemas; test thật |
+| Khu vực          | File giữ chỗ cần điền / file dự kiến tạo                                                                                                                                                                                                                            | Trách nhiệm                                                           |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| Interview        | `apps/api/src/modules/interview/interview.module.ts`; `controllers/interviews.controller.ts`, `services/{propose-interview,respond-interview,reschedule-interview,cancel-interview,join-interview}.service.ts`                                                      | UC08/UC03, orchestration một transaction                              |
+| Interview rules  | `policies/interview.policy.ts`, `rules/{schedule,join-access}.rules.ts`, `repositories/{interview,prisma-interview}.repository.ts`, `ports/interview-lifecycle.port.ts`                                                                                             | Scope, time window, reservation, cancellation/revocation              |
+| Evaluation       | `apps/api/src/modules/evaluation/evaluation.module.ts`; `controllers/{evaluations,interview-completion,results}.controller.ts`; `services/{evaluate,record-attendance,complete-interview,mark-interviewed,publish-result}.service.ts`                               | UC13/UC09; application ghi qua BE2                                    |
+| Evaluation rules | `rules/{evaluation,attendance,completion,result}.rules.ts`, `policies/evaluation.policy.ts`, `repositories/prisma-evaluation.repository.ts`, `ports/evaluation-read.port.ts`                                                                                        | Phiếu riêng tư; completion/result evidence                            |
+| Notification     | `apps/api/src/modules/notification/notification.module.ts`; `controllers/{notifications,event-operations}.controller.ts`, `services/notification.service.ts`, `repositories/{prisma-outbox,prisma-notification,prisma-email}.repository.ts`, `ports/outbox.port.ts` | Outbox/delivery/notification và admin event operations                |
+| Audit            | `apps/api/src/modules/audit/audit.module.ts`; `controllers/audit-query.controller.ts`, `services/{audit-writer,audit-query}.service.ts`, `policies/audit-read.policy.ts`, `repositories/prisma-audit.repository.ts`                                                 | Writer dùng chung và API audit đã làm sạch                            |
+| Reporting        | `apps/api/src/modules/reporting/reporting.module.ts`; `controllers/statistics.controller.ts`, `services/recruitment-statistics.service.ts`, `rules/cohort.rules.ts`, `policies/reporting.policy.ts`                                                                 | Tổng hợp qua read ports BE1/BE2; không lấy repository nội bộ          |
+| Integration      | `libs/platform/mail/{mail.port,smtp-mail.adapter}.ts`, `libs/platform/video/{video.port,jitsi-video.adapter}.ts`; domain DTO/mappers ở module tương ứng                                                                                                             | Adapter ngoài DB, timeout, redaction                                  |
+| Worker           | `apps/worker/src/{main,worker.module}.ts`; `jobs/{outbox-dispatcher,email-delivery,expire-proposals,revoke-room}.job.ts`, `consumers/event-consumer.registry.ts`, `reconciliation/reservation-reconciliation.ts`                                                    | Scheduler/polling, graceful shutdown, lease/reconcile                 |
+| Shared, phối hợp | `libs/platform/database/`, `libs/platform/clock/`, `apps/api/src/app.module.ts`, `prisma/schema.prisma`, `.env.example`, workspace build config                                                                                                                     | BE2 sở hữu UoW/Tx; BE1 bootstrap; BE3 chỉ nối DI/config đã thống nhất |
+| Contracts/tests  | `contracts/openapi/be3.yaml`, `contracts/events/*.v1.schema.json`; module `*.spec.ts`, `tests/{integration,api,concurrency,contract}/be3/`                                                                                                                          | Request/response/event schemas; test thật                             |
 
 BE3 sở hữu 8 bảng: Interview, Participant, Reservation, Evaluation, OutboxEvent, Notification, EmailDelivery, AuditLog. BE1 sở hữu Identity/Company/Job/Skill và admin mutations. BE2 sở hữu Application/History/CV/Idempotency; BE3 tuyệt đối không `update` trực tiếp các bảng đó. AuditQueryController/EventOperationsController do BE3 cung cấp dưới `/admin`, cùng guard/policy BE1; không tạo route trùng ở AdminModule.
 
 ## Các quyết định pha 1 phải chốt
 
-| ID | Khoảng trống/khác biệt | Đề xuất triển khai và người phối hợp | Gate |
-|---|---|---|---|
-| D01 | Hủy lịch cuối cần lùi application nhưng contract chưa có command | BE2 bổ sung command chuyên biệt `onOpenInterviewsCancelled` (tên đề xuất), nhận expectedVersion/evidence/Tx; chỉ lùi khi không CONFIRMED và không COMPLETED/NO_SHOW | TC46 và contract rollback; không dùng generic status setter |
-| D02 | ResultPort chưa biểu diễn evidence lịch trong chữ ký | BE2/BE3 khóa kiểu evidence + cơ chế kiểm dưới cùng Tx; BE3 tính từ lịch đã khóa, BE2 kiểm cạnh/version và điều kiện kết quả | EC08/09; không nhận evidence từ HTTP body |
-| D03 | Mục 8.6 đặt Interview/Outbox cuối, producer cần Outbox trước | Tách migration baseline Outbox/Audit sau Identity; Interview/Evaluation/Notification/Email sau Application; BE2 điều phối thứ tự và cập nhật tài liệu | Deploy DB rỗng và upgrade; không đổi migration đã chạy |
-| D04 | UC09 dùng publicMessage/internalReason, bảng API dùng message/reason | Đề xuất wire DTO `{result,message,reason?,version}`, map sang port `publicMessage/internalReason`; REJECTED bắt buộc reason. BE2/FE2 khóa schema trước code | Contract normalization/hash và không leak reason |
-| D05 | `audit_log` không có actor_type, mô tả cancelled_by lại nhắc actor_type | Đề xuất dùng actor_id NULL = SYSTEM theo bảng hiện có; actor_type tính ở DTO, sửa mô tả cho thống nhất. Nếu nhóm cần lưu cột phải migration có ghi khác biệt | EC32, system cancellation audit không mất nguồn gốc |
-| D06 | candidate/saved_job event không có aggregate_type riêng | Đề xuất `candidate.profile_updated → USER/userId`; `saved_job.* → JOB/jobId` với userId ở payload. BE2 xác nhận semantics aggregateVersion theo aggregate; nếu không khả thi mở enum có migration thay vì gán version sai | JSON schema + consumer registry, không dựa global ordering |
-| D07 | Read port thống kê chưa có milestone/asOf/snapshot | BE1 bổ sung job facts port; BE2 mở rộng reporting facts để nhận cùng read Tx/asOf, trả cohort/distinct milestones, không PII | TC53/54 EC35; không raw JOIN repository BE2 |
-| D08 | Auth mail cần token nhưng event nghiệp vụ chỉ IDs | BE1 sở hữu token validity và read port giải mã vật liệu bảo mật; BE3 chỉ vận chuyển sau commit. Auth material mã hóa không trả admin API/log; event nghiệp vụ khác chỉ IDs/version/time | Token bị resend/reset không được gửi lại như còn hiệu lực |
-| D09 | Thiếu schema read/calendar/admin/unread/evaluation absent | Chốt pagination/filter allowlist; `data:null` cho phiếu chưa tạo của actor được phép (đề xuất); unreadCount theo owner; limits và error codes cố định | API/FE1/FE2 contract fixtures |
-| D10 | Chưa có giao thức provider kiểm generation/kick | Prototype Jitsi private: online authorization ở join + revoke/kick hook. Nếu provider chỉ JWT TTL thì chưa đạt; dừng phần nghiệm thu UC03, ghi blocker và phương án tích hợp | Token cũ bị chặn, active connection revoke đo thật |
-| D11 | API respond chỉ nêu interviewVersion, workflow thay application | Đề xuất trả applicationVersion trong context; các lệnh chạm application dùng version đã đọc và kiểm lại dưới khóa; chốt khi nào client phải gửi applicationVersion riêng | Confirm vs withdraw/result không lost update |
-| D12 | Tự hết hạn proposal cùng rollback request có thể mất mutation EXPIRED | Tác vụ expire riêng bằng Tx có audit/outbox; request confirm vẫn kiểm DB time để từ chối ngay. Không dựa worker đúng giờ để cho phép xác nhận | Đúng expires_at luôn từ chối, worker eventual EXPIRED |
-| D13 | ADMIN retry FAILED chưa có ngân sách retry mới rõ ràng | Đề xuất reset attempt_count cho một chu kỳ mới trên cùng eventId, audit lưu số attempt cũ/lý do/actor/time để đối soát tổng các chu kỳ. Delivery retry chốt tương tự; cập nhật contract trước code | FAILED lần6 không bị claim lần7 tự động; retry ADMIN có audit và không mất lịch sử số lần thử |
+| ID  | Khoảng trống/khác biệt                                                  | Đề xuất triển khai và người phối hợp                                                                                                                                                                                      | Gate                                                                                          |
+| --- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| D01 | Hủy lịch cuối cần lùi application nhưng contract chưa có command        | BE2 bổ sung command chuyên biệt `onOpenInterviewsCancelled` (tên đề xuất), nhận expectedVersion/evidence/Tx; chỉ lùi khi không CONFIRMED và không COMPLETED/NO_SHOW                                                       | TC46 và contract rollback; không dùng generic status setter                                   |
+| D02 | ResultPort chưa biểu diễn evidence lịch trong chữ ký                    | BE2/BE3 khóa kiểu evidence + cơ chế kiểm dưới cùng Tx; BE3 tính từ lịch đã khóa, BE2 kiểm cạnh/version và điều kiện kết quả                                                                                               | EC08/09; không nhận evidence từ HTTP body                                                     |
+| D03 | Mục 8.6 đặt Interview/Outbox cuối, producer cần Outbox trước            | Tách migration baseline Outbox/Audit sau Identity; Interview/Evaluation/Notification/Email sau Application; BE2 điều phối thứ tự và cập nhật tài liệu                                                                     | Deploy DB rỗng và upgrade; không đổi migration đã chạy                                        |
+| D04 | UC09 dùng publicMessage/internalReason, bảng API dùng message/reason    | Đề xuất wire DTO `{result,message,reason?,version}`, map sang port `publicMessage/internalReason`; REJECTED bắt buộc reason. BE2/FE2 khóa schema trước code                                                               | Contract normalization/hash và không leak reason                                              |
+| D05 | `audit_log` không có actor_type, mô tả cancelled_by lại nhắc actor_type | Đề xuất dùng actor_id NULL = SYSTEM theo bảng hiện có; actor_type tính ở DTO, sửa mô tả cho thống nhất. Nếu nhóm cần lưu cột phải migration có ghi khác biệt                                                              | EC32, system cancellation audit không mất nguồn gốc                                           |
+| D06 | candidate/saved_job event không có aggregate_type riêng                 | Đề xuất `candidate.profile_updated → USER/userId`; `saved_job.* → JOB/jobId` với userId ở payload. BE2 xác nhận semantics aggregateVersion theo aggregate; nếu không khả thi mở enum có migration thay vì gán version sai | JSON schema + consumer registry, không dựa global ordering                                    |
+| D07 | Read port thống kê chưa có milestone/asOf/snapshot                      | BE1 bổ sung job facts port; BE2 mở rộng reporting facts để nhận cùng read Tx/asOf, trả cohort/distinct milestones, không PII                                                                                              | TC53/54 EC35; không raw JOIN repository BE2                                                   |
+| D08 | Auth mail cần token nhưng event nghiệp vụ chỉ IDs                       | BE1 sở hữu token validity và read port giải mã vật liệu bảo mật; BE3 chỉ vận chuyển sau commit. Auth material mã hóa không trả admin API/log; event nghiệp vụ khác chỉ IDs/version/time                                   | Token bị resend/reset không được gửi lại như còn hiệu lực                                     |
+| D09 | Thiếu schema read/calendar/admin/unread/evaluation absent               | Chốt pagination/filter allowlist; `data:null` cho phiếu chưa tạo của actor được phép (đề xuất); unreadCount theo owner; limits và error codes cố định                                                                     | API/FE1/FE2 contract fixtures                                                                 |
+| D10 | Chưa có giao thức provider kiểm generation/kick                         | Prototype Jitsi private: online authorization ở join + revoke/kick hook. Nếu provider chỉ JWT TTL thì chưa đạt; dừng phần nghiệm thu UC03, ghi blocker và phương án tích hợp                                              | Token cũ bị chặn, active connection revoke đo thật                                            |
+| D11 | API respond chỉ nêu interviewVersion, workflow thay application         | Đề xuất trả applicationVersion trong context; các lệnh chạm application dùng version đã đọc và kiểm lại dưới khóa; chốt khi nào client phải gửi applicationVersion riêng                                                  | Confirm vs withdraw/result không lost update                                                  |
+| D12 | Tự hết hạn proposal cùng rollback request có thể mất mutation EXPIRED   | Tác vụ expire riêng bằng Tx có audit/outbox; request confirm vẫn kiểm DB time để từ chối ngay. Không dựa worker đúng giờ để cho phép xác nhận                                                                             | Đúng expires_at luôn từ chối, worker eventual EXPIRED                                         |
+| D13 | ADMIN retry FAILED chưa có ngân sách retry mới rõ ràng                  | Đề xuất reset attempt_count cho một chu kỳ mới trên cùng eventId, audit lưu số attempt cũ/lý do/actor/time để đối soát tổng các chu kỳ. Delivery retry chốt tương tự; cập nhật contract trước code                        | FAILED lần6 không bị claim lần7 tự động; retry ADMIN có audit và không mất lịch sử số lần thử |
 
 Các quyết định trên **chưa là thay đổi contract** trong lượt lập kế hoạch. Khi chưa chốt, dùng fake port cho unit; không phát hành endpoint/migration phụ thuộc giả định đó. Không cần đổi báo cáo gốc.
 
@@ -72,11 +72,16 @@ Giữ `Actor`, opaque `Tx`, UnitOfWork và IdempotencyStore do BE2 điều phố
 // Pseudocode hợp đồng mới cần pha 1 chốt; không copy opaque Tx thành any.
 interface VideoPort {
   issueJoinGrant(input: {
-    operationId: string; interviewId: string; userId: string;
-    accessGeneration: number; expiresAt: string;
+    operationId: string;
+    interviewId: string;
+    userId: string;
+    accessGeneration: number;
+    expiresAt: string;
   }): Promise<JoinGrant>;
   revoke(input: {
-    operationId: string; interviewId: string; accessGeneration: number;
+    operationId: string;
+    interviewId: string;
+    accessGeneration: number;
   }): Promise<void>;
 }
 type MailContent =
@@ -84,7 +89,9 @@ type MailContent =
   | { kind: 'auth'; purpose: 'VERIFY' | 'RESET'; tokenMaterial: EphemeralAuthMaterial };
 interface MailPort {
   send(input: {
-    deliveryId: string; recipient: string; content: MailContent;
+    deliveryId: string;
+    recipient: string;
+    content: MailContent;
   }): Promise<{ providerMessageId?: string }>;
 }
 ```
@@ -132,24 +139,24 @@ Rút hồ sơ thuộc BE2: ExitCoordinator gọi LifecyclePort cùng Tx để h�
 
 Các route lấy từ đặc tả mục 7.1; wire DTO chi tiết còn cần khóa ở pha 1. Không thêm endpoint confirm hoặc PATCH status tự do.
 
-| HTTP và route | Dữ liệu/chính sách chính | UC/UI |
-|---|---|---|
-| POST `/applications/:id/interviews` | startAt/endAt có offset, interviewerIds 1–10, key; candidate từ context; version theo D11 | UC08 UI20/21 |
-| POST `/interviews/:id/respond` | response ACCEPTED/DECLINED, interviewVersion; participant actor | UC08 UI13/14 |
-| POST `/interviews/:id/cancel`, `/interviews/:id/reschedule` | reason/version; reschedule tạo proposal mới, không sửa tại chỗ | UC08 UI14/21 |
-| GET `/interviews`, `/interviews/:id`, `/applications/:id/interviews` | participant/recruiter scoped list/detail/total; response/attendance/version; không token/phiếu | UC08 UI11/13/14/20 |
-| POST `/interviews/:id/join` | actor session+CSRF; `[start−10m,end+30m)`, token ≤min(5m, remaining) | UC03 UI14/15 |
-| PUT `/interviews/:id/participants/:userId/attendance` | attendance/reason/participantVersion/interviewVersion; recruiter sau endAt | UC13 UI14/20 |
-| GET/PUT `/interviews/:id/evaluation` | chỉ phiếu của interviewer actor; scores 1–5, recommendation, note; sửa có version | UC13 UI22 |
-| GET `/applications/:id/evaluations` | recruiter đúng scope; luôn chặn candidate/internal privilege escalation | UC13 UI20/23 |
-| POST `/interviews/:id/complete`, `/interviews/:id/no-show` | version; attendance/evaluations; no-show reason và DB time ≥end+30m | UC13 UI14/20 |
-| POST `/applications/:id/mark-interviewed` | version; có COMPLETED/đủ phiếu/không PROPOSED hoặc CONFIRMED | UC13 UI20 |
-| POST `/applications/:id/result` | result HIRED/REJECTED, message, reason?, version/key theo D04 | UC09 UI11/20/23 |
-| GET `/notifications`, PATCH `/notifications/:id/read` | owner scope + unreadCount; readAt lần đầu giữ nguyên khi retry | UC15 UI24 |
-| GET `/statistics` | companyId/from/to/jobId; scope, period≤366d, counts/denominator/rates/asOf | UC16 UI25 |
-| GET `/admin/events`, `/admin/events/:id`; POST `/admin/events/:id/retry` | admin, metadata sạch; chỉ retry FAILED, reason, eventId giữ nguyên | UC10/15 UI28 |
-| GET `/admin/audit` | admin + filter/paging allowlist; không CV/evaluation/token | UC10 UI28 |
-| POST `/admin/interviews/:id/security-cancel` | workflow BE1 gọi port BE3; reason/version, có thể sau startAt | UC10/03/08 UI28 |
+| HTTP và route                                                            | Dữ liệu/chính sách chính                                                                       | UC/UI              |
+| ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------- | ------------------ |
+| POST `/applications/:id/interviews`                                      | startAt/endAt có offset, interviewerIds 1–10, key; candidate từ context; version theo D11      | UC08 UI20/21       |
+| POST `/interviews/:id/respond`                                           | response ACCEPTED/DECLINED, interviewVersion; participant actor                                | UC08 UI13/14       |
+| POST `/interviews/:id/cancel`, `/interviews/:id/reschedule`              | reason/version; reschedule tạo proposal mới, không sửa tại chỗ                                 | UC08 UI14/21       |
+| GET `/interviews`, `/interviews/:id`, `/applications/:id/interviews`     | participant/recruiter scoped list/detail/total; response/attendance/version; không token/phiếu | UC08 UI11/13/14/20 |
+| POST `/interviews/:id/join`                                              | actor session+CSRF; `[start−10m,end+30m)`, token ≤min(5m, remaining)                           | UC03 UI14/15       |
+| PUT `/interviews/:id/participants/:userId/attendance`                    | attendance/reason/participantVersion/interviewVersion; recruiter sau endAt                     | UC13 UI14/20       |
+| GET/PUT `/interviews/:id/evaluation`                                     | chỉ phiếu của interviewer actor; scores 1–5, recommendation, note; sửa có version              | UC13 UI22          |
+| GET `/applications/:id/evaluations`                                      | recruiter đúng scope; luôn chặn candidate/internal privilege escalation                        | UC13 UI20/23       |
+| POST `/interviews/:id/complete`, `/interviews/:id/no-show`               | version; attendance/evaluations; no-show reason và DB time ≥end+30m                            | UC13 UI14/20       |
+| POST `/applications/:id/mark-interviewed`                                | version; có COMPLETED/đủ phiếu/không PROPOSED hoặc CONFIRMED                                   | UC13 UI20          |
+| POST `/applications/:id/result`                                          | result HIRED/REJECTED, message, reason?, version/key theo D04                                  | UC09 UI11/20/23    |
+| GET `/notifications`, PATCH `/notifications/:id/read`                    | owner scope + unreadCount; readAt lần đầu giữ nguyên khi retry                                 | UC15 UI24          |
+| GET `/statistics`                                                        | companyId/from/to/jobId; scope, period≤366d, counts/denominator/rates/asOf                     | UC16 UI25          |
+| GET `/admin/events`, `/admin/events/:id`; POST `/admin/events/:id/retry` | admin, metadata sạch; chỉ retry FAILED, reason, eventId giữ nguyên                             | UC10/15 UI28       |
+| GET `/admin/audit`                                                       | admin + filter/paging allowlist; không CV/evaluation/token                                     | UC10 UI28          |
+| POST `/admin/interviews/:id/security-cancel`                             | workflow BE1 gọi port BE3; reason/version, có thể sau startAt                                  | UC10/03/08 UI28    |
 
 Envelope `{data,meta?}` và lỗi `{code,message,fieldErrors?,traceId}`. DTO NFC/trim/code point, forbid unknown fields, UUID/ISO offset; page≥1, size1–50. 400 dữ liệu; 401 phiên; 404 ngoài phạm vi; 403 đã được biết nhưng thiếu action; 409 version/state/overlap/key; 503 provider tạm lỗi. Error/DTO không trả lịch riêng của người bị overlap. ADMIN không tự có quyền CV/phiếu.
 

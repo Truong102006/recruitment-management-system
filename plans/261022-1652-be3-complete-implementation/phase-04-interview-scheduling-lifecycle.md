@@ -1,8 +1,8 @@
 ---
 phase: 4
-title: "Interview scheduling lifecycle"
+title: 'Interview scheduling lifecycle'
 status: pending
-effort: ""
+effort: ''
 ---
 
 # Phase 4: Interview scheduling lifecycle

@@ -14,47 +14,47 @@ Trạng thái: `TODO` chưa làm; `IN_PROGRESS` đang làm hoặc còn thiếu k
 
 ## Tiến độ chức năng
 
-| Mã | Chức năng | Phụ trách theo báo cáo | Trạng thái | File / bằng chứng | Test |
-|---|---|---|---|---|---|
-| UC01 | Đăng tin tuyển dụng | BE1 | TODO | Chưa có | Chưa chạy |
-| UC02 | Nộp CV ứng tuyển | BE2 | TODO | Chưa có | Chưa chạy |
-| UC03 | Phỏng vấn trực tuyến | BE3 | TODO | Chưa có | Chưa chạy |
-| UC04 | Đăng ký và xác thực | BE1 | TODO | Chưa có | Chưa chạy |
-| UC05 | Tìm kiếm và xem tin | BE1 | TODO | Chưa có | Chưa chạy |
-| UC06 | Quản lý CV và đề nghị thay CV | BE2 | TODO | Chưa có | Chưa chạy |
-| UC07 | Xét duyệt và rút hồ sơ | BE2 | TODO | Chưa có | Chưa chạy |
-| UC08 | Quản lý lịch phỏng vấn | BE3 | TODO | Chưa có | Chưa chạy |
-| UC09 | Công bố kết quả | BE3 | TODO | Chưa có | Chưa chạy |
-| UC10 | Quản trị và kiểm duyệt | BE1 | TODO | Chưa có | Chưa chạy |
-| UC11 | Doanh nghiệp và thành viên | BE1 | TODO | Chưa có | Chưa chạy |
-| UC12 | Hồ sơ cá nhân | BE2 | TODO | Chưa có | Chưa chạy |
-| UC13 | Đánh giá và hoàn tất phỏng vấn | BE3 | TODO | Chưa có | Chưa chạy |
-| UC14 | Lưu tin quan tâm | BE2 | TODO | Chưa có | Chưa chạy |
-| UC15 | Thông báo | BE3 | TODO | Chưa có | Chưa chạy |
-| UC16 | Thống kê tuyển dụng | BE3 | TODO | Chưa có | Chưa chạy |
+| Mã   | Chức năng                      | Phụ trách theo báo cáo | Trạng thái | File / bằng chứng | Test      |
+| ---- | ------------------------------ | ---------------------- | ---------- | ----------------- | --------- |
+| UC01 | Đăng tin tuyển dụng            | BE1                    | TODO       | Chưa có           | Chưa chạy |
+| UC02 | Nộp CV ứng tuyển               | BE2                    | TODO       | Chưa có           | Chưa chạy |
+| UC03 | Phỏng vấn trực tuyến           | BE3                    | TODO       | Chưa có           | Chưa chạy |
+| UC04 | Đăng ký và xác thực            | BE1                    | TODO       | Chưa có           | Chưa chạy |
+| UC05 | Tìm kiếm và xem tin            | BE1                    | TODO       | Chưa có           | Chưa chạy |
+| UC06 | Quản lý CV và đề nghị thay CV  | BE2                    | TODO       | Chưa có           | Chưa chạy |
+| UC07 | Xét duyệt và rút hồ sơ         | BE2                    | TODO       | Chưa có           | Chưa chạy |
+| UC08 | Quản lý lịch phỏng vấn         | BE3                    | TODO       | Chưa có           | Chưa chạy |
+| UC09 | Công bố kết quả                | BE3                    | TODO       | Chưa có           | Chưa chạy |
+| UC10 | Quản trị và kiểm duyệt         | BE1                    | TODO       | Chưa có           | Chưa chạy |
+| UC11 | Doanh nghiệp và thành viên     | BE1                    | TODO       | Chưa có           | Chưa chạy |
+| UC12 | Hồ sơ cá nhân                  | BE2                    | TODO       | Chưa có           | Chưa chạy |
+| UC13 | Đánh giá và hoàn tất phỏng vấn | BE3                    | TODO       | Chưa có           | Chưa chạy |
+| UC14 | Lưu tin quan tâm               | BE2                    | TODO       | Chưa có           | Chưa chạy |
+| UC15 | Thông báo                      | BE3                    | TODO       | Chưa có           | Chưa chạy |
+| UC16 | Thống kê tuyển dụng            | BE3                    | TODO       | Chưa có           | Chưa chạy |
 
 ## Hạ tầng và frontend
 
-| Hạng mục | Trạng thái | Bằng chứng / phần còn thiếu |
-|---|---|---|
-| Đồng bộ GitHub | DONE | origin/main đã nhận ed9fe6d và 9cded06; không đưa môi trường local/node_modules lên Git |
-| Đặc tả tổng hợp | DONE | project-specification.md |
-| Quy tắc và sổ tiến độ | DONE | ../AGENTS.md và file này |
-| Khung workspace và cấu hình phát triển | DONE | package.json/lockfile, apps/api, apps/worker, apps/web, cấu hình công cụ; Docs/development-setup.md |
-| Hợp đồng tích hợp BE2 phiên bản 1 | DONE | Docs/be2-integration-contract.md; đã đối chiếu đặc tả và kiểm tra liên kết/diff, mới là tài liệu thiết kế |
-| Hướng dẫn AI BE1/BE3 | DONE | Docs/BE1-BE3_note.md; đã kiểm tra phạm vi giao việc, liên kết tài liệu và diff; chưa phải code ứng dụng |
-| Backend NestJS/TypeScript | IN_PROGRESS | Có manifest và module/bootstrap trống; chưa cài dependency hoặc viết bootstrap |
-| PostgreSQL/Prisma, 25 bảng, migration, seed | IN_PROGRESS | Có Compose và datasource/generator; chưa có model/constraint/migration thực |
-| Storage CV và scanner | TODO | Chưa tích hợp |
-| Outbox/email/idempotency/worker | TODO | Chưa triển khai |
-| Jitsi và thu hồi quyền phòng | TODO | Chưa kiểm provider thật |
-| FE1: UI01–UI12, UI24, UI29 | TODO | Có folder chức năng và cấu hình React/Vite; chưa có giao diện |
-| FE2: UI13–UI23, UI25–UI28 | TODO | Có folder chức năng và cấu hình React/Vite; chưa có giao diện |
-| OpenAPI và contract test | IN_PROGRESS | Đã chốt tài liệu hợp đồng tích hợp BE2 với BE1/BE3; chưa có OpenAPI, event schema hoặc contract test thực thi |
-| Unit/integration/API/concurrency | TODO | TC01–TC60 và EC01–EC40 chưa thực thi |
-| Frontend/E2E/accessibility | TODO | Ma trận FE chưa thực thi |
-| CI/coverage/evidence gate | TODO | Chưa có pipeline và report |
-| Hiệu năng/backup/restore/vận hành | TODO | Chưa đo và diễn tập |
+| Hạng mục                                    | Trạng thái  | Bằng chứng / phần còn thiếu                                                                                   |
+| ------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------- |
+| Đồng bộ GitHub                              | DONE        | origin/main đã nhận ed9fe6d và 9cded06; không đưa môi trường local/node_modules lên Git                       |
+| Đặc tả tổng hợp                             | DONE        | project-specification.md                                                                                      |
+| Quy tắc và sổ tiến độ                       | DONE        | ../AGENTS.md và file này                                                                                      |
+| Khung workspace và cấu hình phát triển      | DONE        | package.json/lockfile, apps/api, apps/worker, apps/web, cấu hình công cụ; Docs/development-setup.md           |
+| Hợp đồng tích hợp BE2 phiên bản 1           | DONE        | Docs/be2-integration-contract.md; đã đối chiếu đặc tả và kiểm tra liên kết/diff, mới là tài liệu thiết kế     |
+| Hướng dẫn AI BE1/BE3                        | DONE        | Docs/BE1-BE3_note.md; đã kiểm tra phạm vi giao việc, liên kết tài liệu và diff; chưa phải code ứng dụng       |
+| Backend NestJS/TypeScript                   | IN_PROGRESS | Có manifest và module/bootstrap trống; chưa cài dependency hoặc viết bootstrap                                |
+| PostgreSQL/Prisma, 25 bảng, migration, seed | IN_PROGRESS | Có Compose và datasource/generator; chưa có model/constraint/migration thực                                   |
+| Storage CV và scanner                       | TODO        | Chưa tích hợp                                                                                                 |
+| Outbox/email/idempotency/worker             | TODO        | Chưa triển khai                                                                                               |
+| Jitsi và thu hồi quyền phòng                | TODO        | Chưa kiểm provider thật                                                                                       |
+| FE1: UI01–UI12, UI24, UI29                  | TODO        | Có folder chức năng và cấu hình React/Vite; chưa có giao diện                                                 |
+| FE2: UI13–UI23, UI25–UI28                   | TODO        | Có folder chức năng và cấu hình React/Vite; chưa có giao diện                                                 |
+| OpenAPI và contract test                    | IN_PROGRESS | Đã chốt tài liệu hợp đồng tích hợp BE2 với BE1/BE3; chưa có OpenAPI, event schema hoặc contract test thực thi |
+| Unit/integration/API/concurrency            | TODO        | TC01–TC60 và EC01–EC40 chưa thực thi                                                                          |
+| Frontend/E2E/accessibility                  | TODO        | Ma trận FE chưa thực thi                                                                                      |
+| CI/coverage/evidence gate                   | TODO        | Chưa có pipeline và report                                                                                    |
+| Hiệu năng/backup/restore/vận hành           | TODO        | Chưa đo và diễn tập                                                                                           |
 
 ## Công việc đang làm và trở ngại
 

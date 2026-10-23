@@ -1,8 +1,8 @@
 ---
 phase: 6
-title: "Evaluation completion and results"
+title: 'Evaluation completion and results'
 status: pending
-effort: ""
+effort: ''
 ---
 
 # Phase 6: Evaluation completion and results
