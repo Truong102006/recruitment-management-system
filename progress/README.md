@@ -69,10 +69,11 @@ Các công việc trên nhánh cá nhân chưa được báo cáo vào đây ch�
 
 Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; không đánh dấu cả nhóm UI hoàn thành nếu mới xong một màn.
 
-| Mã  | Phạm vi                                                                                       | Phụ trách | Trạng thái trên main | Bằng chứng / phần còn thiếu                               |
-| --- | --------------------------------------------------------------------------------------------- | --------- | -------------------- | --------------------------------------------------------- |
-| FE1 | UI01–UI12, UI24, UI29: tìm việc, auth, ứng viên, CV, hồ sơ, tin lưu, thông báo, lỗi chung     | FE1       | TODO                 | Có cấu hình React/Vite; React entry, app/router còn trống |
-| FE2 | UI13–UI23, UI25–UI28: lịch/video, doanh nghiệp, tin, hồ sơ, đánh giá/kết quả, thống kê, admin | FE2       | TODO                 | Chưa có màn hình hoặc E2E                                 |
+| Mã         | Phạm vi                                                                                       | Phụ trách | Trạng thái trên main | Bằng chứng / phần còn thiếu                                                                                                 |
+| ---------- | --------------------------------------------------------------------------------------------- | --------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| FE1        | UI01–UI12, UI24, UI29: tìm việc, auth, ứng viên, CV, hồ sơ, tin lưu, thông báo, lỗi chung     | FE1       | TODO                 | Có cấu hình React/Vite; React entry, app/router còn trống                                                                   |
+| FE2        | UI13–UI23, UI25–UI28: lịch/video, doanh nghiệp, tin, hồ sơ, đánh giá/kết quả, thống kê, admin | FE2       | TODO                 | Chưa có màn hình hoặc E2E                                                                                                   |
+| FE2-PHASE1 | Nền tảng kiến trúc FE2: Tokens, Router modular, HTTP client, CompanyContext, Mock layer       | FE2       | DONE (trên nhánh)    | 21 tests đạt; coverage 97,56% dòng / 92,09% nhánh; build/lint/typecheck pass trên `feat/fe2-implementation`. Chưa gộp main. |
 
 ### Tài liệu và hạ tầng chung
 
@@ -130,6 +131,41 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 - Bước kế tiếp của BE1: nhận và bind runtime ports BE2/BE3; chạy actual cross-owner/provider/HTTPS acceptance, CI GitHub/negative controls/load/restore/runtime DB permissions và xử lý dependency audit theo owner. Source và gate local đã có bằng chứng; chưa gộp main.
 
 ## Nhật ký báo cáo
+
+### 2026-10-23 19:40 (Asia/Saigon) — FE2 — Hoàn thành Pha 1 nền tảng kiến trúc FE2
+
+- Mã báo cáo: 20261023-1940-FE2-phase1-done
+- Người thực hiện / AI hỗ trợ: Antigravity (hỗ trợ FE2).
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: FE2-PHASE1, UI13–UI23, UI25–UI28; design tokens, modular router, HTTP client, CompanyContext, AuthContext, Recruiter/Admin layout shells.
+- Trạng thái: DONE (phạm vi nhánh `feat/fe2-implementation`).
+- Nhánh / commit / PR / tích hợp main: `feat/fe2-implementation`; commit chứa báo cáo này; chưa gộp main.
+- Đã hoàn thành: Khởi tạo hệ thống tokens.css & global.css; xây dựng HttpClient facade tự động gắn CSRF và Idempotency-Key; xây dựng CompanyContext hủy in-flight query và xóa tenant cache khi switch công ty; tạo RecruiterLayout và AdminLayout; phân tách cây router modular sạch sẽ cho các module FE2; cấu hình AppProviders và React 19 entry; thiết lập alias @rms/contracts/public.
+- File / bằng chứng: apps/web/src/styles/tokens.css, global.css; apps/web/src/lib/http/api-client.ts, api-client.test.ts; apps/web/src/features/companies/context/company-context.tsx, company-context.test.tsx; apps/web/src/features/auth/context/auth-context.tsx, auth-context.test.tsx; apps/web/src/app/layouts/recruiter-layout.tsx, recruiter-layout.test.tsx, admin-layout.tsx, admin-layout.test.tsx; apps/web/src/app/router.tsx, router.test.tsx, providers.tsx, app.tsx, app.test.tsx, main.tsx.
+- Kiểm tra đã chạy:
+  - `npm run typecheck`: đạt (tsc backend + web clean 0 lỗi).
+  - `npm run lint`: đạt (eslint apps libs tests --max-warnings=0 clean).
+  - `npm run format:check`: đạt (All matched files use Prettier code style).
+  - `npm run test:web:ci`: đạt 7 suites, 21/21 tests passed; coverage dòng 97,56%, coverage nhánh 92,09% (vượt ngưỡng yêu cầu 80% / 70%).
+  - `npm run build`: đạt (build thành công cả @rms/api, @rms/web, @rms/worker).
+- Kiểm tra chưa chạy / coverage: Chưa chạy Playwright E2E cho UI hoàn chỉnh vì các màn hình nghiệp vụ cụ thể sẽ thực hiện từ Pha 2–6.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không sửa đổi DB/API hay schema; import kiểu dữ liệu an toàn từ @rms/contracts/public; cô lập hoàn toàn không ảnh hưởng tới FE1 hay Backend.
+- Phần còn thiếu / blocker: Không có blocker. Các màn hình UI chi tiết sẽ triển khai từ Pha 2 (Component dùng chung DataTable, Calendar/Agenda).
+- Bước tiếp theo: Bắt đầu Pha 2 (xây dựng DataTable generic, Calendar/Agenda component và hoàn thiện UI Shell).
+
+### 2026-10-23 19:30 (Asia/Saigon) — FE2 — Bắt đầu Pha 1 nền tảng kiến trúc FE2
+
+- Mã báo cáo: 20261023-1930-FE2-phase1-start
+- Người thực hiện / AI hỗ trợ: Antigravity (hỗ trợ FE2).
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: FE2-PHASE1, UI13–UI23, UI25–UI28; hạ tầng apps/web, design tokens, HTTP client, modular router, CompanyContext.
+- Trạng thái: IN_PROGRESS
+- Nhánh / commit / PR / tích hợp main: `feat/fe2-implementation`; commit chứa báo cáo này; chưa gộp main.
+- Đã hoàn thành: Chốt kế hoạch 8 pha cho FE2 tại fe2-implementation-plan.md; tạo nhánh feat/fe2-implementation; cài đặt dependencies npm ci; bắt đầu lập trình Phase 1 theo nguyên tắc zero-collision với FE1.
+- File / bằng chứng: Cập nhật progress/README.md; fe2-implementation-plan.md.
+- Kiểm tra đã chạy: npm run typecheck đạt (tsc backend + web clean); npm run db:generate đạt.
+- Kiểm tra chưa chạy / coverage: vitest run --coverage chưa chạy vì đang viết test Phase 1.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không thay đổi DB/API; tuân thủ contract libs/contracts/public/index.ts; cô lập hoàn toàn với FE1 và BE.
+- Phần còn thiếu / blocker: Đang viết code và unit test cho Phase 1; chưa có blocker.
+- Bước tiếp theo: Hoàn thành tokens.css, api-client.ts, company-context.tsx, modular router và bộ test Vitest.
 
 ### 2026-10-23 11:02 (Asia/Saigon) — BE1 — Tích hợp cấu hình cloud/test lên main
 
