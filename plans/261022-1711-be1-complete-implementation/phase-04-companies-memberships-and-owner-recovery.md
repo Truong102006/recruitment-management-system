@@ -1,8 +1,8 @@
 ---
 phase: 4
-title: "Companies memberships and owner recovery"
-status: pending
-effort: ""
+title: 'Companies memberships and owner recovery'
+status: in-progress
+effort: ''
 ---
 
 # Phase 4: Companies memberships and owner recovery
@@ -53,3 +53,7 @@ CompanyPolicy tách member management context và operational APPROVED context A
 ## Risk Assessment
 
 Chỉ khóa company rồi thêm khóa owner user sẽ đảo lock order: discover/revalidate set và rollback/retry có giới hạn. Khóa security target owner cuối là ngoại lệ hợp lệ, không tự từ chối ở OwnerRules đường admin. Thay membership không được dựa global roles cached từ phiên cũ.
+
+## Đồng bộ kiểm chứng 23/10/2026 — Codex hỗ trợ BE1
+
+Company/membership/recovery có source, verified predicate và account locks trước company; còn application conflict/interview runtime và barrier liên nhóm. Pha giữ IN_PROGRESS theo tiêu chí đầy đủ; không coi fake ports là runtime acceptance. Báo cáo lịch sử giữ trong sổ chung. Bằng chứng cuối xem [tiến độ](../../progress/README.md), [bàn giao](../../Docs/be1-handoff.md) và artifact local `reports/be1/final-verification.md`. Chưa commit/chưa gộp main.

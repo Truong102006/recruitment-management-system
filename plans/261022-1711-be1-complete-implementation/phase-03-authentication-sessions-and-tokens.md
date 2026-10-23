@@ -1,8 +1,8 @@
 ---
 phase: 3
-title: "Authentication sessions and tokens"
-status: pending
-effort: ""
+title: 'Authentication sessions and tokens'
+status: in-progress
+effort: 'completed'
 ---
 
 # Phase 3: Authentication sessions and tokens
@@ -53,3 +53,7 @@ RegisterService/SessionService/AuthTokenService/ResetPasswordService cùng repos
 ## Risk Assessment
 
 Không thể chứng minh không enumeration tuyệt đối với201/202 theo nguồn; ghi đúng giới hạn. Session guard kiểm account status nhưng command vẫn cần lock/recheck để tránh TOCTOU. Không trả csrf_hash/session token hash qua session DTO; không lưu raw token trong idempotency response.
+
+## Đồng bộ kiểm chứng 23/10/2026 — Codex hỗ trợ BE1
+
+Auth/session/token có PostgreSQL rollback/lock-wait evidence; còn profile/mail runtime và browser HTTPS. Pha giữ IN_PROGRESS theo tiêu chí đầy đủ; không coi fake ports là runtime acceptance. Báo cáo lịch sử giữ trong sổ chung. Bằng chứng cuối xem [tiến độ](../../progress/README.md), [bàn giao](../../Docs/be1-handoff.md) và artifact local `reports/be1/final-verification.md`. Chưa commit/chưa gộp main.

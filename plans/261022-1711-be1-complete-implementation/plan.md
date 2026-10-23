@@ -1,15 +1,15 @@
 ---
-title: "Triển khai toàn bộ backend BE1"
-description: "Kế hoạch BE1 từ nền API, danh tính, doanh nghiệp, tin tuyển dụng đến quản trị, tích hợp và CI có bằng chứng."
-status: pending
+title: 'Triển khai toàn bộ backend BE1'
+description: 'Kế hoạch BE1 từ nền API, danh tính, doanh nghiệp, tin tuyển dụng đến quản trị, tích hợp và CI có bằng chứng.'
+status: in-progress
 priority: P1
-branch: "main"
+branch: 'feat/be1-implementation'
 tags: [backend, database, api, auth, infra]
 relatedPlans: [261022-1652-be3-complete-implementation]
 blockedBy: []
 blocks: []
-created: "2026-10-22T10:12:42.041Z"
-createdBy: "ck:plan"
+created: '2026-10-22T10:12:42.041Z'
+createdBy: 'ck:plan'
 source: skill
 ---
 
@@ -17,32 +17,32 @@ source: skill
 
 ## Overview
 
-Hoàn thành toàn bộ UC01, UC04, UC05, UC10, UC11 và hạ tầng BE1 theo báo cáo8.3. Người lập: Codex hỗ trợ BE1, chưa xác nhận tên người phụ trách; ngày22/10/2026 Asia/Saigon. **Đây là tài liệu kế hoạch, 8 pha vẫn pending; chưa code/test/coverage mới.** Source API/worker/modules/seed hiện trống, Prisma chỉ generator/datasource; không suy chức năng đã có từ file giữ chỗ hoặc kế hoạch BE3.
+Hoàn thành toàn bộ UC01, UC04, UC05, UC10, UC11 và hạ tầng BE1 theo báo cáo8.3. Người lập: Codex hỗ trợ BE1, chưa xác nhận tên người phụ trách; ngày22/10/2026 Asia/Saigon. **Cập nhật 23/10/2026:** có source BE1 Identity/Company/Job/Admin, migrations, API/security tests và CI backend trong working tree. Các pha giữ IN_PROGRESS do còn gate liên nhóm/provider/CI/operations chưa có bằng chứng. Xem từng pha và sổ tiến độ; không suy nghiệm thu từ source/mock.
 
 Phạm vi gồm 9 bảng BE1, bootstrap/security API, port cho BE2/BE3, Identity/Company/Job/Admin, DTO/OpenAPI/events, seed/test/CI và bàn giao. Không triển khai thay phần CV/Application/Interview/worker của owner khác; không thêm broker, social login, thanh toán hay lời mời user chưa có tài khoản. Không ước lượng ngày khi chưa biết năng lực/thời gian thành viên.
 
 ## Phases
 
-| Phase | Name | Status |
-|-------|------|--------|
-| 1 | [Contracts and cross-team integration](./phase-01-contracts-and-cross-team-integration.md) | Pending |
-| 2 | [Bootstrap and identity database](./phase-02-bootstrap-and-identity-database.md) | Pending |
-| 3 | [Authentication sessions and tokens](./phase-03-authentication-sessions-and-tokens.md) | Pending |
-| 4 | [Companies memberships and owner recovery](./phase-04-companies-memberships-and-owner-recovery.md) | Pending |
-| 5 | [Jobs publication search and skills](./phase-05-jobs-publication-search-and-skills.md) | Pending |
-| 6 | [Admin moderation and security revocation](./phase-06-admin-moderation-and-security-revocation.md) | Pending |
-| 7 | [Integration concurrency and API security](./phase-07-integration-concurrency-and-api-security.md) | Pending |
-| 8 | [CI operations verification and handoff](./phase-08-ci-operations-verification-and-handoff.md) | Pending |
+| Phase | Name                                                                                               | Status      |
+| ----- | -------------------------------------------------------------------------------------------------- | ----------- |
+| 1     | [Contracts and cross-team integration](./phase-01-contracts-and-cross-team-integration.md)         | In Progress |
+| 2     | [Bootstrap and identity database](./phase-02-bootstrap-and-identity-database.md)                   | In Progress |
+| 3     | [Authentication sessions and tokens](./phase-03-authentication-sessions-and-tokens.md)             | In Progress |
+| 4     | [Companies memberships and owner recovery](./phase-04-companies-memberships-and-owner-recovery.md) | In Progress |
+| 5     | [Jobs publication search and skills](./phase-05-jobs-publication-search-and-skills.md)             | In Progress |
+| 6     | [Admin moderation and security revocation](./phase-06-admin-moderation-and-security-revocation.md) | In Progress |
+| 7     | [Integration concurrency and API security](./phase-07-integration-concurrency-and-api-security.md) | In Progress |
+| 8     | [CI operations verification and handoff](./phase-08-ci-operations-verification-and-handoff.md)     | In Progress |
 
 ## Dependencies
 
-| Đầu vào/đầu ra | Owner và gate |
-|---|---|
-| UnitOfWork/opaque Tx/IdempotencyStore; candidate-profile facade; conflict read port | BE2; chốt pha 1, cần thật cho register/membership và kiểm tích hợp |
-| OutboxPort/AuditWriter + migration baseline | BE3 pha 1–2, cần sau migration Identity để producer BE1 ghi sự kiện nguyên tử |
-| Membership schedule check, revoke scope/security-cancel, auth-mail worker | BE3; BE1 pha 4/6 nối BE3 pha 4/5; test provider thật để nghiệm thu revoke |
-| Actor/session/CSRF/access/job ports + Identity/Company/Job migration | BE1 cung cấp sớm cho cả hai BE; không chờ hoàn thành UC10 mới xuất ports |
-| OpenAPI/common error/security bootstrap và CI skeleton | BE1 điều phối; mỗi owner thêm test/contract/job của mình |
+| Đầu vào/đầu ra                                                                      | Owner và gate                                                                 |
+| ----------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| UnitOfWork/opaque Tx/IdempotencyStore; candidate-profile facade; conflict read port | BE2; chốt pha 1, cần thật cho register/membership và kiểm tích hợp            |
+| OutboxPort/AuditWriter + migration baseline                                         | BE3 pha 1–2, cần sau migration Identity để producer BE1 ghi sự kiện nguyên tử |
+| Membership schedule check, revoke scope/security-cancel, auth-mail worker           | BE3; BE1 pha 4/6 nối BE3 pha 4/5; test provider thật để nghiệm thu revoke     |
+| Actor/session/CSRF/access/job ports + Identity/Company/Job migration                | BE1 cung cấp sớm cho cả hai BE; không chờ hoàn thành UC10 mới xuất ports      |
+| OpenAPI/common error/security bootstrap và CI skeleton                              | BE1 điều phối; mỗi owner thêm test/contract/job của mình                      |
 
 Đã quét kế hoạch BE3 đang pending và cập nhật [điểm nối hai chiều](../261022-1652-be3-complete-implementation/plan.md). Phụ thuộc qua lại ở **milestone từng pha**, không dùng `blockedBy` cấp toàn kế hoạch gây vòng chờ giả. `relatedPlans` chỉ metadata liên quan, không là gate CLI; gate chi tiết ở [blueprint](architecture-and-contracts.md). Chưa có plan BE2 để tham chiếu ID.
 
@@ -59,10 +59,14 @@ Phạm vi gồm 9 bảng BE1, bootstrap/security API, port cho BE2/BE3, Identity
 - [ ] 5 UC có API đọc/ghi, schema/migration/seed, policy/rules và OpenAPI/test thực.
 - [ ] Auth token/session/CSRF, reset/login/lock và OWNER/ADMIN đồng thời đúng; log/DTO không lộ bí mật.
 - [ ] Company/job scope và lifecycle đúng; submit/close/suspend/membership races có PostgreSQL barrier test.
-- [ ] Ports/Tx/events nối BE2/BE3 thật; security revocation không chờ event mới chặn join, provider evidence đầy đủ.
+- [ ] Portss/Tx/events nối BE2/BE3 thật; ecurity revocation không chờ event mới chặn join, provider evidence đầy đủ.
 - [ ] CI/gate/coverage/migration/negative controls thực; không Critical/High mở; load/restore phối hợp có evidence.
 - [ ] Người khác clean setup/demo được, review BE2 và cập nhật trạng thái tích hợp trong sổ chung.
 
 ## Kiểm tra và giới hạn
 
 [Báo cáo rà soát kế hoạch](reports/plan-review.md). Dùng `ck:plan` và tổ chức output theo `ck:project-organization`; scaffold bằng `npm exec --yes --package claudekit-cli@4.5.2 -- ck plan create ...`. Không thay dependencies/lockfile ứng dụng. Không có Claude Task tools hoặc script set-active-plan; dùng checklist phase. Kế hoạch ở working tree `main`, chưa commit/chưa gộp main. Các snippet là blueprint, chưa phải source chạy được; A01–A15 cần chốt ở pha 1 trước triển khai phần phụ thuộc.
+
+## Bàn giao triển khai 23/10/2026
+
+Đã đồng bộ cả 8 pha và gỡ checkmark rộng chưa đủ bằng chứng ở pha 1–3. Đọc [setup](../../Docs/be1-setup.md), [runbook](../../Docs/be1-security-runbook.md), [handoff](../../Docs/be1-handoff.md), [tiến độ](../../progress/README.md). Không có Claude Task tools; dùng checklist pha và sổ chung. Code BE1 không thay nghiệm thu BE2/BE3/FE/provider.

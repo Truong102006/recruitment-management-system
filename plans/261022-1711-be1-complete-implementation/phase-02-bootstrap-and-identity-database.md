@@ -1,8 +1,8 @@
 ---
 phase: 2
-title: "Bootstrap and identity database"
-status: pending
-effort: ""
+title: 'Bootstrap and identity database'
+status: in-progress
+effort: 'completed'
 ---
 
 # Phase 2: Bootstrap and identity database
@@ -51,3 +51,7 @@ Tách hàm cấu hình API dùng lại ở main và test harness. Guard Session/
 ## Risk Assessment
 
 Secure cookie không hoạt động như dự kiến trên topology HTTP khác origin: giải quyết A05 trước auth browser test. Raw stack/Prisma error có thể leak secrets: fixture chủ động chứa chuỗi sentinel trong log tests. Chưa có Docker/DB phải báo fail/blocker, không skip.
+
+## Đồng bộ kiểm chứng 23/10/2026 — Codex hỗ trợ BE1
+
+Bootstrap, additive email_verified_at và migration PostgreSQL có test; còn DB runtime permissions và historical release upgrade. Pha giữ IN_PROGRESS theo tiêu chí đầy đủ; không coi fake ports là runtime acceptance. Báo cáo lịch sử giữ trong sổ chung. Bằng chứng cuối xem [tiến độ](../../progress/README.md), [bàn giao](../../Docs/be1-handoff.md) và artifact local `reports/be1/final-verification.md`. Chưa commit/chưa gộp main.

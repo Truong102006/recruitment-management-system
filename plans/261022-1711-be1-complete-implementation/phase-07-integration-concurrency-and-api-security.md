@@ -1,8 +1,8 @@
 ---
 phase: 7
-title: "Integration concurrency and API security"
-status: pending
-effort: ""
+title: 'Integration concurrency and API security'
+status: in-progress
+effort: ''
 ---
 
 # Phase 7: Integration concurrency and API security
@@ -46,8 +46,12 @@ Test suites theo owner interface, shared fixture IDs/versions và dependency man
 - [ ] Test xuyên owner dùng implementation thật+PostgreSQL và barrier, verify rollback/constraints/side effects.
 - [ ] Scope/CSRF/auth races/admin invariants/submit lifecycle đều có evidence, không Critical/High mở.
 - [ ] Event/DTO schemas và FE fixtures cùng behavior production; log redaction được kiểm.
-- [ ] Gate chưa chạy/thiếu runtime/provider ghi rõ, không đổi trạng thái DONE khi mới mock.
+- [x] Gate chưa chạy/thiếu runtime/provider ghi rõ, không đổi trạng thái DONE khi mới mock.
 
 ## Risk Assessment
 
 `Promise.all` không tự chứng minh overlap; test cần connection/barrier xác nhận đang chờ/chồng Tx. Không tự sửa test expectation khác spec để xanh. NFR/API security toàn hệ thống cần owner BE2/BE3/FE xác nhận, không BE1 báo hoàn thành thay.
+
+## Đồng bộ kiểm chứng 23/10/2026 — Codex hỗ trợ BE1
+
+API/DB security và lock-wait barrier có evidence; runtime BE2/BE3/FE/provider chưa được chứng minh. Pha giữ IN_PROGRESS theo tiêu chí đầy đủ; không coi fake ports là runtime acceptance. Báo cáo lịch sử giữ trong sổ chung. Bằng chứng cuối xem [tiến độ](../../progress/README.md), [bàn giao](../../Docs/be1-handoff.md) và artifact local `reports/be1/final-verification.md`. Chưa commit/chưa gộp main.

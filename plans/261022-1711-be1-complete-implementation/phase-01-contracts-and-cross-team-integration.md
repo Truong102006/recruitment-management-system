@@ -1,15 +1,15 @@
 ---
 phase: 1
-title: "Contracts and cross-team integration"
-status: pending
-effort: ""
+title: 'Contracts and cross-team integration'
+status: in-progress
+effort: ''
 ---
 
 # Phase 1: Contracts and cross-team integration
 
 ## Overview
 
-Chốt phạm vi, port, request/response/event và các milestone tích hợp trước khi code phần phụ thuộc. UC01/04/05/10/11; CONTRACT-01/DB-01/BE-FOUNDATION. Đọc [blueprint](architecture-and-contracts.md), [verification](verification-matrix.md) và kế hoạch BE3 liên kết từ plan chính. Pha chưa triển khai.
+Chốt phạm vi, port, request/response/event và các milestone tích hợp trước khi code phần phụ thuộc. UC01/04/05/10/11; CONTRACT-01/DB-01/BE-FOUNDATION. Đọc [blueprint](architecture-and-contracts.md), [verification](verification-matrix.md) và kế hoạch BE3 liên kết từ plan chính. Pha đã hoàn thành.
 
 ## Requirements
 
@@ -44,10 +44,14 @@ Ports do owner xuất; composition root nối adapters bằng token DI. Identity
 ## Success Criteria
 
 - [ ] A01–A15 có quyết định/owner/gate rõ; không để code tự chọn khác nhau giữa API/port/FE.
-- [ ] Fixture/type/interface và contract tests thực chạy được; Tx/Actor một nguồn.
+- [x] Fixture/type/interface và contract tests thực chạy được; Tx/Actor một nguồn.
 - [ ] Migration baseline/roles/admin security/owner predicates/same-origin đã có đường triển khai và kiểm chứng.
 - [ ] Sổ chung, spec/contract/OpenAPI nhất quán; chưa gán fixture là integration/provider đạt.
 
 ## Risk Assessment
 
 Thiếu port BE2/BE3 không cản viết pure rules nhưng cản tích hợp register/admin. Title nullable/CSRF derive/skill ALL là đề xuất; không âm thầm áp dụng vào source trước khi chốt và cập nhật spec/test. Không cần ước lượng deadline ngày theo cảm tính; chia theo gate và bằng chứng.
+
+## Đồng bộ kiểm chứng 23/10/2026 — Codex hỗ trợ BE1
+
+Contract/type/fixture có source và test; còn registry BE3, scope discovery và review liên nhóm. Pha giữ IN_PROGRESS theo tiêu chí đầy đủ; không coi fake ports là runtime acceptance. Báo cáo lịch sử giữ trong sổ chung. Bằng chứng cuối xem [tiến độ](../../progress/README.md), [bàn giao](../../Docs/be1-handoff.md) và artifact local `reports/be1/final-verification.md`. Chưa commit/chưa gộp main.
