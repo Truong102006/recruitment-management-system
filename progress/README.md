@@ -138,6 +138,29 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 
 ## Nhật ký báo cáo
 
+### 2026-10-23 23:55 (Asia/Saigon) — FE2 — Đồng bộ màu tiêu đề bảng theo Design Tokens thống nhất (UI28)
+
+- Mã báo cáo: 20261023-2355-FE2-table-header-theme-sync
+- Người thực hiện / AI hỗ trợ: Antigravity (hỗ trợ FE2).
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: UI28 (`AdminAuditPage`, `AdminEventsPage`); Đồng bộ màu sắc tiêu đề bảng (`thead`) theo biến theme hệ thống `var(--soft2)`, `var(--ink2)`, `var(--line)` tương đồng với component `DataTable` và toàn bộ các trang khác trong chế độ Dark / Light Mode.
+- Trạng thái: DONE (phạm vi nhánh `feat/fe2-implementation`).
+- Nhánh / commit / PR / tích hợp main: `feat/fe2-implementation`; commit chứa báo cáo này; chưa gộp main.
+- Đã hoàn thành:
+  - Thay thế fallback cứng `#f8fafc` gây lóa trắng trên giao diện nền tối bằng token nền tiêu đề chuẩn `var(--soft2)` (`#1f232a` ở Dark Mode, `#f7f7f8` ở Light Mode).
+  - Đổi màu chữ tiêu đề bảng `th` sang `var(--ink2)` (`#c4c7ce` ở Dark Mode, `#3d3d42` ở Light Mode) và viền ngăn cách `var(--line)`, mang lại độ tương phản sắc nét, đồng nhất 100% với các bảng của `AdminUsersPage`, `AdminJobsPage`, `AdminCompaniesPage` và `DataTable`.
+  - Khung container bảng đổi sang bo tròn 16px, nền `var(--card)` và viền `var(--line)` chuẩn Design System.
+- File / bằng chứng: `apps/web/src/features/admin/pages/admin-audit-page.tsx`, `apps/web/src/features/admin/pages/admin-events-page.tsx`, `progress/README.md`.
+- Kiểm tra đã chạy:
+  - `npm --workspace @rms/web run test:ci -- admin-audit-page admin-events-page fe2-end-to-end-flows`: 3/3 test suites pass, 10/10 tests pass.
+  - `npm run typecheck`: 0 lỗi TypeScript (code 0).
+  - `npm run lint`: 0 lỗi, 0 cảnh báo ESLint (code 0).
+  - `npm run format:check`: 100% tệp tin đạt chuẩn Prettier (code 0).
+  - `npm run build`: Production build thành công (code 0).
+- Kiểm tra chưa chạy / coverage: Thay đổi CSS màu sắc, không phát sinh thêm code runtime hay logic nghiệp vụ.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không ảnh hưởng đến ai.
+- Phần còn thiếu / blocker: Không có.
+- Bước tiếp theo: Sẵn sàng mở PR gộp main.
+
 ### 2026-10-23 23:40 (Asia/Saigon) — FE2 — Sửa lỗi hiển thị giao diện Nhật ký Audit & Sự kiện Outbox lỗi (UI28)
 
 - Mã báo cáo: 20261023-2340-FE2-ui28-css-fix

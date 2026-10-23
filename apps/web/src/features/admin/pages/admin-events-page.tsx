@@ -190,8 +190,8 @@ export const AdminEventsPage: React.FC = () => {
                 fontWeight: 600,
                 padding: '2px 8px',
                 borderRadius: '4px',
-                background: 'var(--color-primary-subtle)',
-                color: 'var(--color-primary)',
+                background: 'var(--tint-bg)',
+                color: 'var(--tint-fg)',
               }}
             >
               UI28 • FE41
@@ -201,7 +201,7 @@ export const AdminEventsPage: React.FC = () => {
                 fontSize: '1.75rem',
                 fontWeight: 700,
                 margin: 0,
-                color: 'var(--color-text)',
+                color: 'var(--ink)',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
@@ -213,7 +213,7 @@ export const AdminEventsPage: React.FC = () => {
               Sự kiện Outbox & Giám sát Retry
             </h1>
           </div>
-          <p style={{ color: 'var(--color-text-muted)', margin: 0, fontSize: '0.9rem' }}>
+          <p style={{ color: 'var(--muted)', margin: 0, fontSize: '0.9rem' }}>
             Theo dõi tính toàn vẹn sự kiện phát hành qua Transactional Outbox và kích hoạt cơ chế
             Retry an toàn (FE41).
           </p>
@@ -228,10 +228,10 @@ export const AdminEventsPage: React.FC = () => {
             alignItems: 'center',
             gap: '6px',
             padding: '0.55rem 1rem',
-            borderRadius: '6px',
-            border: '1px solid var(--color-border)',
-            background: 'var(--color-bg-surface)',
-            color: 'var(--color-text)',
+            borderRadius: '8px',
+            border: '1px solid var(--line)',
+            background: 'var(--card)',
+            color: 'var(--ink)',
             fontSize: '0.85rem',
             fontWeight: 600,
             cursor: loading ? 'not-allowed' : 'pointer',
@@ -296,10 +296,10 @@ export const AdminEventsPage: React.FC = () => {
       {/* Filter Toolbar */}
       <div
         style={{
-          background: 'var(--color-bg-surface)',
+          background: 'var(--card)',
           padding: '1rem',
-          borderRadius: '8px',
-          border: '1px solid var(--color-border)',
+          borderRadius: '12px',
+          border: '1px solid var(--line)',
           marginBottom: '1.25rem',
           display: 'flex',
           gap: '1rem',
@@ -309,16 +309,16 @@ export const AdminEventsPage: React.FC = () => {
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>Trạng thái:</span>
+          <span style={{ fontSize: '0.85rem', color: 'var(--muted)' }}>Trạng thái:</span>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
             style={{
               padding: '0.5rem 0.8rem',
-              borderRadius: '6px',
-              border: '1px solid var(--color-border)',
-              background: 'var(--color-bg-surface)',
-              color: 'var(--color-text)',
+              borderRadius: '8px',
+              border: '1px solid var(--line)',
+              background: 'var(--card)',
+              color: 'var(--ink)',
               fontSize: '0.85rem',
               cursor: 'pointer',
             }}
@@ -330,19 +330,19 @@ export const AdminEventsPage: React.FC = () => {
           </select>
         </div>
 
-        <div style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
-          Tổng số sự kiện: <strong style={{ color: 'var(--color-text)' }}>{events.length}</strong>
+        <div style={{ fontSize: '0.85rem', color: 'var(--muted)' }}>
+          Tổng số sự kiện: <strong style={{ color: 'var(--ink)' }}>{events.length}</strong>
         </div>
       </div>
 
       {/* Events Table */}
       <div
         style={{
-          background: 'var(--color-bg-surface)',
-          border: '1px solid var(--color-border)',
-          borderRadius: '8px',
+          background: 'var(--card)',
+          border: '1px solid var(--line)',
+          borderRadius: '16px',
           overflowX: 'auto',
-          boxShadow: 'var(--sh-s, 0 1px 3px rgba(0,0,0,0.05))',
+          boxShadow: 'var(--sh-s)',
         }}
       >
         <table
@@ -352,46 +352,46 @@ export const AdminEventsPage: React.FC = () => {
             width: '100%',
             borderCollapse: 'collapse',
             textAlign: 'left',
-            fontSize: '0.875rem',
+            fontSize: '13.5px',
           }}
         >
           <thead>
             <tr
               style={{
-                background: 'var(--color-bg-secondary, #f8fafc)',
-                borderBottom: '1px solid var(--color-border)',
+                background: 'var(--soft2)',
+                borderBottom: '1px solid var(--line)',
               }}
             >
-              <th style={{ padding: '12px 14px', fontWeight: 600, color: 'var(--color-text)' }}>
+              <th style={{ padding: '12px 14px', fontWeight: 600, color: 'var(--ink2)' }}>
                 Mã Event / Trace ID
               </th>
-              <th style={{ padding: '12px 14px', fontWeight: 600, color: 'var(--color-text)' }}>
+              <th style={{ padding: '12px 14px', fontWeight: 600, color: 'var(--ink2)' }}>
                 Tên Sự kiện (Type)
               </th>
-              <th style={{ padding: '12px 14px', fontWeight: 600, color: 'var(--color-text)' }}>
+              <th style={{ padding: '12px 14px', fontWeight: 600, color: 'var(--ink2)' }}>
                 Trạng thái
               </th>
               <th
                 style={{
                   padding: '12px 14px',
                   fontWeight: 600,
-                  color: 'var(--color-text)',
+                  color: 'var(--ink2)',
                   textAlign: 'center',
                 }}
               >
                 Số lần Retry
               </th>
-              <th style={{ padding: '12px 14px', fontWeight: 600, color: 'var(--color-text)' }}>
+              <th style={{ padding: '12px 14px', fontWeight: 600, color: 'var(--ink2)' }}>
                 Lỗi gần nhất
               </th>
-              <th style={{ padding: '12px 14px', fontWeight: 600, color: 'var(--color-text)' }}>
+              <th style={{ padding: '12px 14px', fontWeight: 600, color: 'var(--ink2)' }}>
                 Thời gian tạo
               </th>
               <th
                 style={{
                   padding: '12px 14px',
                   fontWeight: 600,
-                  color: 'var(--color-text)',
+                  color: 'var(--ink2)',
                   textAlign: 'right',
                 }}
               >
@@ -407,7 +407,7 @@ export const AdminEventsPage: React.FC = () => {
                   style={{
                     textAlign: 'center',
                     padding: '2.5rem',
-                    color: 'var(--color-text-muted)',
+                    color: 'var(--muted)',
                   }}
                 >
                   Đang tải danh sách sự kiện Outbox...
@@ -420,7 +420,7 @@ export const AdminEventsPage: React.FC = () => {
                   style={{
                     textAlign: 'center',
                     padding: '2.5rem',
-                    color: 'var(--color-text-muted)',
+                    color: 'var(--muted)',
                   }}
                 >
                   Không có sự kiện outbox nào phù hợp với bộ lọc hiện tại.
@@ -431,7 +431,7 @@ export const AdminEventsPage: React.FC = () => {
                 <tr
                   key={evt.id}
                   style={{
-                    borderBottom: '1px solid var(--color-border)',
+                    borderBottom: '1px solid var(--line)',
                   }}
                 >
                   <td style={{ padding: '12px 14px', whiteSpace: 'nowrap' }}>
@@ -440,7 +440,7 @@ export const AdminEventsPage: React.FC = () => {
                         fontFamily: 'monospace',
                         fontWeight: 600,
                         fontSize: '0.85rem',
-                        color: 'var(--color-primary)',
+                        color: 'var(--blue)',
                       }}
                     >
                       {evt.id}
@@ -449,7 +449,7 @@ export const AdminEventsPage: React.FC = () => {
                       style={{
                         fontFamily: 'monospace',
                         fontSize: '0.75rem',
-                        color: 'var(--color-text-muted)',
+                        color: 'var(--muted)',
                         maxWidth: '160px',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
@@ -464,10 +464,11 @@ export const AdminEventsPage: React.FC = () => {
                         fontFamily: 'monospace',
                         fontSize: '0.8rem',
                         fontWeight: 600,
-                        background: 'var(--color-bg-secondary, #f1f5f9)',
+                        background: 'var(--soft2)',
+                        border: '1px solid var(--line)',
                         padding: '2px 8px',
                         borderRadius: '4px',
-                        color: 'var(--color-text)',
+                        color: 'var(--ink)',
                       }}
                     >
                       {evt.eventType}
@@ -484,9 +485,9 @@ export const AdminEventsPage: React.FC = () => {
                         fontWeight: 600,
                         padding: '2px 8px',
                         borderRadius: '4px',
-                        background:
-                          evt.retryCount > 0 ? '#fef3c7' : 'var(--color-bg-secondary, #f1f5f9)',
-                        color: evt.retryCount > 0 ? '#b45309' : 'var(--color-text-muted)',
+                        background: evt.retryCount > 0 ? '#fef3c7' : 'var(--soft2)',
+                        color: evt.retryCount > 0 ? '#b45309' : 'var(--muted)',
+                        border: evt.retryCount > 0 ? '1px solid #fde68a' : '1px solid var(--line)',
                       }}
                     >
                       {evt.retryCount}
@@ -496,7 +497,7 @@ export const AdminEventsPage: React.FC = () => {
                     style={{
                       padding: '12px 14px',
                       fontSize: '0.8rem',
-                      color: evt.lastError ? '#dc2626' : 'var(--color-text-muted)',
+                      color: evt.lastError ? 'var(--red)' : 'var(--muted)',
                       maxWidth: '260px',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
@@ -513,7 +514,7 @@ export const AdminEventsPage: React.FC = () => {
                     style={{
                       padding: '12px 14px',
                       fontSize: '0.8rem',
-                      color: 'var(--color-text-muted)',
+                      color: 'var(--muted)',
                       whiteSpace: 'nowrap',
                     }}
                   >
@@ -534,9 +535,9 @@ export const AdminEventsPage: React.FC = () => {
                         style={{
                           padding: '4px 10px',
                           borderRadius: '4px',
-                          border: '1px solid var(--color-border)',
-                          background: 'var(--color-bg-surface)',
-                          color: 'var(--color-text)',
+                          border: '1px solid var(--line)',
+                          background: 'var(--card)',
+                          color: 'var(--ink)',
                           fontSize: '0.8rem',
                           fontWeight: 600,
                           cursor: 'pointer',
@@ -590,69 +591,61 @@ export const AdminEventsPage: React.FC = () => {
                 display: 'grid',
                 gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
                 gap: '0.75rem',
-                background: 'var(--color-bg-secondary, #f8fafc)',
+                background: 'var(--soft2)',
                 padding: '1rem',
                 borderRadius: '8px',
-                border: '1px solid var(--color-border)',
+                border: '1px solid var(--line)',
               }}
             >
               <div>
-                <span
-                  style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', display: 'block' }}
-                >
+                <span style={{ fontSize: '0.8rem', color: 'var(--muted)', display: 'block' }}>
                   Mã Event ID:
                 </span>
-                <span style={{ fontFamily: 'monospace', fontWeight: 600 }}>{selectedEvent.id}</span>
+                <span style={{ fontFamily: 'monospace', fontWeight: 600, color: 'var(--ink)' }}>
+                  {selectedEvent.id}
+                </span>
               </div>
               <div>
-                <span
-                  style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', display: 'block' }}
-                >
+                <span style={{ fontSize: '0.8rem', color: 'var(--muted)', display: 'block' }}>
                   Loại Event:
                 </span>
-                <span style={{ fontFamily: 'monospace', fontWeight: 600 }}>
+                <span style={{ fontFamily: 'monospace', fontWeight: 600, color: 'var(--ink)' }}>
                   {selectedEvent.eventType}
                 </span>
               </div>
               <div>
-                <span
-                  style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', display: 'block' }}
-                >
+                <span style={{ fontSize: '0.8rem', color: 'var(--muted)', display: 'block' }}>
                   Trạng thái:
                 </span>
                 {getStatusBadge(selectedEvent.status)}
               </div>
               <div>
-                <span
-                  style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', display: 'block' }}
-                >
+                <span style={{ fontSize: '0.8rem', color: 'var(--muted)', display: 'block' }}>
                   Số lần đã Retry:
                 </span>
-                <span style={{ fontFamily: 'monospace', fontWeight: 600 }}>
+                <span style={{ fontFamily: 'monospace', fontWeight: 600, color: 'var(--ink)' }}>
                   {selectedEvent.retryCount}
                 </span>
               </div>
               <div style={{ gridColumn: '1 / -1' }}>
-                <span
-                  style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', display: 'block' }}
-                >
+                <span style={{ fontSize: '0.8rem', color: 'var(--muted)', display: 'block' }}>
                   Aggregate Type & ID:
                 </span>
-                <span style={{ fontFamily: 'monospace', fontWeight: 600 }}>
+                <span style={{ fontFamily: 'monospace', fontWeight: 600, color: 'var(--ink)' }}>
                   {selectedEvent.aggregateType} — {selectedEvent.aggregateId}
                 </span>
               </div>
               <div style={{ gridColumn: '1 / -1' }}>
-                <span
-                  style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', display: 'block' }}
-                >
+                <span style={{ fontSize: '0.8rem', color: 'var(--muted)', display: 'block' }}>
                   Mã vết Trace ID:
                 </span>
                 <span
                   style={{
                     fontFamily: 'monospace',
                     fontSize: '0.85rem',
-                    background: 'var(--color-bg)',
+                    background: 'var(--bg)',
+                    border: '1px solid var(--line)',
+                    color: 'var(--ink)',
                     padding: '4px 8px',
                     borderRadius: '4px',
                     display: 'block',
@@ -671,7 +664,7 @@ export const AdminEventsPage: React.FC = () => {
                   style={{
                     fontSize: '0.85rem',
                     fontWeight: 600,
-                    color: '#dc2626',
+                    color: 'var(--red)',
                     display: 'block',
                     marginBottom: '0.4rem',
                   }}
@@ -704,6 +697,7 @@ export const AdminEventsPage: React.FC = () => {
                   fontWeight: 600,
                   display: 'block',
                   marginBottom: '0.4rem',
+                  color: 'var(--ink)',
                 }}
               >
                 Dữ liệu Payload (FE41 - Đã khử các khóa nhạy cảm token/secrets):
@@ -739,9 +733,9 @@ export const AdminEventsPage: React.FC = () => {
                 style={{
                   padding: '0.55rem 1.2rem',
                   borderRadius: '6px',
-                  border: '1px solid var(--color-border)',
-                  background: 'var(--color-bg-surface)',
-                  color: 'var(--color-text)',
+                  border: '1px solid var(--line)',
+                  background: 'var(--card)',
+                  color: 'var(--ink)',
                   fontWeight: 600,
                   cursor: 'pointer',
                 }}
@@ -788,7 +782,7 @@ export const AdminEventsPage: React.FC = () => {
           <div
             style={{ display: 'flex', flexDirection: 'column', gap: '1rem', fontSize: '0.9rem' }}
           >
-            <p style={{ margin: 0 }}>
+            <p style={{ margin: 0, color: 'var(--ink)' }}>
               Bạn có chắc chắn muốn phát lại sự kiện{' '}
               <strong style={{ fontFamily: 'monospace' }}>{retryTargetEvent.eventType}</strong> (ID:{' '}
               <span style={{ fontFamily: 'monospace' }}>{retryTargetEvent.id}</span>)?
@@ -829,9 +823,9 @@ export const AdminEventsPage: React.FC = () => {
                 style={{
                   padding: '0.55rem 1.2rem',
                   borderRadius: '6px',
-                  border: '1px solid var(--color-border)',
-                  background: 'var(--color-bg-surface)',
-                  color: 'var(--color-text)',
+                  border: '1px solid var(--line)',
+                  background: 'var(--card)',
+                  color: 'var(--ink)',
                   fontWeight: 600,
                   cursor: retrying ? 'not-allowed' : 'pointer',
                 }}

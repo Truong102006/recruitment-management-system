@@ -84,9 +84,9 @@ export const AdminAuditPage: React.FC = () => {
       };
     }
     return {
-      background: 'var(--color-primary-subtle)',
-      color: 'var(--color-primary)',
-      border: '1px solid var(--color-border)',
+      background: 'var(--tint-bg)',
+      color: 'var(--tint-fg)',
+      border: '1px solid var(--line)',
     };
   };
 
@@ -115,8 +115,8 @@ export const AdminAuditPage: React.FC = () => {
                 fontWeight: 600,
                 padding: '2px 8px',
                 borderRadius: '4px',
-                background: 'var(--color-primary-subtle)',
-                color: 'var(--color-primary)',
+                background: 'var(--tint-bg)',
+                color: 'var(--tint-fg)',
               }}
             >
               UI28
@@ -126,7 +126,7 @@ export const AdminAuditPage: React.FC = () => {
                 fontSize: '1.75rem',
                 fontWeight: 700,
                 margin: 0,
-                color: 'var(--color-text)',
+                color: 'var(--ink)',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
@@ -138,7 +138,7 @@ export const AdminAuditPage: React.FC = () => {
               Nhật ký Audit Hệ thống
             </h1>
           </div>
-          <p style={{ color: 'var(--color-text-muted)', margin: 0, fontSize: '0.9rem' }}>
+          <p style={{ color: 'var(--muted)', margin: 0, fontSize: '0.9rem' }}>
             Tra cứu toàn bộ lịch sử thao tác, xác thực danh tính actor, loại đối tượng và mã vết
             traceId.
           </p>
@@ -153,10 +153,10 @@ export const AdminAuditPage: React.FC = () => {
             alignItems: 'center',
             gap: '6px',
             padding: '0.55rem 1rem',
-            borderRadius: '6px',
-            border: '1px solid var(--color-border)',
-            background: 'var(--color-bg-surface)',
-            color: 'var(--color-text)',
+            borderRadius: '8px',
+            border: '1px solid var(--line)',
+            background: 'var(--card)',
+            color: 'var(--ink)',
             fontSize: '0.85rem',
             fontWeight: 600,
             cursor: loading ? 'not-allowed' : 'pointer',
@@ -169,10 +169,10 @@ export const AdminAuditPage: React.FC = () => {
       {/* Filter Bar */}
       <div
         style={{
-          background: 'var(--color-bg-surface)',
+          background: 'var(--card)',
           padding: '1rem',
-          borderRadius: '8px',
-          border: '1px solid var(--color-border)',
+          borderRadius: '12px',
+          border: '1px solid var(--line)',
           marginBottom: '1.25rem',
           display: 'flex',
           gap: '1rem',
@@ -190,10 +190,10 @@ export const AdminAuditPage: React.FC = () => {
             style={{
               width: '100%',
               padding: '0.5rem 0.8rem',
-              borderRadius: '6px',
-              border: '1px solid var(--color-border)',
-              background: 'var(--color-bg)',
-              color: 'var(--color-text)',
+              borderRadius: '8px',
+              border: '1px solid var(--line)',
+              background: 'var(--bg)',
+              color: 'var(--ink)',
               fontSize: '0.9rem',
               boxSizing: 'border-box',
             }}
@@ -201,16 +201,16 @@ export const AdminAuditPage: React.FC = () => {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>Thực thể:</span>
+          <span style={{ fontSize: '0.85rem', color: 'var(--muted)' }}>Thực thể:</span>
           <select
             value={entityTypeFilter}
             onChange={(e) => setEntityTypeFilter(e.target.value)}
             style={{
               padding: '0.5rem 0.8rem',
-              borderRadius: '6px',
-              border: '1px solid var(--color-border)',
-              background: 'var(--color-bg-surface)',
-              color: 'var(--color-text)',
+              borderRadius: '8px',
+              border: '1px solid var(--line)',
+              background: 'var(--card)',
+              color: 'var(--ink)',
               fontSize: '0.85rem',
               cursor: 'pointer',
             }}
@@ -263,11 +263,11 @@ export const AdminAuditPage: React.FC = () => {
       {/* Table Section */}
       <div
         style={{
-          background: 'var(--color-bg-surface)',
-          border: '1px solid var(--color-border)',
-          borderRadius: '8px',
+          background: 'var(--card)',
+          border: '1px solid var(--line)',
+          borderRadius: '16px',
           overflowX: 'auto',
-          boxShadow: 'var(--sh-s, 0 1px 3px rgba(0,0,0,0.05))',
+          boxShadow: 'var(--sh-s)',
         }}
       >
         <table
@@ -277,39 +277,39 @@ export const AdminAuditPage: React.FC = () => {
             width: '100%',
             borderCollapse: 'collapse',
             textAlign: 'left',
-            fontSize: '0.875rem',
+            fontSize: '13.5px',
           }}
         >
           <thead>
             <tr
               style={{
-                background: 'var(--color-bg-secondary, #f8fafc)',
-                borderBottom: '1px solid var(--color-border)',
+                background: 'var(--soft2)',
+                borderBottom: '1px solid var(--line)',
               }}
             >
-              <th style={{ padding: '12px 14px', fontWeight: 600, color: 'var(--color-text)' }}>
+              <th style={{ padding: '12px 14px', fontWeight: 600, color: 'var(--ink2)' }}>
                 Thời gian
               </th>
-              <th style={{ padding: '12px 14px', fontWeight: 600, color: 'var(--color-text)' }}>
+              <th style={{ padding: '12px 14px', fontWeight: 600, color: 'var(--ink2)' }}>
                 Hành động
               </th>
-              <th style={{ padding: '12px 14px', fontWeight: 600, color: 'var(--color-text)' }}>
+              <th style={{ padding: '12px 14px', fontWeight: 600, color: 'var(--ink2)' }}>
                 Loại thực thể
               </th>
-              <th style={{ padding: '12px 14px', fontWeight: 600, color: 'var(--color-text)' }}>
+              <th style={{ padding: '12px 14px', fontWeight: 600, color: 'var(--ink2)' }}>
                 ID Thực thể
               </th>
-              <th style={{ padding: '12px 14px', fontWeight: 600, color: 'var(--color-text)' }}>
+              <th style={{ padding: '12px 14px', fontWeight: 600, color: 'var(--ink2)' }}>
                 Người thực hiện
               </th>
-              <th style={{ padding: '12px 14px', fontWeight: 600, color: 'var(--color-text)' }}>
+              <th style={{ padding: '12px 14px', fontWeight: 600, color: 'var(--ink2)' }}>
                 Trace ID
               </th>
               <th
                 style={{
                   padding: '12px 14px',
                   fontWeight: 600,
-                  color: 'var(--color-text)',
+                  color: 'var(--ink2)',
                   textAlign: 'right',
                 }}
               >
@@ -325,7 +325,7 @@ export const AdminAuditPage: React.FC = () => {
                   style={{
                     textAlign: 'center',
                     padding: '2.5rem',
-                    color: 'var(--color-text-muted)',
+                    color: 'var(--muted)',
                   }}
                 >
                   Đang tải nhật ký audit...
@@ -338,7 +338,7 @@ export const AdminAuditPage: React.FC = () => {
                   style={{
                     textAlign: 'center',
                     padding: '2.5rem',
-                    color: 'var(--color-text-muted)',
+                    color: 'var(--muted)',
                   }}
                 >
                   Không tìm thấy bản ghi nhật ký audit nào phù hợp.
@@ -349,7 +349,7 @@ export const AdminAuditPage: React.FC = () => {
                 <tr
                   key={log.id}
                   style={{
-                    borderBottom: '1px solid var(--color-border)',
+                    borderBottom: '1px solid var(--line)',
                   }}
                 >
                   <td style={{ padding: '12px 14px', whiteSpace: 'nowrap' }}>
@@ -357,7 +357,7 @@ export const AdminAuditPage: React.FC = () => {
                       style={{
                         fontFamily: 'monospace',
                         fontSize: '0.8rem',
-                        color: 'var(--color-text-muted)',
+                        color: 'var(--muted)',
                       }}
                     >
                       {formatDateTime(log.createdAt)}
@@ -383,12 +383,14 @@ export const AdminAuditPage: React.FC = () => {
                       padding: '12px 14px',
                       whiteSpace: 'nowrap',
                       fontWeight: 600,
-                      color: 'var(--color-text)',
+                      color: 'var(--ink)',
                     }}
                   >
                     <span
                       style={{
-                        background: 'var(--color-bg-secondary, #f1f5f9)',
+                        background: 'var(--soft2)',
+                        border: '1px solid var(--line)',
+                        color: 'var(--ink2)',
                         padding: '2px 8px',
                         borderRadius: '4px',
                         fontSize: '0.75rem',
@@ -403,7 +405,7 @@ export const AdminAuditPage: React.FC = () => {
                       whiteSpace: 'nowrap',
                       fontFamily: 'monospace',
                       fontSize: '0.8rem',
-                      color: 'var(--color-text-muted)',
+                      color: 'var(--muted)',
                     }}
                   >
                     {log.entityId}
@@ -413,7 +415,7 @@ export const AdminAuditPage: React.FC = () => {
                       style={{
                         fontWeight: 600,
                         fontSize: '0.8rem',
-                        color: 'var(--color-text)',
+                        color: 'var(--ink)',
                       }}
                     >
                       {log.actorId}
@@ -425,7 +427,7 @@ export const AdminAuditPage: React.FC = () => {
                       whiteSpace: 'nowrap',
                       fontFamily: 'monospace',
                       fontSize: '0.8rem',
-                      color: 'var(--color-text-muted)',
+                      color: 'var(--muted)',
                     }}
                   >
                     {log.traceId.length > 14 ? `${log.traceId.slice(0, 14)}...` : log.traceId}
@@ -437,9 +439,9 @@ export const AdminAuditPage: React.FC = () => {
                       style={{
                         padding: '4px 10px',
                         borderRadius: '4px',
-                        border: '1px solid var(--color-primary)',
-                        background: 'var(--color-primary-subtle)',
-                        color: 'var(--color-primary)',
+                        border: '1px solid var(--blue)',
+                        background: 'var(--tint-bg)',
+                        color: 'var(--tint-fg)',
                         fontSize: '0.8rem',
                         fontWeight: 600,
                         cursor: 'pointer',
@@ -471,65 +473,59 @@ export const AdminAuditPage: React.FC = () => {
                 display: 'grid',
                 gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
                 gap: '0.75rem',
-                background: 'var(--color-bg-secondary, #f8fafc)',
+                background: 'var(--soft2)',
                 padding: '1rem',
                 borderRadius: '8px',
-                border: '1px solid var(--color-border)',
+                border: '1px solid var(--line)',
               }}
             >
               <div>
-                <span
-                  style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', display: 'block' }}
-                >
+                <span style={{ fontSize: '0.8rem', color: 'var(--muted)', display: 'block' }}>
                   Mã ghi nhật ký:
                 </span>
-                <span style={{ fontFamily: 'monospace', fontWeight: 600 }}>{selectedLog.id}</span>
+                <span style={{ fontFamily: 'monospace', fontWeight: 600, color: 'var(--ink)' }}>
+                  {selectedLog.id}
+                </span>
               </div>
               <div>
-                <span
-                  style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', display: 'block' }}
-                >
+                <span style={{ fontSize: '0.8rem', color: 'var(--muted)', display: 'block' }}>
                   Thời gian:
                 </span>
-                <span style={{ fontWeight: 600 }}>{formatDateTime(selectedLog.createdAt)}</span>
+                <span style={{ fontWeight: 600, color: 'var(--ink)' }}>
+                  {formatDateTime(selectedLog.createdAt)}
+                </span>
               </div>
               <div>
-                <span
-                  style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', display: 'block' }}
-                >
+                <span style={{ fontSize: '0.8rem', color: 'var(--muted)', display: 'block' }}>
                   Thực thể & ID:
                 </span>
-                <span style={{ fontWeight: 600 }}>
+                <span style={{ fontWeight: 600, color: 'var(--ink)' }}>
                   {selectedLog.entityType} ({selectedLog.entityId})
                 </span>
               </div>
               <div>
-                <span
-                  style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', display: 'block' }}
-                >
+                <span style={{ fontSize: '0.8rem', color: 'var(--muted)', display: 'block' }}>
                   Người thực hiện (Actor):
                 </span>
-                <span style={{ fontWeight: 600 }}>{selectedLog.actorId}</span>
+                <span style={{ fontWeight: 600, color: 'var(--ink)' }}>{selectedLog.actorId}</span>
               </div>
               <div style={{ gridColumn: '1 / -1' }}>
-                <span
-                  style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', display: 'block' }}
-                >
+                <span style={{ fontSize: '0.8rem', color: 'var(--muted)', display: 'block' }}>
                   Mô tả / Diễn giải:
                 </span>
-                <span style={{ color: 'var(--color-text)' }}>{selectedLog.details}</span>
+                <span style={{ color: 'var(--ink)' }}>{selectedLog.details}</span>
               </div>
               <div style={{ gridColumn: '1 / -1' }}>
-                <span
-                  style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', display: 'block' }}
-                >
+                <span style={{ fontSize: '0.8rem', color: 'var(--muted)', display: 'block' }}>
                   Mã vết giao dịch (Trace ID):
                 </span>
                 <span
                   style={{
                     fontFamily: 'monospace',
                     fontSize: '0.85rem',
-                    background: 'var(--color-bg)',
+                    background: 'var(--bg)',
+                    border: '1px solid var(--line)',
+                    color: 'var(--ink)',
                     padding: '4px 8px',
                     borderRadius: '4px',
                     display: 'block',
@@ -549,6 +545,7 @@ export const AdminAuditPage: React.FC = () => {
                   fontWeight: 600,
                   display: 'block',
                   marginBottom: '0.4rem',
+                  color: 'var(--ink)',
                 }}
               >
                 Dữ liệu Metadata:
@@ -577,9 +574,9 @@ export const AdminAuditPage: React.FC = () => {
                 style={{
                   padding: '0.55rem 1.2rem',
                   borderRadius: '6px',
-                  border: '1px solid var(--color-border)',
-                  background: 'var(--color-bg-surface)',
-                  color: 'var(--color-text)',
+                  border: '1px solid var(--line)',
+                  background: 'var(--card)',
+                  color: 'var(--ink)',
                   fontWeight: 600,
                   cursor: 'pointer',
                 }}
