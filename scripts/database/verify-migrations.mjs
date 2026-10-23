@@ -28,6 +28,7 @@ try {
       roles: { create: { role: 'CANDIDATE' } },
     },
   });
+  await prisma.candidateProfile.create({ data: { userId: user.id } });
   run();
   if (
     (
@@ -38,6 +39,8 @@ try {
     ).roles.length !== 1
   )
     throw new Error('Data lost on repeated deploy');
+  if (!(await prisma.candidateProfile.findUnique({ where: { userId: user.id } })))
+    throw new Error('BE2 profile lost on repeated deploy');
   const constraints =
     await prisma.$queryRaw`SELECT conname FROM pg_constraint c JOIN pg_namespace n ON n.oid = c.connamespace WHERE n.nspname = ${schema} AND c.convalidated`;
   for (const name of [
@@ -46,6 +49,11 @@ try {
     'check_job_salary',
     'check_job_published_complete',
     'company_membership_user_id_fkey',
+    'fk_application_original_cv',
+    'fk_application_current_cv',
+    'ck_final_result',
+    'fk_cv_change_application_owner',
+    'ck_idempotency_state',
   ]) {
     if (!constraints.some((row) => row.conname === name))
       throw new Error(`Missing validated constraint ${name}`);
@@ -56,6 +64,8 @@ try {
     'user_account_email_key',
     'company_tax_code_key',
     'job_post_status_deadline_idx',
+    'uq_cv_change_pending',
+    'saved_job_candidate_id_created_at_job_id_idx',
   ]) {
     if (!indexes.some((row) => row.indexname === name)) throw new Error(`Missing index ${name}`);
   }
@@ -66,6 +76,13 @@ try {
     denied = true;
   }
   if (!denied) throw new Error('Database accepted invalid account status');
+  let invalidProfileDenied = false;
+  try {
+    await prisma.candidateProfile.create({ data: { userId: randomUUID() } });
+  } catch {
+    invalidProfileDenied = true;
+  }
+  if (!invalidProfileDenied) throw new Error('BE2 accepted profile without an identity owner');
   mkdirSync('reports/backend/migrations', { recursive: true });
   writeFileSync(
     'reports/backend/migrations/result.json',
@@ -79,6 +96,9 @@ try {
           'validated constraints',
           'indexes',
           'invalid status rejected',
+          'BE2 profile preserved on repeated deploy',
+          'BE2 constraints and indexes',
+          'BE2 candidate identity foreign key',
         ],
         limitations: [
           'No historical release upgrade fixture exists yet',

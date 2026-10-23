@@ -17,7 +17,7 @@ Tài liệu này cụ thể hóa [đặc tả tổng hợp](project-specificatio
 
 BE2 tạo và kiểm migration/constraint cho các bảng sở hữu; BE1 tạo khóa chính và chỉ mục được tham chiếu tại `user_account`, `company`, `job_post`, `skill`. Migration BE2 chỉ chạy sau các migration BE1 liên quan. BE3 tạo FK từ `interview.application_id` sang `application.id` sau migration application. Không sửa migration đã áp dụng ở môi trường chung.
 
-Model BE2 và SQL FK/CHECK/trigger hiện được chuẩn bị theo [kế hoạch migration BE2](be2-data-migration-plan.md). SQL đặt ở `prisma/pending/` vì các bảng BE1 chưa có trên main; chưa áp dụng lên PostgreSQL. Sau khi BE1 gộp migration, BE2 chuyển bản SQL đó thành migration theo thứ tự và kiểm constraint thật trước khi BE3 tham chiếu application.
+Model BE2 và SQL FK/CHECK/trigger theo [kế hoạch migration BE2](be2-data-migration-plan.md) đã được đưa vào `prisma/migrations/20261023121800_be2_candidate_application` sau hai migration BE1. Bản ở `prisma/pending/` giữ làm lịch sử thiết kế. Migration chưa được kiểm trên PostgreSQL tại máy này hoặc áp dụng lên DB dùng chung; CI chạy migrate trên PostgreSQL cô lập trước khi BE3 tham chiếu application.
 
 ### Khóa ngoại và dữ liệu chung
 

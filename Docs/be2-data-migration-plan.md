@@ -1,11 +1,11 @@
 # BE2 — model và migration chờ nền BE1
 
-Phạm vi bước 2 của kế hoạch BE2: model và bản SQL cho tám bảng do BE2 sở hữu. Nguồn yêu cầu là [đặc tả hệ thống](project-specification.md) mục 5.1–5.4 và [hợp đồng BE2](be2-integration-contract.md). Đây là bản chuẩn bị để tích hợp, **chưa phải migration đã áp dụng**.
+Phạm vi: model và SQL cho tám bảng do BE2 sở hữu. Nguồn yêu cầu là [đặc tả hệ thống](project-specification.md) mục 5.1–5.4 và [hợp đồng BE2](be2-integration-contract.md). Ngày 23/10/2026 SQL đã được đưa vào migration sau BE1, **chưa áp dụng lên DB dùng chung**.
 
 ## Artefact
 
 - [Prisma schema](../prisma/schema.prisma): tám model BE2, kiểu cột, khóa chính, unique và index Prisma hỗ trợ. Chưa khai báo relation tới model BE1 để không tạo model thay chủ sở hữu.
-- [SQL chờ tích hợp](../prisma/pending/be2-after-be1.sql): FK tới BE1, FK ghép chứng minh CV/application cùng candidate, CHECK, partial unique một đề nghị PENDING, trigger bất biến và chỉ mục. File này ở `prisma/pending`, không được `prisma migrate deploy` tự chạy.
+- [Migration BE2](../prisma/migrations/20261023121800_be2_candidate_application/migration.sql): FK tới BE1, FK ghép chứng minh CV/application cùng candidate, CHECK, partial unique một đề nghị PENDING, trigger bất biến và chỉ mục. [SQL thiết kế cũ](../prisma/pending/be2-after-be1.sql) không được `prisma migrate deploy` tự chạy.
 - Schema Prisma **không đại diện đầy đủ** cho raw SQL CHECK, trigger, partial index và FK chéo nhóm. Không dùng `prisma db push` để thay migration này.
 
 ## Thứ tự hợp nhất
@@ -17,4 +17,4 @@ Phạm vi bước 2 của kế hoạch BE2: model và bản SQL cho tám bảng 
 
 ## Giới hạn đã biết
 
-Thiếu bảng nền và generated Prisma client tích hợp của BE1, nên chưa chạy migration/constraint trên PostgreSQL thật. Repo hiện cũng chưa có bootstrap API thật. Chỉ `prisma validate` xác nhận model khi cung cấp `DATABASE_URL` giả để parse schema; nó không chứng minh SQL chạy thành công hoặc schema DB nhất quán.
+BE1 foundation/email verification đã có trên main. Prisma Client BE2 đã generate và schema validate trên máy BE2; migration BE2 chưa được chạy trên PostgreSQL tại máy này. CI với PostgreSQL cô lập phải xác nhận deploy, FK, trigger, index và test adapter trước khi coi DB BE2 hoàn thành. Không chạy migration mới trên Neon dùng chung trong bước kiểm thử.

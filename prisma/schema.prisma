@@ -181,7 +181,7 @@ model JobSkill {
   @@map("job_skill")
 }
 
-// BE2 models preserved from main; cross-owner constraints remain pending.
+// BE2 models; cross-owner FKs, checks and triggers are in the BE2 SQL migration.
 model CandidateProfile {
   userId    String   @id @map("user_id") @db.Uuid
   phone     String?  @db.VarChar(20)

@@ -4,7 +4,7 @@
 
 Nguồn: [Bao_Cao_SE113_Final.md](Bao_Cao_SE113_Final.md), bản bổ sung ngày 16/10/2026. Tài liệu tập hợp đầy đủ các phần liên quan từ báo cáo để agent tra cứu khi triển khai: 15 FR, 20 BR, 16 UC, 25 bảng, TC01–TC60, EC01–EC40, ma trận test giao diện, tiêu chí CI và hợp đồng API.
 
-**Đây là đặc tả cần triển khai, chưa phải chức năng đã hoạt động.** Repo đã có khung API/worker/web, manifest/lockfile và cấu hình phát triển theo [development-setup.md](development-setup.md). Nền code transaction/port, DTO/schema và test unit/contract BE2 đã lên `main` tại `62215fc`; chưa có model/migration nghiệp vụ, endpoint chạy hoặc CI thực thi. SQL là thiết kế tham khảo; endpoint chưa được kiểm chứng trên server. Coverage nền có ghi trong [sổ tiến độ](../progress/README.md), không thay cho nghiệm thu UC. OpenAPI và schema request/response hiện mới bao phủ một phần hợp đồng.
+**Đây là đặc tả cần triển khai, chưa phải chức năng đã nghiệm thu.** Repo có khung API/worker/web, source BE1 trên main và source BE2 theo [sổ tiến độ](../progress/README.md). BE2 đã đăng ký một số route Nest và có migration trong source; chưa kiểm HTTP/PostgreSQL/BE3 đủ để coi endpoint hoạt động. SQL/contract không thay bằng chứng chạy thật. Coverage có ghi trong sổ tiến độ, không thay nghiệm thu UC.
 
 Các mục bên dưới giữ nguyên số thứ tự trong báo cáo để đối chiếu. Thứ tự tra cứu: tổng quan (chương 1), chức năng/quyền/quy tắc và UC (chương 2–3), kiến trúc và database (chương 4–5), test (chương 6 và mục 7.2.5–7.5), API (mục 7.1 ở cuối file). Các hình/đường dẫn ngoài nếu thiếu cần bổ sung khi sử dụng.
 
@@ -1392,7 +1392,7 @@ Hệ thống có 25 bảng, gồm 24 bảng nghiệp vụ và hạ tầng đã x
 
 ## 5.2 Ràng buộc liên bảng và tính nhất quán
 
-**Triển khai BE2 đang chờ migration nền:** [kế hoạch model và migration BE2](be2-data-migration-plan.md) liệt kê tám model do BE2 sở hữu và SQL FK/CHECK/trigger/chỉ mục ở `prisma/pending/`. Bản SQL chưa được áp dụng vì `user_account`, `skill`, `job_post` của BE1 chưa có migration trên main; nó phải được chuyển thành migration sau BE1 rồi kiểm PostgreSQL thật trước khi coi DB BE2 hoàn thành. Quy tắc và bất biến trong các bảng dưới đây không thay đổi.
+**Triển khai DB BE2 (23/10/2026):** [kế hoạch model và migration BE2](be2-data-migration-plan.md) liệt kê tám model do BE2 sở hữu. SQL FK/CHECK/trigger/chỉ mục đã chuyển từ `prisma/pending/` sang migration BE2 sau hai migration BE1. Chưa có kết quả deploy/test PostgreSQL tại máy này hoặc áp dụng DB dùng chung; phải kiểm trên PostgreSQL cô lập trước khi coi DB BE2 hoàn thành. Quy tắc và bất biến trong các bảng dưới đây không thay đổi.
 
 | **Mã** | **Bất biến**                                                         | **Nơi bảo vệ và ca kiểm thử**                                                        |
 |--------|----------------------------------------------------------------------|--------------------------------------------------------------------------------------|
