@@ -6,7 +6,10 @@
     "jsx": "react-jsx",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "types": ["vite/client"],
-    "noEmit": true
+    "noEmit": true,
+    "paths": {
+      "@rms/contracts/public": ["../../libs/contracts/public/index.ts"]
+    }
   },
-  "include": ["src", "vite.config.ts", "vitest.config.ts"]
+  "include": ["src", "vite.config.ts", "vitest.config.ts", "../../libs/contracts/public/**/*.ts"]
 }
