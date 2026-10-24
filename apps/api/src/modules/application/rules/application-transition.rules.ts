@@ -129,7 +129,11 @@ export function decideApplicationTransition(
       if (command.result === 'HIRED' && state.status !== 'INTERVIEWED') return conflict();
       if (command.result !== 'HIRED' && command.result !== 'REJECTED') return conflict();
       const evidence = assertEvidence(state, command);
-      if (evidence.proposedCount !== 0 || evidence.confirmedCount !== 0) return conflict();
+      if (
+        evidence.proposedCount !== 0 ||
+        (command.result === 'HIRED' && evidence.confirmedCount !== 0)
+      )
+        return conflict();
       if (
         command.result === 'HIRED' &&
         (evidence.completedCount < 1 || evidence.missingEvaluationCount !== 0)

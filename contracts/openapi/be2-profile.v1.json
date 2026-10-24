@@ -3,7 +3,7 @@
   "info": {
     "title": "BE2 candidate profile contract",
     "version": "1.0.0",
-    "description": "UC12 wire contract. The BE1 session guard, Nest route binding and database migration are pending."
+    "description": "UC12 wire contract. BE1 session/Origin/CSRF guard and Nest route binding are present; BE2 database migration and BE3 Outbox remain pending."
   },
   "paths": {
     "/api/candidate/profile": {

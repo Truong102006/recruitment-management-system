@@ -4,7 +4,7 @@
 
 Nguồn: [Bao_Cao_SE113_Final.md](Bao_Cao_SE113_Final.md), bản bổ sung ngày 16/10/2026. Tài liệu tập hợp đầy đủ các phần liên quan từ báo cáo để agent tra cứu khi triển khai: 15 FR, 20 BR, 16 UC, 25 bảng, TC01–TC60, EC01–EC40, ma trận test giao diện, tiêu chí CI và hợp đồng API.
 
-**Đây là đặc tả cần triển khai, chưa phải chức năng đã hoạt động.** Repo đã có khung API/worker/web, manifest/lockfile và cấu hình phát triển theo [development-setup.md](development-setup.md). Nền code transaction/port, DTO/schema và test unit/contract BE2 đã lên `main` tại `62215fc`; chưa có model/migration nghiệp vụ, endpoint chạy hoặc CI thực thi. SQL là thiết kế tham khảo; endpoint chưa được kiểm chứng trên server. Coverage nền có ghi trong [sổ tiến độ](../progress/README.md), không thay cho nghiệm thu UC. OpenAPI và schema request/response hiện mới bao phủ một phần hợp đồng.
+**Đây là đặc tả cần triển khai, chưa phải chức năng đã nghiệm thu.** Repo có khung API/worker/web, source BE1 trên main và source BE2 theo [sổ tiến độ](../progress/README.md). BE2 đã đăng ký một số route Nest và có migration trong source; chưa kiểm HTTP/PostgreSQL/BE3 đủ để coi endpoint hoạt động. SQL/contract không thay bằng chứng chạy thật. Coverage có ghi trong sổ tiến độ, không thay nghiệm thu UC.
 
 Các mục bên dưới giữ nguyên số thứ tự trong báo cáo để đối chiếu. Thứ tự tra cứu: tổng quan (chương 1), chức năng/quyền/quy tắc và UC (chương 2–3), kiến trúc và database (chương 4–5), test (chương 6 và mục 7.2.5–7.5), API (mục 7.1 ở cuối file). Các hình/đường dẫn ngoài nếu thiếu cần bổ sung khi sử dụng.
 
@@ -571,6 +571,8 @@ Mỗi mutation bao gồm kiểm tra quyền hiện tại, validation và transac
 
 ### 3.1.14 UC14 Lưu tin quan tâm
 
+**Hiện trạng triển khai BE2 (23/10/2026):** repository/service đã có thao tác lưu/xóa idempotent và trang danh sách. Danh sách dùng `JobVisibilityPort` của BE1 để trả placeholder (`available=false`, `title=null`) khi tin không còn được phép hiển thị. Chưa đăng ký route HTTP hoặc kiểm PostgreSQL; đây chưa phải nghiệm thu UC14.
+
 **Mục tiêu và kích hoạt:** Ghi nhận tin quan tâm mà không tạo bản ghi trùng. Lưu, bỏ lưu hoặc mở danh sách tin đã lưu.
 
 **Dữ liệu vào và đầu ra:** jobId và session ứng viên. Đầu ra: Một savedJob hoặc đã bỏ lưu; không lộ tin bị hạn chế.
@@ -652,6 +654,10 @@ Mỗi mutation bao gồm kiểm tra quyền hiện tại, validation và transac
 **Dữ liệu và kiểm chứng:** ReportingModule; read repository cho job/application/history; TC53–TC54, EC35; BE3.
 
 ## 3.2 Trạng thái hồ sơ và tác dụng phụ
+
+**Hiện trạng API BE2 (23/10/2026):** `Be2Module` đã đăng ký route profile, tin lưu và hồ sơ ứng tuyển với guard session/Origin/CSRF của BE1; binding DI của BE1/BE2 đạt unit boot test. Các lệnh ghi cần Outbox hoặc lifecycle BE3 sẽ trả 503 khi provider thiếu. Route CV upload/list/download/delete, storage/scanner thật, migration DB và HTTP integration test còn thiếu; xem [OpenAPI runtime](../contracts/openapi/be2-runtime.v1.json). Chưa nghiệm thu UC02/06/07/12/14.
+
+**Hiện trạng port BE2 (23/10/2026):** `Be2ApplicationPorts` đã hiện thực các cạnh do lịch phỏng vấn và công bố kết quả kích hoạt trong transaction của caller; kiểm lại quyền recruiter từ BE1, version và bằng chứng lịch gắn `tx.id`, ghi history/outbox nguyên tử và idempotency khi công bố. BE3 phải xác nhận/hủy lịch trong cùng transaction trước khi gọi port. Phần này mới có unit test; chưa có provider BE3 hoặc test PostgreSQL nên chưa nghiệm thu UC08/09.
 
 | **Trạng thái hiện tại**  | **Cạnh hợp lệ**                            | **Điều kiện và tác dụng phụ**                                                                                            |
 |--------------------------|--------------------------------------------|--------------------------------------------------------------------------------------------------------------------------|
@@ -918,6 +924,10 @@ Không phải module nào cũng cần đủ tất cả thư mục; cấu trúc p
 **BE2: kho CV bước 5 (23/10/2026):** `CvWarehouseService` và `PrismaCvRepository` hiện thực phần BE2 độc lập của upload-init, quota 20 dưới khóa user BE1, attempt riêng, nhận byte có giới hạn, quarantine, Outbox yêu cầu quét, lease quét, READY/REJECTED hoặc retry khi lỗi kỹ thuật, URL tải tối đa 300 giây và xóa hai giai đoạn. `CvSafetyInspector` phải kiểm cấu trúc/mật khẩu/mã độc bằng provider thật trước khi gắn vào worker; `QuarantineStore` phải giữ version bất biến. Chưa có adapter provider, route/guard BE1, worker BE3, migration chạy hoặc test PostgreSQL/API; vì vậy UC06 và STORAGE-01 vẫn đang triển khai. Các interface này không đổi BR06–BR08, đường dẫn mục 7.1 hoặc trạng thái ở mục 3.2.
 
 **BE2: nộp hồ sơ bước 6 (23/10/2026):** `SubmitApplicationWorkflowService` nối khóa user và điều kiện ứng viên của BE1, khóa company/job và điều kiện tin/membership của BE1, kiểm CV READY BE2 rồi lấy snapshot profile BE2 trong transaction của lát cắt persistence bước 3. Idempotency replay chỉ kiểm quyền hiện tại; claim mới mới kiểm điều kiện nộp. Repository ánh xạ đúng ràng buộc `uq_application_candidate_job` thành xung đột, không đổi lỗi DB khác. Port BE1 phải khóa user trước, company/job sau và dùng DB clock sau khóa; không được lấy thêm khóa user sau company/job. Chưa có implementation port BE1/Outbox BE3, route/guard, migration và test DB/concurrency, nên UC02 chưa nghiệm thu. Đây là hiện thực dần mục 3.1.2/4.4, không đổi quy tắc báo cáo.
+
+**BE2: thay CV bước 7 (23/10/2026):** `CvChangeWorkflowService` dùng rule BR07–BR08, khóa user/company/application/CV, giữ original bất biến, thay current ở SUBMITTED hoặc tạo PENDING ở SCREENING; recruiter duyệt/từ chối với cả applicationVersion và requestVersion. History/Outbox/idempotency cùng transaction. Hai event bổ sung `application.cv_change_requested` và `application.cv_change_rejected` chỉ mang applicationId, cần BE3 cập nhật consumer schema v1 khi nối. Mới có unit/contract test, chưa có route/provider BE3/PostgreSQL integration nên UC06 vẫn IN_PROGRESS.
+
+**BE2: xét duyệt/rút bước 8 (23/10/2026):** `ReviewApplicationWorkflowService` chỉ chuyển SUBMITTED→SCREENING→SHORTLISTED theo rule; rời SCREENING hủy đề nghị CV PENDING cùng transaction. Rút hồ sơ từ trạng thái chưa kết thúc yêu cầu `InterviewLifecyclePort.cancelOpenForApplication` của BE3 trong cùng transaction trước khi ghi WITHDRAWN, History và Outbox; lỗi BE3 rollback. `ApplicationReadService` lọc candidate/recruiter trước khi truy vấn DTO/history công khai. Chưa có BE3 implementation, controller, migration hay DB/API/concurrency test nên UC07 vẫn IN_PROGRESS.
 
 ## 4.4 Transaction khóa và thao tác đồng thời
 
@@ -1382,7 +1392,7 @@ Hệ thống có 25 bảng, gồm 24 bảng nghiệp vụ và hạ tầng đã x
 
 ## 5.2 Ràng buộc liên bảng và tính nhất quán
 
-**Triển khai BE2 đang chờ migration nền:** [kế hoạch model và migration BE2](be2-data-migration-plan.md) liệt kê tám model do BE2 sở hữu và SQL FK/CHECK/trigger/chỉ mục ở `prisma/pending/`. Bản SQL chưa được áp dụng vì `user_account`, `skill`, `job_post` của BE1 chưa có migration trên main; nó phải được chuyển thành migration sau BE1 rồi kiểm PostgreSQL thật trước khi coi DB BE2 hoàn thành. Quy tắc và bất biến trong các bảng dưới đây không thay đổi.
+**Triển khai DB BE2 (23/10/2026):** [kế hoạch model và migration BE2](be2-data-migration-plan.md) liệt kê tám model do BE2 sở hữu. SQL FK/CHECK/trigger/chỉ mục đã chuyển từ `prisma/pending/` sang migration BE2 sau hai migration BE1. [CI nhánh BE2](https://github.com/Truong102006/recruitment-management-system/actions/runs/39905484135) đã deploy và kiểm trên PostgreSQL cô lập; chưa áp dụng DB dùng chung hoặc nghiệm thu HTTP/BE3. Quy tắc và bất biến trong các bảng dưới đây không thay đổi.
 
 | **Mã** | **Bất biến**                                                         | **Nơi bảo vệ và ca kiểm thử**                                                        |
 |--------|----------------------------------------------------------------------|--------------------------------------------------------------------------------------|

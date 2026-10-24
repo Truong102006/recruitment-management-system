@@ -34,13 +34,15 @@
 
 ## Tổng quan hiện tại
 
+**2026-10-23 12:27 (Asia/Saigon) — SHIP-BE2: DONE (phạm vi Git)** — Bảy commit BE2 đã fast-forward và push lên `main` tại `1299cd7`; [CI nhánh](https://github.com/Truong102006/recruitment-management-system/actions/runs/39905484135) và [CI main](https://github.com/Truong102006/recruitment-management-system/actions/runs/39905843323) đều đạt backend/quality-gate trên PostgreSQL cô lập. Chức năng BE2 tổng thể vẫn IN_PROGRESS vì còn BE3 Outbox/lifecycle, CV storage/scanner, API CV và HTTP nghiệm thu; không deploy migration lên Neon dùng chung trong lượt này.
+
 **2026-10-23 11:02 (Asia/Saigon) — SHIP-CLOUD-01: DONE (phạm vi Git)** — Truong102006 / Codex: [PR #3](https://github.com/Truong102006/recruitment-management-system/pull/3) đã merge main tại `80cd120`; ba commit giữ riêng. Đã pull main; bản ghi tích hợp này chờ PR tài liệu trên `docs/cloud-main-integration`.
 
 **23/10/2026 10:07 — SHIP-BE1: DONE (phạm vi Git)** — Truong102006 / BE1, Codex: [PR #1](https://github.com/Truong102006/recruitment-management-system/pull/1) đã merge vào main tại `ae869e70479f741596c58268002372315698911d`, giữ 12 commit nhỏ gồm tích hợp main và hai sửa tương thích. Backend/quality-gate cho push và PR đều đạt. BE1 nghiệp vụ vẫn IN_PROGRESS do còn binding/provider và nghiệm thu toàn hệ thống. Bản ghi tích hợp này trên `docs/be1-main-integration`, chờ PR tài liệu.
 
 **BE1 hiện có trên main:** Identity/Company/Job/Admin, migration BE1 và CI backend đã tích hợp qua PR #1; [kiểm chứng](../Docs/be1-verification.md). Kết quả hosted mới: 316 unit, 108 integration (gồm 23 contract); coverage tập source cấu hình 92,45% dòng / 76,93% nhánh. Còn runtime BE2/BE3/provider và nghiệm thu operations/dependency audit; không đánh DONE toàn BE1. Các nhật ký bên dưới giữ nguyên trạng thái lịch sử lúc thực hiện.
 
-Cập nhật ngày **23/10/2026**: nền BE2, kế hoạch BE1/BE3, quy tắc thuần và các bước BE2 2–6 đã tích hợp trên `main` (`6de3918`, `57bcbbe`, `9ae1f4e`, `3123e75`, `c874fbb`); sửa đường xử lý sự kiện xóa CV tại `eeadd96`. BE2 đạt 91 unit + 13 contract test cho code hiện có. Có model và SQL BE2 chờ bảng nền BE1; chưa có migration PostgreSQL đã áp dụng, route API nghiệp vụ chạy được hoặc pipeline CI. Việc cài dependency và mở Vite ngày 16/10 là ghi nhận lịch sử ở môi trường trước, không xác nhận máy của mọi thành viên đã setup thành công.
+Cập nhật ngày **23/10/2026**: nền BE2, kế hoạch BE1/BE3, quy tắc thuần và các bước BE2 2–6 đã tích hợp trên `main` (`6de3918`, `57bcbbe`, `9ae1f4e`, `3123e75`, `c874fbb`); sửa đường xử lý sự kiện xóa CV tại `eeadd96`. BE2 đạt 91 unit + 13 contract test cho code hiện có. Đây là trạng thái trước đợt BE2 hôm nay; migration và một số route đã lên main, xem bản ghi SHIP-BE2 mới nhất ở trên. Chưa áp migration BE2 lên DB dùng chung hoặc nghiệm thu HTTP trọn luồng. Việc cài dependency và mở Vite ngày 16/10 là ghi nhận lịch sử ở môi trường trước, không xác nhận máy của mọi thành viên đã setup thành công.
 
 Các công việc trên nhánh cá nhân chưa được báo cáo vào đây chưa được xác nhận. Mỗi thành viên cập nhật kết quả của mình kèm bằng chứng; không coi bảng TODO là kết luận người đó chưa làm gì ngoài main.
 
@@ -49,19 +51,19 @@ Các công việc trên nhánh cá nhân chưa được báo cáo vào đây ch�
 | Mã   | Chức năng                      | Phụ trách | Trạng thái công việc (xem tích hợp) | Bằng chứng / phần còn thiếu                                                                                                                                                        |
 | ---- | ------------------------------ | --------- | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | UC01 | Đăng tin tuyển dụng            | BE1       | IN_PROGRESS                         | Source main PR #1: runtime DTO, account→company→job locks, recheck quyền, publish/close Outbox fail-closed; gate local đạt. Đã gộp main PR #1; còn BE2 lifecycle integration/FE.   |
-| UC02 | Nộp CV ứng tuyển               | BE2       | IN_PROGRESS                         | Đã có workflow điều phối và lát cắt ghi trên `main` (`c874fbb`); chưa có BE1/BE3 binding, API/migration/integration test                                                           |
+| UC02 | Nộp CV ứng tuyển               | BE2       | IN_PROGRESS                         | Workflow/route và BE1 binding đã lên main; migration đạt CI PostgreSQL. Ghi hồ sơ cần Outbox BE3 thật và HTTP nghiệm thu.                                                          |
 | UC03 | Phỏng vấn trực tuyến           | BE3       | TODO                                | Chưa có API/provider test                                                                                                                                                          |
 | UC04 | Đăng ký và xác thực            | BE1       | IN_PROGRESS                         | Source main PR #1: durable verification, account/token locks, CSRF/session/Origin và rollback tests đạt. Đã gộp main PR #1; profile/mail runtime và HTTPS browser chưa nghiệm thu. |
 | UC05 | Tìm kiếm và xem tin            | BE1       | IN_PROGRESS                         | Source main PR #1: public scope/verified owner/query DTO và validation tests đạt. Đã gộp main PR #1; còn load/FE nghiệm thu.                                                       |
-| UC06 | Quản lý CV và thay CV đã nộp   | BE2       | IN_PROGRESS                         | Có workflow kho CV trên `main` (`3123e75`); còn provider storage/scanner, phần thay CV và API/integration test                                                                     |
-| UC07 | Xét duyệt và rút hồ sơ         | BE2       | TODO                                | Có DTO/schema, port BE3 và quy tắc chuyển trạng thái/rút hồ sơ thuần; chưa có workflow/API/integration test                                                                        |
+| UC06 | Quản lý CV và thay CV đã nộp   | BE2       | IN_PROGRESS                         | Thay CV/review đã lên main; kho CV có service/repository. Còn S3/scanner, worker, API CV và nghiệm thu.                                                                            |
+| UC07 | Xét duyệt và rút hồ sơ         | BE2       | IN_PROGRESS                         | Review/read/withdraw route đã lên main; rút hồ sơ cần InterviewLifecycle BE3 cùng transaction và HTTP nghiệm thu.                                                                  |
 | UC08 | Quản lý lịch phỏng vấn         | BE3       | TODO                                | Chưa có API/test concurrency                                                                                                                                                       |
 | UC09 | Công bố kết quả                | BE3       | TODO                                | Có điểm nối BE2 trong contract; chưa có workflow/test                                                                                                                              |
 | UC10 | Quản trị và kiểm duyệt         | BE1       | IN_PROGRESS                         | Admin PATCH/read/recovery/last ADMIN/atomic rollback có test PostgreSQL. Đã gộp main PR #1; actual BE3 revoke intent/provider/scope còn thiếu.                                     |
 | UC11 | Doanh nghiệp và thành viên     | BE1       | IN_PROGRESS                         | Source main PR #1: sorted account locks, verified OWNER, không ADMIN bypass; tests đạt. Đã gộp main PR #1; conflict/schedule runtime BE2/BE3 còn thiếu.                            |
-| UC12 | Hồ sơ cá nhân                  | BE2       | IN_PROGRESS                         | Có service/repository BE2, unit/contract test và OpenAPI GET/PATCH; chưa đăng ký route do thiếu guard/port BE1, migration PostgreSQL và API/integration test                       |
+| UC12 | Hồ sơ cá nhân                  | BE2       | IN_PROGRESS                         | GET/PATCH route và BE1 guard đã lên main; DB BE2 đạt CI; PATCH cần Outbox BE3 và HTTP nghiệm thu.                                                                                  |
 | UC13 | Đánh giá và hoàn tất phỏng vấn | BE3       | TODO                                | Chưa có API/test                                                                                                                                                                   |
-| UC14 | Lưu tin quan tâm               | BE2       | TODO                                | Có contract thiết kế; chưa có API/test                                                                                                                                             |
+| UC14 | Lưu tin quan tâm               | BE2       | IN_PROGRESS                         | PUT/DELETE/GET route đã lên main, idempotent/placeholder và DB adapter đạt CI; write cần Outbox BE3, còn HTTP nghiệm thu.                                                          |
 | UC15 | Thông báo                      | BE3       | TODO                                | Chưa có worker/API/test                                                                                                                                                            |
 | UC16 | Thống kê tuyển dụng            | BE3       | TODO                                | Chưa có read model/API/test                                                                                                                                                        |
 
@@ -91,11 +93,18 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 | DOC-05        | Kế hoạch triển khai toàn bộ BE3 / Codex hỗ trợ BE3, chưa xác nhận người phụ trách | DONE        | [Kế hoạch 8 pha](../plans/261022-1652-be3-complete-implementation/plan.md), [rà soát](../plans/261022-1652-be3-complete-implementation/reports/plan-review.md); Đã tích hợp main; 6 UC chưa triển khai            |
 | DOC-06        | Kế hoạch triển khai toàn bộ BE1 / Codex hỗ trợ BE1, chưa xác nhận người phụ trách | DONE        | [Kế hoạch 8 pha](../plans/261022-1711-be1-complete-implementation/plan.md), [rà soát](../plans/261022-1711-be1-complete-implementation/reports/plan-review.md); Đã tích hợp main; 5 UC chưa triển khai            |
 | BE-FOUNDATION | Bootstrap NestJS / BE1                                                            | IN_PROGRESS | API bootstrap đã tích hợp main PR #1; clean CI build/API tests đạt. Runtime liên nhóm và HTTPS/FE acceptance chưa nghiệm thu.                                                                                     |
-| DB-01         | Prisma/migration/seed / mỗi BE sở hữu phần mình                                   | IN_PROGRESS | 9 bảng BE1 + additive email_verified_at; PostgreSQL constraints/migration smoke đạt local. Chưa gộp main; thiếu owner schema/runtime permission/historical upgrade.                                               |
+| DB-01         | Prisma/migration/seed / mỗi BE sở hữu phần mình                                   | IN_PROGRESS | BE1 migration và BE2 migration đã lên main; BE2 migration/FK/trigger/adapter đạt CI PostgreSQL cô lập. Chưa deploy Neon dùng chung; BE3 schema/runtime permission còn thiếu.                                      |
 | CLOUD-DB-01   | Shared PostgreSQL cloud / Codex BE1                                               | DONE        | Runtime cloud/test local configuration and team instructions integrated through PR #3 at `80cd120`; guard 3/3 and hosted CI pass. Credentials remain ignored.                                                     |
 | CONTRACT-01   | Port, DTO, OpenAPI, event schema và contract test / cả ba BE                      | IN_PROGRESS | Đã có phần BE2; BE1 đang triển khai Phase 1 contract, schema và test trên nhánh `feat/be1-implementation`                                                                                                         |
 | BE2-STEP2     | Nền transaction và hợp đồng tích hợp / BE2 + Codex                                | DONE        | Đã gộp `main` tại `62215fc`; [bàn giao](../Docs/be2-step2-handoff.md), 23 unit + 11 contract test đạt. DONE chỉ cho phạm vi nền bước 2, không phải UC                                                             |
 | STORAGE-01    | Storage CV và scanner / BE2                                                       | IN_PROGRESS | Có port và service/repository quarantine/quét/xóa, unit test; còn provider PDF/scanner, object store, worker/reconciliation, API và test PostgreSQL                                                               |
+| BE2-CV-07     | Thay CV đã nộp / BE2 + Codex                                                      | DONE        | Workflow/repository, history/outbox/idempotency và test unit/contract trên main từ `6a39cfc`; UC06 tổng thể còn IN_PROGRESS.                                                                                      |
+| BE2-APP-08    | Xem, xét duyệt và rút hồ sơ / BE2 + Codex                                         | DONE        | Workflow/query và unit test trên main từ `8aee179`; UC07 còn BE3 lifecycle/HTTP nghiệm thu.                                                                                                                       |
+| BE2-SAVED-09  | Lưu tin quan tâm / BE2 + Codex                                                    | DONE        | Service/repository, placeholder và contract trên main từ `36135d6`; DB adapter đạt CI; UC14 còn Outbox/HTTP nghiệm thu.                                                                                           |
+| BE2-PORT-10   | Port hồ sơ cho BE1/BE3 / BE2 + Codex                                              | DONE        | Application/Result/Conflict port cùng transaction, history/outbox/idempotency lên main tại `0e1c489`; BE3 runtime còn thiếu.                                                                                      |
+| BE2-API-11    | API/DTO và binding Nest / BE2 + Codex                                             | IN_PROGRESS | Route profile/tin lưu/ứng tuyển và BE1 guard lên main tại `c9c078e`; DI/tsc/contract đạt. CV API và HTTP nghiệm thu còn thiếu.                                                                                    |
+| BE2-QA-12     | Migration và kiểm thử tích hợp / BE2 + Codex                                      | IN_PROGRESS | Migration và DB adapter test lên main tại `602d1d6`; CI PostgreSQL/quality-gate đạt. Còn HTTP/BE3/CV provider nghiệm thu.                                                                                         |
+| SHIP-BE2      | Push BE2 lên main / BE2 + Codex                                                   | DONE        | Bảy commit riêng đã fast-forward và push main tại `1299cd7`; CI nhánh 39905484135 và CI main 39905843323 backend/quality-gate đạt. DONE chỉ cho Git publishing.                                                   |
 | WORKER-01     | Outbox/email/worker / BE3; idempotency/transaction do BE2 phối hợp                | TODO        | Chưa triển khai                                                                                                                                                                                                   |
 | VIDEO-01      | Jitsi và thu hồi quyền phòng / BE3                                                | TODO        | Chưa tích hợp/kiểm provider thật                                                                                                                                                                                  |
 | QA-01         | Unit/integration/API/concurrency/FE/E2E / từng owner                              | IN_PROGRESS | Main PR #1: hosted 35 suites/316 unit, 13 suites/108 integration (gồm23 contract), evidence8 đạt; coverage92,45% dòng/76,93% nhánh. FE-E2E/runtime/provider còn thiếu. [Bằng chứng](../Docs/be1-verification.md). |
@@ -105,6 +114,8 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 | OPS-01        | Hiệu năng, backup/restore và vận hành / BE3 điều phối, cả nhóm kiểm chứng         | TODO        | Chưa đo/chưa diễn tập                                                                                                                                                                                             |
 
 ## Phối hợp và bước tiếp theo
+
+- 23/10/2026 12:27 — SHIP-BE2 DONE phạm vi Git: bảy commit lên main `1299cd7` sau khi CI nhánh PostgreSQL đạt. Thứ tự nối tiếp: BE3 đăng ký Outbox/InterviewLifecycle và kiểm transaction rút/công bố; BE2 thêm S3/scanner/worker/API CV; sau đó chạy HTTP/FE end-to-end trên DB test cô lập. Migration BE2 chưa áp dụng Neon dùng chung.
 
 - SHIP-CLOUD-01 DONE phạm vi xuất bản: PR #3 đã merge main; CI push/PR đều đạt. Không có blocker Git. Tiếp theo: merge bản ghi tích hợp rồi pull main lần cuối; các hạn chế nghiệp vụ BE1/BE2/BE3 giữ nguyên.
 
@@ -138,7 +149,7 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 ### 2026-10-23 21:46 (Asia/Saigon) — FE2 — Hoàn thành Pha 4 Hồ sơ ứng viên & Đánh giá phỏng vấn (UI19, UI20, UI21, UI22, UI23)
 
 - Mã báo cáo: 20261023-2146-FE2-phase4-done
-- Người thực hiện / AI hỗ trợ: Antigravity (hỗ trợ FE2).
+- Người thực hiện / AI hỗ trợ: Hồ Đình Phước Thịnh/Antigravity (hỗ trợ FE2).
 - Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: FE2-PHASE4; UC06, UC07, UC08, UC09, UC13; UI19, UI20, UI21, UI22, UI23; BR01, BR08, BR09, BR10, BR11, BR13, BR14, BR18, BR19; FE30, FE31.
 - Trạng thái: DONE (phạm vi nhánh `feat/fe2-implementation`).
 - Nhánh / commit / PR / tích hợp main: `feat/fe2-implementation`; commit chứa báo cáo này; chưa gộp main.
@@ -172,7 +183,7 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 ### 2026-10-23 21:18 (Asia/Saigon) — FE2 — Bắt đầu Pha 4 Hồ sơ ứng viên & Đánh giá phỏng vấn (UI19, UI20, UI21, UI22, UI23)
 
 - Mã báo cáo: 20261023-2118-FE2-phase4-start
-- Người thực hiện / AI hỗ trợ: Antigravity (hỗ trợ FE2).
+- Người thực hiện / AI hỗ trợ: Hồ Đình Phước Thịnh/Antigravity (hỗ trợ FE2).
 - Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: FE2-PHASE4; UC06, UC07, UC08, UC09, UC13; UI19, UI20, UI21, UI22, UI23; BR01, BR08, BR09, BR10, BR11, BR13, BR14, BR18, BR19; FE30, FE31.
 - Trạng thái: IN_PROGRESS
 - Nhánh / commit / PR / tích hợp main: `feat/fe2-implementation`; commit chứa báo cáo này; chưa gộp main.
@@ -187,7 +198,7 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 ### 2026-10-23 20:45 (Asia/Saigon) — FE2 — Hoàn thành Pha 3 Phân hệ Doanh nghiệp & Tin tuyển dụng (UI16, UI17, UI18)
 
 - Mã báo cáo: 20261023-2045-FE2-phase3-done
-- Người thực hiện / AI hỗ trợ: Antigravity (hỗ trợ FE2).
+- Người thực hiện / AI hỗ trợ: Hồ Đình Phước Thịnh/Antigravity (hỗ trợ FE2).
 - Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: FE2-PHASE3; UC01, UC11; UI16, UI17, UI18; BR01, BR02, BR03, BR04, BR15, BR18, BR19; FE26, FE27, FE28, FE29.
 - Trạng thái: DONE (phạm vi nhánh `feat/fe2-implementation`).
 - Nhánh / commit / PR / tích hợp main: `feat/fe2-implementation`; commit chứa báo cáo này; chưa gộp main.
@@ -218,7 +229,7 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 ### 2026-10-23 20:30 (Asia/Saigon) — FE2 — Bắt đầu Pha 3 Phân hệ Doanh nghiệp & Tin tuyển dụng (UI16, UI17, UI18)
 
 - Mã báo cáo: 20261023-2030-FE2-phase3-start
-- Người thực hiện / AI hỗ trợ: Antigravity (hỗ trợ FE2).
+- Người thực hiện / AI hỗ trợ: Hồ Đình Phước Thịnh/Antigravity (hỗ trợ FE2).
 - Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: FE2-PHASE3; UC01, UC11; UI16, UI17, UI18; BR01, BR02, BR03, BR04, BR15, BR18, BR19; FE26, FE27, FE28, FE29.
 - Trạng thái: IN_PROGRESS
 - Nhánh / commit / PR / tích hợp main: `feat/fe2-implementation`; commit chứa báo cáo này; chưa gộp main.
@@ -233,7 +244,7 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 ### 2026-10-23 20:20 (Asia/Saigon) — FE2 — Hoàn thành Pha 2 các component dùng chung
 
 - Mã báo cáo: 20261023-2020-FE2-phase2-done
-- Người thực hiện / AI hỗ trợ: Antigravity (hỗ trợ FE2).
+- Người thực hiện / AI hỗ trợ: Hồ Đình Phước Thịnh/Antigravity (hỗ trợ FE2).
 - Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: FE2-PHASE2; DataTable generic, Calendar/Agenda, Modal/Dialog, ConfirmDialog, Pagination, StatusBadge; phục vụ UI13, UI16, UI17, UI19, UI20, UI25, UI26, UI28.
 - Trạng thái: DONE (phạm vi nhánh `feat/fe2-implementation`).
 - Nhánh / commit / PR / tích hợp main: `feat/fe2-implementation`; commit chứa báo cáo này; chưa gộp main.
@@ -253,7 +264,7 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 ### 2026-10-23 20:15 (Asia/Saigon) — FE2 — Bắt đầu Pha 2 các component dùng chung
 
 - Mã báo cáo: 20261023-2015-FE2-phase2-start
-- Người thực hiện / AI hỗ trợ: Antigravity (hỗ trợ FE2).
+- Người thực hiện / AI hỗ trợ: Hồ Đình Phước Thịnh/Antigravity (hỗ trợ FE2).
 - Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: FE2-PHASE2; DataTable generic, Calendar/Agenda, Modal/Dialog, StatusBadge; phục vụ UI13, UI16, UI17, UI19, UI20, UI25, UI26, UI28.
 - Trạng thái: IN_PROGRESS
 - Nhánh / commit / PR / tích hợp main: `feat/fe2-implementation`; commit chứa báo cáo này; chưa gộp main.
@@ -268,7 +279,7 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 ### 2026-10-23 19:40 (Asia/Saigon) — FE2 — Hoàn thành Pha 1 nền tảng kiến trúc FE2
 
 - Mã báo cáo: 20261023-1940-FE2-phase1-done
-- Người thực hiện / AI hỗ trợ: Antigravity (hỗ trợ FE2).
+- Người thực hiện / AI hỗ trợ: Hồ Đình Phước Thịnh/Antigravity (hỗ trợ FE2).
 - Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: FE2-PHASE1, UI13–UI23, UI25–UI28; design tokens, modular router, HTTP client, CompanyContext, AuthContext, Recruiter/Admin layout shells.
 - Trạng thái: DONE (phạm vi nhánh `feat/fe2-implementation`).
 - Nhánh / commit / PR / tích hợp main: `feat/fe2-implementation`; commit chứa báo cáo này; chưa gộp main.
@@ -288,7 +299,7 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 ### 2026-10-23 19:30 (Asia/Saigon) — FE2 — Bắt đầu Pha 1 nền tảng kiến trúc FE2
 
 - Mã báo cáo: 20261023-1930-FE2-phase1-start
-- Người thực hiện / AI hỗ trợ: Antigravity (hỗ trợ FE2).
+- Người thực hiện / AI hỗ trợ: Hồ Đình Phước Thịnh/Antigravity (hỗ trợ FE2).
 - Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: FE2-PHASE1, UI13–UI23, UI25–UI28; hạ tầng apps/web, design tokens, HTTP client, modular router, CompanyContext.
 - Trạng thái: IN_PROGRESS
 - Nhánh / commit / PR / tích hợp main: `feat/fe2-implementation`; commit chứa báo cáo này; chưa gộp main.
@@ -299,6 +310,125 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 - Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không thay đổi DB/API; tuân thủ contract libs/contracts/public/index.ts; cô lập hoàn toàn với FE1 và BE.
 - Phần còn thiếu / blocker: Đang viết code và unit test cho Phase 1; chưa có blocker.
 - Bước tiếp theo: Hoàn thành tokens.css, api-client.ts, company-context.tsx, modular router và bộ test Vitest.
+### 2026-10-23 12:27 (Asia/Saigon) — BE2 — Tích hợp bảy commit lên main
+
+- Mã báo cáo: 20261023-1227-BE2-tich-hop-main
+- Người thực hiện / AI hỗ trợ: Người phụ trách BE2 (GitHub repository Truong102006) / Codex; chưa xác nhận tên thật.
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: SHIP-BE2, BE2-CV-07/APP-08/SAVED-09/PORT-10/API-11/QA-12, UC02/06/07/12/14.
+- Trạng thái: DONE — xuất bản Git; các UC và API/QA tổng thể vẫn IN_PROGRESS theo bảng.
+- Nhánh / commit / PR / tích hợp main: `main` / `1299cd7` / không có PR / Đã gộp và push main; commit chứa báo cáo này bổ sung sau.
+- Đã hoàn thành: Fast-forward bảy commit độc lập từ `feat/be2-remaining-work` lên `main`; xác nhận push thành công và cập nhật bảng tiến độ đúng phạm vi.
+- File / bằng chứng: `git log` main tại `1299cd7`, [CI nhánh 39905484135](https://github.com/Truong102006/recruitment-management-system/actions/runs/39905484135), `progress/README.md`.
+- Kiểm tra đã chạy: `git fetch` xác nhận origin/main không có commit mới trước merge; `git merge --ff-only`; `git push origin main` thành công. CI nhánh [39905484135](https://github.com/Truong102006/recruitment-management-system/actions/runs/39905484135) và CI main [39905843323](https://github.com/Truong102006/recruitment-management-system/actions/runs/39905843323) đều đạt backend/quality-gate trên PostgreSQL cô lập.
+- Kiểm tra chưa chạy / coverage: HTTP BE3/CV provider và FE end-to-end chưa chạy; coverage BE2 riêng chưa đo.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: BE1/BE3/FE có source BE2 và migration/route contract trên main; BE3 phải thêm provider thật, FE không coi write 503 là hoàn thành. Không áp dụng migration Neon dùng chung.
+- Phần còn thiếu / blocker: BE3 Outbox/InterviewLifecycle, CV storage/scanner/API và HTTP nghiệm thu.
+- Bước tiếp theo: Push bản ghi tích hợp, kiểm CI main; trình bày các hướng nối code để người phụ trách chọn.
+
+### 2026-10-23 12:26 (Asia/Saigon) — BE2 — CI PostgreSQL cho migration và adapter
+
+- Mã báo cáo: 20261023-1226-BE2-ci-postgresql
+- Người thực hiện / AI hỗ trợ: Người phụ trách BE2 (GitHub repository Truong102006) / Codex; chưa xác nhận tên thật.
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: BE2-QA-12, DB-01, TC19/TC43/TC52 ở phạm vi migration và test adapter.
+- Trạng thái: DONE — migration và bộ test đã viết trong CI; BE2-QA-12 tổng thể vẫn IN_PROGRESS vì chưa có HTTP/BE3/CV provider nghiệm thu.
+- Nhánh / commit / PR / tích hợp main: `feat/be2-remaining-work` / `602d1d6` / chưa có PR / Chưa gộp main tại thời điểm báo cáo.
+- Đã hoàn thành: Push sáu commit BE2; GitHub Actions backend và quality-gate thành công với migration deploy, integration/contract/unit và evidence gate theo pipeline.
+- File / bằng chứng: [GitHub Actions run 39905484135](https://github.com/Truong102006/recruitment-management-system/actions/runs/39905484135), `prisma/migrations/20261023121800_be2_candidate_application/migration.sql`, `tests/integration/be2/application-schema.spec.ts`.
+- Kiểm tra đã chạy: CI `backend` success và `quality-gate` success trên commit `602d1d6`; local 330 unit đạt, coverage 91,28% dòng/74,16% nhánh, tsc/lint/build/Prisma validate đạt.
+- Kiểm tra chưa chạy / coverage: HTTP BE2 trên provider/BE3 thật, CV storage/scanner, browser và cloud DB chưa chạy; coverage BE2 riêng chưa đo.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Migration BE2 đã được kiểm trên PostgreSQL cô lập của CI; chưa deploy Neon dùng chung. BE3 cần migration BE2 trước khi thêm FK; FE chỉ tích hợp các endpoint đã có trong OpenAPI runtime sau khi provider được nối.
+- Phần còn thiếu / blocker: BE3 Outbox/InterviewLifecycle, CV storage/scanner và HTTP tích hợp trọn luồng.
+- Bước tiếp theo: Commit bản ghi CI, đưa nhánh BE2 lên main theo yêu cầu, kiểm CI main và cập nhật trạng thái tích hợp.
+
+### 2026-10-23 12:21 (Asia/Saigon) — BE2 — Bước 12 migration và kiểm thử tích hợp
+
+- Mã báo cáo: 20261023-1221-BE2-migration-kiem-thu
+- Người thực hiện / AI hỗ trợ: Người phụ trách BE2 (GitHub repository Truong102006) / Codex; chưa xác nhận tên thật.
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: BE2-QA-12, UC02/06/07/12/14, FR05–FR08/FR13, TC19/TC43/TC52 và ràng buộc DB mục 5.
+- Trạng thái: IN_PROGRESS — migration trong source và test PostgreSQL đã viết, chưa chạy trên PostgreSQL thật.
+- Nhánh / commit / PR / tích hợp main: `feat/be2-remaining-work` / commit chứa báo cáo này / chưa có PR / Chưa gộp main tại thời điểm báo cáo.
+- Đã hoàn thành: Chuyển SQL BE2 thành migration sau hai migration BE1; mở rộng migration smoke check hồ sơ ứng viên/FK/constraint/index/redeploy; thêm integration test FK CV cùng chủ, snapshot bất biến, history append-only và lưu tin đồng thời/idempotent.
+- File / bằng chứng: `prisma/migrations/20261023121800_be2_candidate_application/migration.sql`, `scripts/database/verify-migrations.mjs`, `tests/integration/be2/application-schema.spec.ts`.
+- Kiểm tra đã chạy: `prisma validate` và `tsc -p tsconfig.backend.json --noEmit` đạt; ESLint test/script đạt; full unit Jest 41 suites/330 tests đạt, coverage 91,28% dòng/74,16% nhánh trên Windows/Node 24.
+- Kiểm tra chưa chạy / coverage: Migration smoke/PostgreSQL integration/API/concurrency end-to-end chưa chạy vì máy không có Docker, psql hoặc PostgreSQL local; test DB cần CI cô lập. BE3 thật chưa có.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Migration mới tạo tám bảng BE2, FK sang BE1, trigger/index và idempotency; BE3 phải áp migration này trước FK sang application. Không deploy lên Neon dùng chung trong lượt kiểm thử này.
+- Phần còn thiếu / blocker: Kết quả CI PostgreSQL, BE3 Outbox/lifecycle, CV storage/scanner và HTTP nghiệm thu.
+- Bước tiếp theo: Commit bước 12, push nhánh cho CI PostgreSQL, sửa lỗi nếu có rồi gộp/push main theo yêu cầu.
+
+### 2026-10-23 12:17 (Asia/Saigon) — BE2 — Bước 11 API và binding Nest
+
+- Mã báo cáo: 20261023-1217-BE2-api-binding
+- Người thực hiện / AI hỗ trợ: Người phụ trách BE2 (GitHub repository Truong102006) / Codex; chưa xác nhận tên thật.
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: BE2-API-11, UC02/06/07/12/14, FR05–FR08/FR13, BR01/BR07–BR09/BR18–BR20 ở phạm vi binding/API contract.
+- Trạng thái: IN_PROGRESS — route profile/tin lưu/hồ sơ đã đăng ký; route CV và nghiệm thu HTTP còn thiếu.
+- Nhánh / commit / PR / tích hợp main: `feat/be2-remaining-work` / commit chứa báo cáo này / chưa có PR / Chưa gộp main tại thời điểm báo cáo.
+- Đã hoàn thành: `Be2Module` bind UOW/SQL/repository/services, xuất CandidateProfile/CvSelection/Application/Result/Conflict ports; BE1 thấy hai port BE2 trong DI. Controller profile/saved jobs/applications dùng session guard, global Origin/CSRF; lỗi domain/idempotency được ánh xạ HTTP. BE3 thiếu thì write fail closed 503. OpenAPI runtime liệt kê route thực có.
+- File / bằng chứng: `apps/api/src/modules/be2.module.ts`, các controller trong `candidate/` và `application/`, `apps/api/src/common/filters/api-exception.filter.ts`, `contracts/openapi/be2-runtime.v1.json`, `apps/api/src/modules/be2.module.spec.ts`.
+- Kiểm tra đã chạy: `prisma generate` với URL local giả thành công; `tsc -p tsconfig.backend.json --noEmit` đạt; Nest DI boot test đạt 1/1; BE2 contract 15/15 đạt trên Windows/Node 24.
+- Kiểm tra chưa chạy / coverage: HTTP/PostgreSQL/CSRF browser và route CV chưa chạy; coverage chưa đo.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Thêm route Nest và OpenAPI runtime; FE xem OpenAPI, BE1 không cần tự bind port BE2; BE3 đăng ký Outbox/Lifecycle thật qua token đã chốt. Không thay đổi quy tắc Word.
+- Phần còn thiếu / blocker: BE3 runtime, migration BE2, storage/scanner CV thật và HTTP integration test.
+- Bước tiếp theo: Commit riêng phần API; tạo migration BE2 và kiểm tra gate.
+
+### 2026-10-23 12:06 (Asia/Saigon) — BE2 — Bước 10 port hồ sơ cho BE1 và BE3
+
+- Mã báo cáo: 20261023-1206-BE2-port-ho-so
+- Người thực hiện / AI hỗ trợ: Người phụ trách BE2 (GitHub repository Truong102006) / Codex; chưa xác nhận tên thật.
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: BE2-PORT-10, UC07/08/09/11/16, BR08–BR09, TC19/TC46–TC49 ở phạm vi unit.
+- Trạng thái: DONE — port BE2 độc lập; tích hợp BE3/runtime vẫn IN_PROGRESS.
+- Nhánh / commit / PR / tích hợp main: `feat/be2-remaining-work` / commit chứa báo cáo này / chưa có PR / Chưa gộp main tại thời điểm báo cáo.
+- Đã hoàn thành: Application/Result/Conflict port kiểm recruiter, version, evidence đúng transaction; công bố kết quả ghi message/thời điểm/history/outbox/idempotency; replay không ghi lần hai; rollback khi Outbox lỗi.
+- File / bằng chứng: `apps/api/src/modules/application/services/application-ports.service.ts`, `services/application-ports.service.spec.ts`, `repositories/application-workflow.repository.ts`.
+- Kiểm tra đã chạy: Jest 3/3 unit mới, 3/3 unit thay CV hồi quy, ESLint/Prettier file bước 10 đạt trên Windows/Node 24.
+- Kiểm tra chưa chạy / coverage: PostgreSQL, BE3 integration và runtime DI chưa chạy; coverage chưa đo.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không thêm bảng/endpoint; thêm thao tác SQL result vào repository. BE3 phải truyền evidence của transaction đang mở và hoàn tất lịch trước khi gọi port; BE1 có thể gọi ApplicationConflictPort.
+- Phần còn thiếu / blocker: BE3 lịch/Outbox thật; migration BE2 và test DB.
+- Bước tiếp theo: Commit bước 10; hoàn thiện API/guard/DTO và module binding.
+
+### 2026-10-23 12:03 (Asia/Saigon) — BE2 — Bước 9 lưu tin quan tâm
+
+- Mã báo cáo: 20261023-1203-BE2-tin-quan-tam
+- Người thực hiện / AI hỗ trợ: Người phụ trách BE2 (GitHub repository Truong102006) / Codex; chưa xác nhận tên thật.
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: BE2-SAVED-09, UC14, FR13, BR01/BR04, TC52 ở phạm vi unit/contract.
+- Trạng thái: DONE — service/repository độc lập; UC14 tổng thể IN_PROGRESS.
+- Nhánh / commit / PR / tích hợp main: `feat/be2-remaining-work` / commit chứa báo cáo này / chưa có PR / Chưa gộp main tại thời điểm báo cáo.
+- Đã hoàn thành: PUT/DELETE idempotent, event chỉ khi thay đổi; GET phân trang và ẩn tên tin khi BE1 visibility báo không còn khả dụng.
+- File / bằng chứng: `apps/api/src/modules/candidate/repositories/saved-job.repository.ts`, `services/saved-job.service.ts`, `services/saved-job.service.spec.ts`, `contracts/schemas/be2.v1.json`, `tests/contract/be2-contract.spec.ts`.
+- Kiểm tra đã chạy: Jest 2/2 unit và 14/14 contract BE2 trên Windows/Node 24; lint/format kiểm ở bước commit.
+- Kiểm tra chưa chạy / coverage: PostgreSQL/API/concurrency chưa chạy; coverage chưa đo.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Thêm `SavedJobDto/Page` vào public/schema; FE1 có thể dùng contract; BE1 phải bind JobVisibilityPort; BE3 OutboxPort cần xử lý hai event đã có.
+- Phần còn thiếu / blocker: Route/guard, BE1/BE3 runtime bindings, migration và PostgreSQL test.
+- Bước tiếp theo: Commit bước 9; triển khai các port BE2 cho BE1/BE3.
+
+### 2026-10-23 12:00 (Asia/Saigon) — BE2 — Bước 8 xét duyệt và rút hồ sơ
+
+- Mã báo cáo: 20261023-1200-BE2-xet-duyet-rut
+- Người thực hiện / AI hỗ trợ: Người phụ trách BE2 (GitHub repository Truong102006) / Codex; chưa xác nhận tên thật.
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: BE2-APP-08, UC07, BR08–BR09, TC19/TC43, EC05/EC08–EC09/EC32–EC33 ở phạm vi unit.
+- Trạng thái: DONE — workflow/query độc lập; UC07 tổng thể IN_PROGRESS vì BE3 chưa có và chưa có API/DB test.
+- Nhánh / commit / PR / tích hợp main: `feat/be2-remaining-work` / commit chứa báo cáo này / chưa có PR / Chưa gộp main tại thời điểm báo cáo.
+- Đã hoàn thành: Review theo cạnh trạng thái, hủy đề nghị CV khi rời SCREENING; withdraw gọi BE3 hủy lịch trong cùng transaction trước ghi WITHDRAWN; query danh sách/chi tiết/history theo candidate hoặc company scope, map DTO công khai.
+- File / bằng chứng: `apps/api/src/modules/application/services/review-application-workflow.service.ts`, `services/application-read.service.ts`, `repositories/application-query.repository.ts` và test tương ứng.
+- Kiểm tra đã chạy: Jest 5/5 unit ở hai suite mới; ESLint/Prettier file bước 8 đạt trên Windows/Node 24.
+- Kiểm tra chưa chạy / coverage: PostgreSQL/API/concurrency và BE3 thật chưa chạy; coverage chưa đo; toàn suite chờ gate cuối.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không đổi SQL/endpoint; xác định `InterviewLifecyclePort.cancelOpenForApplication` phải cùng transaction, recheck lock scope và rollback khi lỗi. FE dùng DTO candidate hiện có sau khi route được nối.
+- Phần còn thiếu / blocker: BE3 lifecycle/outbox thật, module/controller/guard, migration BE2 và integration test.
+- Bước tiếp theo: Commit bước 8; triển khai UC14 lưu tin quan tâm.
+
+### 2026-10-23 11:57 (Asia/Saigon) — BE2 — Bước 7 thay CV đã nộp
+
+- Mã báo cáo: 20261023-1157-BE2-thay-cv
+- Người thực hiện / AI hỗ trợ: Người phụ trách BE2 (GitHub repository Truong102006) / Codex; chưa xác nhận tên thật.
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: BE2-CV-07, UC06, BR07–BR08, TC10–TC13, EC04–EC07 ở phạm vi unit/contract.
+- Trạng thái: DONE — lát cắt workflow BE2; UC06 tổng thể IN_PROGRESS vì API/provider/DB integration còn thiếu.
+- Nhánh / commit / PR / tích hợp main: `feat/be2-remaining-work` / commit chứa báo cáo này / chưa có PR / Chưa gộp main tại thời điểm báo cáo.
+- Đã hoàn thành: Thay current CV ở SUBMITTED giữ original; tạo PENDING ở SCREENING; recruiter duyệt/từ chối với hai version; history và event trong transaction; Idempotency-Key cho lệnh ứng viên; rollback khi Outbox lỗi.
+- File / bằng chứng: `apps/api/src/modules/application/repositories/application-workflow.repository.ts`, `services/cv-change-workflow.service.ts`, `services/cv-change-workflow.service.spec.ts`, `contracts/events/be2.v1.json`, `tests/contract/be2-contract.spec.ts`.
+- Kiểm tra đã chạy: Jest 3/3 unit của workflow và 13/13 contract BE2; ESLint file liên quan đạt; Prettier source/event đạt trên Windows/Node 24; `git diff --check` đạt.
+- Kiểm tra chưa chạy / coverage: Toàn suite, PostgreSQL/API/concurrency chưa chạy; coverage chưa đo. Dependency cũ trên máy chưa đồng bộ sau pull BE1, đang xử lý trước gate cuối.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không đổi SQL/endpoint; thêm hai event v1 `application.cv_change_requested`/`application.cv_change_rejected` chỉ mang applicationId. BE3 cần cập nhật consumer/fixture trước khi nối Outbox.
+- Phần còn thiếu / blocker: API/guard/binding, migration BE2/PostgreSQL và Outbox BE3 thật; UC06 chưa nghiệm thu.
+- Bước tiếp theo: Commit riêng bước 7, tiếp tục bước 8 xét duyệt/rút hồ sơ.
 
 ### 2026-10-23 11:02 (Asia/Saigon) — BE1 — Tích hợp cấu hình cloud/test lên main
 

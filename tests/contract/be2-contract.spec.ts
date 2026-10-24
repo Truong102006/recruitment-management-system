@@ -6,6 +6,7 @@ import fixture from '../../contracts/fixtures/candidate-application.v1.json';
 import eventFixture from '../../contracts/fixtures/application-submitted.v1.json';
 import openapi from '../../contracts/openapi/be2-foundation.v1.json';
 import profileOpenapi from '../../contracts/openapi/be2-profile.v1.json';
+import runtimeOpenapi from '../../contracts/openapi/be2-runtime.v1.json';
 import {
   APPLICATION_STATUSES,
   type CandidateApplicationDto,
@@ -58,6 +59,34 @@ describe('UC12 profile wire contract', () => {
       required: true,
     });
     expect(path.get.security).toEqual([{ sessionCookie: [] }]);
+  });
+});
+
+describe('BE2 Nest route contract', () => {
+  it('documents every wired path and resolves each BE2 schema reference', () => {
+    expect(Object.keys(runtimeOpenapi.paths).sort()).toEqual(
+      [
+        '/applications',
+        '/applications/{id}',
+        '/applications/{id}/cv-change',
+        '/applications/{id}/history',
+        '/applications/{id}/review',
+        '/applications/{id}/withdraw',
+        '/candidate/profile',
+        '/cv-change/{id}/approve',
+        '/cv-change/{id}/reject',
+        '/jobs/{id}/applications',
+        '/saved-jobs',
+        '/saved-jobs/{jobId}',
+      ].sort(),
+    );
+    const refs =
+      JSON.stringify(runtimeOpenapi).match(
+        /\.\.\/schemas\/be2\.v1\.json#\/definitions\/[A-Za-z]+/g,
+      ) ?? [];
+    for (const ref of refs)
+      expect(ajv.getSchema(`${schema.$id}#/definitions/${ref.split('/').at(-1)}`)).toBeDefined();
+    expect(runtimeOpenapi.paths['/saved-jobs/{jobId}'].put.responses['204']).toBeDefined();
   });
 });
 
@@ -213,6 +242,8 @@ describe('BE2 event producer contract for BE3', () => {
     'application.submitted': { applicationId: id },
     'application.status_changed': { applicationId: id },
     'application.cv_replaced': { applicationId: id },
+    'application.cv_change_requested': { applicationId: id },
+    'application.cv_change_rejected': { applicationId: id },
     'application.withdrawn': { applicationId: id },
     'application.result_published': { applicationId: id },
     'saved_job.created': { candidateId: id, jobId: fixture.data.jobId },
@@ -245,6 +276,30 @@ describe('BE2 event producer contract for BE3', () => {
     expect(validateEvent({ ...eventFixture, eventType: 'cv.scan_requested' })).toBe(false);
     expect(validateEvent({ ...eventFixture, eventType: 'unknown' })).toBe(false);
     expect(validateEvent({ ...eventFixture, schemaVersion: 2 })).toBe(false);
+  });
+});
+
+describe('UC14 saved job wire contract', () => {
+  it('hides restricted job details and validates paging shape', () => {
+    const page = {
+      data: [
+        {
+          jobId: fixture.data.jobId,
+          savedAt: fixture.data.updatedAt,
+          available: false,
+          acceptingApplications: false,
+          title: null,
+        },
+      ],
+      meta: { page: 1, pageSize: 20, total: 1 },
+    };
+    expect(validate('SavedJobPage', page)).toBe(true);
+    expect(
+      validate('SavedJobPage', {
+        ...page,
+        data: [{ ...page.data[0], title: 'private', internalNote: 'secret' }],
+      }),
+    ).toBe(false);
   });
 });
 
