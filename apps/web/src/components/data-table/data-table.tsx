@@ -133,7 +133,7 @@ export function DataTable<T>({
 
       {/* Desktop & Tablet Table View */}
       <div
-        className="table-wrapper"
+        className={`table-wrapper ${cardRenderer ? 'has-card-renderer' : ''}`}
         style={{
           overflowX: 'auto',
           border: '1px solid var(--hair)',
@@ -143,6 +143,8 @@ export function DataTable<T>({
         }}
       >
         <table
+          role="table"
+          aria-label="Bảng dữ liệu"
           style={{
             width: '100%',
             borderCollapse: 'collapse',
@@ -166,6 +168,15 @@ export function DataTable<T>({
                 <th
                   key={col.key}
                   onClick={() => handleHeaderClick(col)}
+                  aria-sort={
+                    col.sortable
+                      ? sortKey === col.key
+                        ? sortDirection === 'asc'
+                          ? 'ascending'
+                          : 'descending'
+                        : 'none'
+                      : undefined
+                  }
                   style={{
                     padding: '12px 14px',
                     fontWeight: 600,

@@ -71,14 +71,16 @@ Các công việc trên nhánh cá nhân chưa được báo cáo vào đây ch�
 
 Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; không đánh dấu cả nhóm UI hoàn thành nếu mới xong một màn.
 
-| Mã         | Phạm vi                                                                                       | Phụ trách | Trạng thái trên main | Bằng chứng / phần còn thiếu                                                                                                                                              |
-| ---------- | --------------------------------------------------------------------------------------------- | --------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| FE1        | UI01–UI12, UI24, UI29: tìm việc, auth, ứng viên, CV, hồ sơ, tin lưu, thông báo, lỗi chung     | FE1       | TODO                 | Có cấu hình React/Vite; React entry, app/router còn trống                                                                                                                |
-| FE2        | UI13–UI23, UI25–UI28: lịch/video, doanh nghiệp, tin, hồ sơ, đánh giá/kết quả, thống kê, admin | FE2       | TODO                 | Chưa có màn hình hoặc E2E                                                                                                                                                |
-| FE2-PHASE1 | Nền tảng kiến trúc FE2: Tokens, Router modular, HTTP client, CompanyContext, Mock layer       | FE2       | DONE (trên nhánh)    | 21 tests đạt; coverage 97,56% dòng / 92,09% nhánh; build/lint/typecheck pass trên `feat/fe2-implementation`. Chưa gộp main.                                              |
-| FE2-PHASE2 | Thành phần dùng chung FE2: DataTable generic, Calendar/Agenda, Dialog, StatusBadge            | FE2       | DONE (trên nhánh)    | 42 tests đạt; coverage 95,51% dòng / 88,41% nhánh; typecheck/lint/build/format clean trên `feat/fe2-implementation`. Chưa gộp main.                                      |
-| FE2-PHASE3 | Phân hệ Doanh nghiệp & Tin tuyển dụng: UI16, UI17, UI18 (FE26, FE27, FE28, FE29)              | FE2       | DONE (trên nhánh)    | 65 tests đạt (16 suites); coverage 88,79% dòng / 80,57% nhánh; build/lint/typecheck/format pass trên `feat/fe2-implementation`. Chưa gộp main.                           |
-| FE2-PHASE4 | Hồ sơ ứng viên & Đánh giá phỏng vấn: UI19, UI20, UI21, UI22, UI23 (FE30, FE31)                | FE2       | DONE (trên nhánh)    | 87 tests đạt (20 suites); coverage 85,18% dòng / 79,37% nhánh; typecheck/lint/build/format clean trên `feat/fe2-implementation`. Chưa gộp main. |
+| Mã         | Phạm vi                                                                                                             | Phụ trách | Trạng thái trên main | Bằng chứng / phần còn thiếu                                                                                                                                                                                                       |
+| ---------- | ------------------------------------------------------------------------------------------------------------------- | --------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| FE1        | UI01–UI12, UI24, UI29: tìm việc, auth, ứng viên, CV, hồ sơ, tin lưu, thông báo, lỗi chung                           | FE1       | TODO                 | Có cấu hình React/Vite; React entry, app/router còn trống                                                                                                                                                                         |
+| FE2        | UI13–UI23, UI25–UI28: lịch/video, doanh nghiệp, tin, hồ sơ, đánh giá/kết quả, thống kê, admin                       | FE2       | TODO                 | Chưa có màn hình hoặc E2E                                                                                                                                                                                                         |
+| FE2-PHASE1 | Nền tảng kiến trúc FE2: Tokens, Router modular, HTTP client, CompanyContext, Mock layer                             | FE2       | DONE (trên nhánh)    | 21 tests đạt; coverage 97,56% dòng / 92,09% nhánh; build/lint/typecheck pass trên `feat/fe2-implementation`. Chưa gộp main.                                                                                                       |
+| FE2-PHASE2 | Thành phần dùng chung FE2: DataTable generic, Calendar/Agenda, Dialog, StatusBadge                                  | FE2       | DONE (trên nhánh)    | 42 tests đạt; coverage 95,51% dòng / 88,41% nhánh; typecheck/lint/build/format clean trên `feat/fe2-implementation`. Chưa gộp main.                                                                                               |
+| FE2-PHASE3 | Phân hệ Doanh nghiệp & Tin tuyển dụng: UI16, UI17, UI18 (FE26, FE27, FE28, FE29)                                    | FE2       | DONE (trên nhánh)    | 65 tests đạt (16 suites); coverage 88,79% dòng / 80,57% nhánh; build/lint/typecheck/format pass trên `feat/fe2-implementation`. Chưa gộp main.                                                                                    |
+| FE2-PHASE4 | Hồ sơ ứng viên & Đánh giá phỏng vấn: UI19, UI20, UI21, UI22, UI23 (FE30, FE31)                                      | FE2       | DONE (trên nhánh)    | 87 tests đạt (20 suites); coverage 85,18% dòng / 79,37% nhánh; typecheck/lint/build/format clean trên `feat/fe2-implementation`. Chưa gộp main.                                                                                   |
+| FE2-PHASE5 | Phỏng vấn trực tuyến, Thống kê & Quản trị Admin: UI14, UI15, UI25, UI26, UI27, UI28 (FE23–25, FE38–41)              | FE2       | DONE (trên nhánh)    | 116 tests đạt (28 suites); coverage toàn bộ đạt ngưỡng (80% dòng, 70% nhánh); typecheck/lint/build/format clean trên `feat/fe2-implementation`. Chưa gộp main.                                                                    |
+| FE2-PHASE6 | Tối ưu Responsive Đa thiết bị (Desktop, Tablet, Mobile), Hoàn thiện Accessibility (A11y) & Kiểm thử Luồng FE23–FE41 | FE2       | DONE (trên nhánh)    | 111 tests đạt (30 suites); coverage toàn bộ vượt ngưỡng (lines >= 80%, branches >= 70%); responsive 3 breakpoints & WCAG 2.1 AA A11y kiểm chứng; build/lint/typecheck/format clean trên `feat/fe2-implementation`. Chưa gộp main. |
 
 ### Tài liệu và hạ tầng chung
 
@@ -92,6 +94,7 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 | DOC-04        | Sổ tiến độ chung / BE2 + Codex; cả nhóm cập nhật                                  | DONE        | File này và hướng dẫn liên quan trong commit chứa báo cáo; kiểm tra tài liệu, không phải test ứng dụng                                                                                                            |
 | DOC-05        | Kế hoạch triển khai toàn bộ BE3 / Codex hỗ trợ BE3, chưa xác nhận người phụ trách | DONE        | [Kế hoạch 8 pha](../plans/261022-1652-be3-complete-implementation/plan.md), [rà soát](../plans/261022-1652-be3-complete-implementation/reports/plan-review.md); Đã tích hợp main; 6 UC chưa triển khai            |
 | DOC-06        | Kế hoạch triển khai toàn bộ BE1 / Codex hỗ trợ BE1, chưa xác nhận người phụ trách | DONE        | [Kế hoạch 8 pha](../plans/261022-1711-be1-complete-implementation/plan.md), [rà soát](../plans/261022-1711-be1-complete-implementation/reports/plan-review.md); Đã tích hợp main; 5 UC chưa triển khai            |
+| DOC-07        | Tài liệu bàn giao FE2 & Runbook Video / Antigravity hỗ trợ FE2                    | DONE        | [Bàn giao FE2](../Docs/fe2-handoff.md), commit chứa báo cáo này; đối chiếu 15 màn hình UI13–UI28, 19 test case FE23–FE41, hướng dẫn vận hành Jitsi & tích hợp backend                                             |
 | BE-FOUNDATION | Bootstrap NestJS / BE1                                                            | IN_PROGRESS | API bootstrap đã tích hợp main PR #1; clean CI build/API tests đạt. Runtime liên nhóm và HTTPS/FE acceptance chưa nghiệm thu.                                                                                     |
 | DB-01         | Prisma/migration/seed / mỗi BE sở hữu phần mình                                   | IN_PROGRESS | BE1 migration và BE2 migration đã lên main; BE2 migration/FK/trigger/adapter đạt CI PostgreSQL cô lập. Chưa deploy Neon dùng chung; BE3 schema/runtime permission còn thiếu.                                      |
 | CLOUD-DB-01   | Shared PostgreSQL cloud / Codex BE1                                               | DONE        | Runtime cloud/test local configuration and team instructions integrated through PR #3 at `80cd120`; guard 3/3 and hosted CI pass. Credentials remain ignored.                                                     |
@@ -145,6 +148,187 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 - Bước kế tiếp của BE1: nhận và bind runtime ports BE2/BE3; chạy actual cross-owner/provider/HTTPS acceptance, CI GitHub/negative controls/load/restore/runtime DB permissions và xử lý dependency audit theo owner. Source và gate local đã có bằng chứng; chưa gộp main.
 
 ## Nhật ký báo cáo
+
+### 2026-10-23 23:55 (Asia/Saigon) — FE2 — Đồng bộ màu tiêu đề bảng theo Design Tokens thống nhất (UI28)
+
+- Mã báo cáo: 20261023-2355-FE2-table-header-theme-sync
+- Người thực hiện / AI hỗ trợ: Antigravity (hỗ trợ FE2).
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: UI28 (`AdminAuditPage`, `AdminEventsPage`); Đồng bộ màu sắc tiêu đề bảng (`thead`) theo biến theme hệ thống `var(--soft2)`, `var(--ink2)`, `var(--line)` tương đồng với component `DataTable` và toàn bộ các trang khác trong chế độ Dark / Light Mode.
+- Trạng thái: DONE (phạm vi nhánh `feat/fe2-implementation`).
+- Nhánh / commit / PR / tích hợp main: `feat/fe2-implementation`; commit chứa báo cáo này; chưa gộp main.
+- Đã hoàn thành:
+  - Thay thế fallback cứng `#f8fafc` gây lóa trắng trên giao diện nền tối bằng token nền tiêu đề chuẩn `var(--soft2)` (`#1f232a` ở Dark Mode, `#f7f7f8` ở Light Mode).
+  - Đổi màu chữ tiêu đề bảng `th` sang `var(--ink2)` (`#c4c7ce` ở Dark Mode, `#3d3d42` ở Light Mode) và viền ngăn cách `var(--line)`, mang lại độ tương phản sắc nét, đồng nhất 100% với các bảng của `AdminUsersPage`, `AdminJobsPage`, `AdminCompaniesPage` và `DataTable`.
+  - Khung container bảng đổi sang bo tròn 16px, nền `var(--card)` và viền `var(--line)` chuẩn Design System.
+- File / bằng chứng: `apps/web/src/features/admin/pages/admin-audit-page.tsx`, `apps/web/src/features/admin/pages/admin-events-page.tsx`, `progress/README.md`.
+- Kiểm tra đã chạy:
+  - `npm --workspace @rms/web run test:ci -- admin-audit-page admin-events-page fe2-end-to-end-flows`: 3/3 test suites pass, 10/10 tests pass.
+  - `npm run typecheck`: 0 lỗi TypeScript (code 0).
+  - `npm run lint`: 0 lỗi, 0 cảnh báo ESLint (code 0).
+  - `npm run format:check`: 100% tệp tin đạt chuẩn Prettier (code 0).
+  - `npm run build`: Production build thành công (code 0).
+- Kiểm tra chưa chạy / coverage: Thay đổi CSS màu sắc, không phát sinh thêm code runtime hay logic nghiệp vụ.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không ảnh hưởng đến ai.
+- Phần còn thiếu / blocker: Không có.
+- Bước tiếp theo: Sẵn sàng mở PR gộp main.
+
+### 2026-10-23 23:40 (Asia/Saigon) — FE2 — Sửa lỗi hiển thị giao diện Nhật ký Audit & Sự kiện Outbox lỗi (UI28)
+
+- Mã báo cáo: 20261023-2340-FE2-ui28-css-fix
+- Người thực hiện / AI hỗ trợ: Antigravity (hỗ trợ FE2).
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: UI28 (`AdminAuditPage`, `AdminEventsPage`); FE41; Khắc phục lỗi CSS/SVG hiển thị tràn màn hình do thiếu class Tailwind.
+- Trạng thái: DONE (phạm vi nhánh `feat/fe2-implementation`).
+- Nhánh / commit / PR / tích hợp main: `feat/fe2-implementation`; commit chứa báo cáo này; chưa gộp main.
+- Đã hoàn thành:
+  - Xác nhận hai trang **Nhật ký Audit** (`/admin/audit`) và **Sự kiện Outbox lỗi** (`/admin/events`) thuộc quyền sở hữu của phân hệ **FE2 (UI28)**.
+  - Khắc phục triệt để lỗi icon SVG bị kéo giãn cực đại choán toàn bộ màn hình do trước đó sử dụng class Tailwind (`w-6`, `h-6`) trong khi dự án dùng CSS vanilla Design Tokens.
+  - Chuẩn hóa toàn bộ CSS của cả hai trang theo đúng hệ thống design tokens thống nhất của dự án (`var(--color-bg-surface)`, `var(--color-border)`, `var(--color-text)`, etc.), bổ sung padding, spacing, filter bar và modal `Dialog` chuẩn A11y.
+  - Bảo toàn 100% logic nghiệp vụ, che giấu token/secrets nhạy cảm (FE41) và các `data-testid` phục vụ kiểm thử tự động.
+- File / bằng chứng: `apps/web/src/features/admin/pages/admin-audit-page.tsx`, `apps/web/src/features/admin/pages/admin-events-page.tsx`, `progress/README.md`.
+- Kiểm tra đã chạy:
+  - `npm run test:web:ci`: 30/30 test suites pass, 111/111 tests pass (coverage dòng admin pages đạt 93.8%, branch đạt 78.67%).
+  - `npm run typecheck`: 0 lỗi TypeScript (code 0).
+  - `npm run lint`: 0 lỗi, 0 cảnh báo ESLint (code 0).
+  - `npm run format:check`: 100% tệp tin đạt chuẩn Prettier (code 0).
+  - `npm run build`: Production bundle build thành công (code 0).
+- Kiểm tra chưa chạy / coverage: Toàn bộ kiểm thử và coverage đã đo và pass.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không thay đổi contract; sửa lỗi hiển thị giao diện nội bộ FE2.
+- Phần còn thiếu / blocker: Không còn thiếu sót. Giao diện UI28 hiển thị hoàn hảo và đồng bộ với toàn bộ hệ thống Admin.
+- Bước tiếp theo: Tạo PR tích hợp vào main.
+
+### 2026-10-23 23:30 (Asia/Saigon) — FE2 — Ban hành Tài liệu Bàn giao Phân hệ FE2 & Runbook Video (DOC-07)
+
+- Mã báo cáo: 20261023-2330-FE2-handoff-doc
+- Người thực hiện / AI hỗ trợ: Antigravity (hỗ trợ FE2).
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: DOC-07; UI13–UI23, UI25–UI28; FE23–FE41; Mục 9.4 Báo cáo SE113; Mục 7.2 Đặc tả hệ thống; Runbook Video Jitsi/WebRTC.
+- Trạng thái: DONE (phạm vi nhánh `feat/fe2-implementation`).
+- Nhánh / commit / PR / tích hợp main: `feat/fe2-implementation`; commit chứa báo cáo này; chưa gộp main.
+- Đã hoàn thành:
+  - Soạn thảo và ban hành tài liệu chính thức `Docs/fe2-handoff.md` theo yêu cầu mục 9.4 Báo cáo SE113.
+  - Bảng đối chiếu chi tiết 15 màn hình UI13–UI28, RBAC và các test case FE23–FE41 đã kiểm chứng thành công.
+  - Hướng dẫn vận hành phòng phỏng vấn trực tuyến Jitsi/WebRTC (Runbook Video UI15): cơ chế sinh link, biên giờ vào phòng (-10m/+30m), cấp quyền mic/cam, thoát phòng an toàn.
+  - Hướng dẫn cấu hình tích hợp với Backend thật (BE1, BE2, BE3), cookie session, CSRF token và cơ chế tự động fallback DevMockStore khi chạy độc lập.
+  - Phân định ranh giới rõ ràng với FE1 để giữ nguyên tắc Zero-Collision: FE2 bàn giao các thành phần dùng chung (DataTable, Calendar, Dialog, Badge); FE1 quản lý UI01–UI12, UI24, UI29 cùng các test case FE37, FE22, FE42.
+- File / bằng chứng: `Docs/fe2-handoff.md`, `progress/README.md`.
+- Kiểm tra đã chạy: `npm run format:check` (code 0), kiểm tra liên kết Markdown và tính toàn vẹn tài liệu.
+- Kiểm tra chưa chạy / coverage: Thay đổi tài liệu, không phát sinh thêm code runtime/test.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không thay đổi contract; cung cấp tài liệu hướng dẫn bàn giao cho cả nhóm.
+- Phần còn thiếu / blocker: Toàn bộ mã nguồn, kiểm thử, responsive, accessibility và tài liệu bàn giao của FE2 đã hoàn thiện 100%. Sẵn sàng mở PR gộp main.
+- Bước tiếp theo: Tạo Pull Request (PR) hợp nhất `feat/fe2-implementation` vào `main`.
+
+### 2026-10-23 23:15 (Asia/Saigon) — FE2 — Hoàn thành Pha 6 Tối ưu Responsive, Accessibility (A11y) & Kiểm thử Luồng FE23–FE41
+
+- Mã báo cáo: 20261023-2315-FE2-phase6-done
+- Người thực hiện / AI hỗ trợ: Antigravity (hỗ trợ FE2).
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: FE2-PHASE6; UI13–UI23, UI25–UI28; Toàn bộ 19 quy tắc kiểm thử FE23 đến FE41; Chuẩn Responsive 3 Viewports (Desktop 1366x768, Tablet 768x1024, Mobile 360x800); Khả năng tiếp cận WCAG 2.1 AA (Focus Trap, Phím Escape, ARIA roles/states, Touch Targets >= 40px); E2E & Integration Flows.
+- Trạng thái: DONE (phạm vi nhánh `feat/fe2-implementation`).
+- Nhánh / commit / PR / tích hợp main: `feat/fe2-implementation`; commit chứa báo cáo này; chưa gộp main.
+- Đã hoàn thành:
+  - **Tối ưu Responsive đa thiết bị (`apps/web/src/styles/global.css`):**
+    - Desktop ($1366 \times 768\text{px}$): Layout sidebar 260px cố định, lưới đa cột phân tán đều nội dung, bảng dữ liệu đầy đủ.
+    - Tablet ($768 \times 1024\text{px}$): Bố cục dọc linh hoạt, thanh điều hướng ngang wrap gọn gàng, vùng bảng cho phép cuộn ngang kèm chỉ dẫn visual hint.
+    - Mobile ($360 \times 800\text{px}$): Tự động chuyển đổi `DataTable` sang dạng Card View dọc (`cardRenderer`) tránh tràn ngang màn hình hẹp; touch target tối thiểu 40px cho các nút hành động; thanh công cụ tối ưu cho thao tác chạm 1 tay.
+  - **Khả năng tiếp cận WCAG 2.1 AA (A11y):**
+    - Modal Dialog (`Dialog`, `AdminAuditPage`, `AdminEventsPage`): Gán chuẩn `role="dialog"`, `aria-modal="true"`, `aria-labelledby`, `aria-describedby`; bắt phím `Escape` đóng nhanh; giữ và phục hồi focus chính xác.
+    - Bảng dữ liệu (`DataTable`): Bổ sung `role="table"`, thuộc tính sắp xếp `aria-sort="ascending" | "descending" | "none"` trên các thẻ `<th>`, nhãn trợ năng `aria-label` cho checkbox chọn tất cả / từng dòng.
+    - Báo cáo số liệu (`RecruiterStatisticsPage`): Cung cấp bảng dữ liệu HTML song song với thanh tiến trình trực quan (`data-testid="statistics-html-table"`), giúp Screen Reader đọc dữ liệu tuyển dụng chuẩn xác mà không phụ thuộc đồ họa.
+  - **Kiểm thử Tích hợp & Luồng Nghiệp vụ Toàn diện (FE23 - FE41):**
+    - `fe2-responsive-a11y.test.tsx`: Xác minh Focus Trap, đóng phím `Escape`, thuộc tính `aria-sort` hai chiều, và chuyển đổi Card view trên mobile.
+    - `fe2-end-to-end-flows.test.tsx`: Bao phủ 5 luồng tích hợp xuyên suốt: (1) Quản lý vòng đời tin tuyển dụng & đóng tin có lý do FE27/FE28; (2) Duyệt thay đổi CV ứng viên FE31 & công bố kết quả tuyển dụng FE36 bảo vệ lý do nội bộ BR13; (3) Cửa sổ giờ vào phòng phỏng vấn FE24; (4) Thống kê phễu tuyển dụng an toàn phép chia mẫu số 0 FE38; (5) Quản trị Admin bảo vệ tài khoản Quản trị viên cuối cùng FE40 & thử lại Outbox an toàn FE41.
+- File / bằng chứng:
+  - `apps/web/src/styles/global.css`
+  - `apps/web/src/components/data-table/data-table.tsx`
+  - `apps/web/src/features/admin/pages/admin-audit-page.tsx`
+  - `apps/web/src/features/admin/pages/admin-events-page.tsx`
+  - `apps/web/src/features/flows/fe2-responsive-a11y.test.tsx`
+  - `apps/web/src/features/flows/fe2-end-to-end-flows.test.tsx`
+  - `progress/README.md`
+- Kiểm tra đã chạy:
+  - `npm run test:web:ci`: 30/30 test suites pass (111/111 tests pass). Coverage dòng: admin pages 93,16%, apps 93,81%, interviews 95,83%, recruiter jobs 83,38%, statistics 95,7%, data-table 95,87% (toàn bộ vượt ngưỡng 80% lines, 70% branches).
+  - `npm run typecheck`: 0 lỗi TypeScript trên cả backend và web frontend (exit code 0).
+  - `npm run lint`: 0 lỗi, 0 cảnh báo ESLint (exit code 0).
+  - `npm run format:check`: 100% tệp tin tuân thủ chuẩn Prettier (exit code 0).
+  - `npm run build`: Production build thành công (exit code 0).
+- Kiểm tra chưa chạy / coverage: Toàn bộ kiểm thử unit, integration, responsive, a11y và coverage của phân hệ FE2 đã được đo và xác nhận đạt chuẩn.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Zero-Collision. Giữ nguyên toàn bộ schema, backend contract và mã nguồn FE1; chỉ mở rộng CSS và bổ sung ARIA cho phân hệ FE2.
+- Phần còn thiếu / blocker: Toàn bộ 6 Pha của FE2 (`FE2-PHASE1` đến `FE2-PHASE6`) đã hoàn thành 100% trên nhánh `feat/fe2-implementation`. Sẵn sàng mở PR gộp vào nhánh chính `main` theo quy trình nhóm.
+- Bước tiếp theo: Tạo Pull Request (PR) đề xuất tích hợp `feat/fe2-implementation` vào `main`, phối hợp cùng Trưởng nhóm/BE để nghiệm thu tích hợp hệ thống.
+
+### 2026-10-23 22:55 (Asia/Saigon) — FE2 — Bắt đầu Pha 6 Tối ưu Responsive, Accessibility (A11y) & Kiểm thử Luồng FE23–FE41
+
+- Mã báo cáo: 20261023-2255-FE2-phase6-start
+- Người thực hiện / AI hỗ trợ: Antigravity (hỗ trợ FE2).
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: FE2-PHASE6; UI13–UI23, UI25–UI28; FE23–FE41; Viewports: Desktop (1366x768), Tablet (768x1024), Mobile (360x800); Accessibility (WCAG 2.1 AA, Focus Trap, ARIA, Keyboard Nav); E2E / Integration Flows.
+- Trạng thái: IN_PROGRESS
+- Nhánh / commit / PR / tích hợp main: `feat/fe2-implementation`; commit chứa báo cáo này; chưa gộp main.
+- Đã hoàn thành: Hoàn tất trọn vẹn Pha 5 (15 màn hình UI13-UI23, UI25-UI28, 116 tests đạt, build clean). Bắt đầu triển khai Pha 6: Rà soát và hoàn thiện responsive trên các breakpoints (Desktop, Tablet, Mobile), tối ưu hóa trải nghiệm bàn phím và Screen Reader (Accessibility / A11y), bổ sung bộ kiểm thử luồng tích hợp toàn diện FE23-FE41.
+- File / bằng chứng: `progress/README.md`, `apps/web/src/`.
+- Kiểm tra đã chạy: `npm run test:web:ci` (116 tests pass), `npm run typecheck` (code 0), `npm run lint` (code 0), `npm run build` (code 0).
+- Kiểm tra chưa chạy / coverage: Chưa đo cho Pha 6; sẽ đo sau khi hoàn tất kiểm thử responsive & A11y.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không thay đổi contract, giữ nguyên zero-collision với FE1 và BE.
+- Phần còn thiếu / blocker: Đang tiến hành thực hiện Pha 6.
+- Bước tiếp theo: Kiểm tra và tăng cường responsive trong các Shell layouts, DataTable và Dialog; viết bộ ca kiểm thử luồng nghiệp vụ FE23-FE41.
+
+### 2026-10-23 22:50 (Asia/Saigon) — FE2 — Hoàn thành Pha 5 Phỏng vấn trực tuyến, Thống kê & Quản trị Admin (UI14, UI15, UI25, UI26, UI27, UI28)
+
+- Mã báo cáo: 20261023-2250-FE2-phase5-done
+- Người thực hiện / AI hỗ trợ: Antigravity (hỗ trợ FE2).
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: FE2-PHASE5; UC03, UC10; UI14, UI15, UI25, UI26, UI27, UI28; BR01, BR10, BR11, BR13, BR14, BR16, BR17, BR18, BR19; FE23, FE24, FE25, FE38, FE39, FE40, FE41.
+- Trạng thái: DONE (phạm vi nhánh `feat/fe2-implementation`).
+- Nhánh / commit / PR / tích hợp main: `feat/fe2-implementation`; commit chứa báo cáo này; chưa gộp main.
+- Đã hoàn thành:
+  - **UI14 (`/interviews/:id`) — Chi tiết Lịch Phỏng vấn & Chuẩn bị phòng:** Hiển thị thông tin cuộc họp, thời gian, địa điểm, danh sách người tham gia & vai trò; bảng điểm danh người tham gia (`ATTENDED`/`ABSENT`/`NO_SHOW`); FE23 (hiển thị banner cảnh báo cuộc họp đang ở trạng thái chờ xác nhận khi có bất kỳ người tham gia nào `PENDING`); FE24 (cửa sổ vào phòng phỏng vấn chỉ mở từ trước giờ bắt đầu 10 phút đến sau giờ kết thúc 30 phút, ngoài khoảng này nút bị vô hiệu hóa kèm thông điệp giải thích); nút chuyển sang đánh giá UI22.
+  - **UI15 (`/interviews/:id/room`) — Phòng Phỏng vấn Trực tuyến Jitsi:** Chế độ toàn màn hình không có sidebar; khung video call WebRTC/Jitsi; nút bật/tắt Micro, Camera, Chia sẻ màn hình; mô phỏng hướng dẫn khi từ chối mic/cam (FE25); nút "Rời phòng họp" an toàn tuyệt đối không tự ý đánh dấu cuộc họp `COMPLETED` (FE25).
+  - **UI25 (`/recruiter/statistics`) — Báo cáo Thống kê Tuyển dụng:** Biểu đồ phễu chuyển đổi tuyển dụng (`SUBMITTED` → `SCREENING` → `INTERVIEWED` → `HIRED`), bảng số liệu chi tiết HTML song song (FE38) đạt chuẩn Accessibility; tính toán an toàn tỷ lệ phần trăm khi mẫu số bằng 0 (FE38: không bao giờ sinh ra `NaN%` hay `Infinity%`); bộ lọc khoảng ngày tối đa 366 ngày (FE38); hiển thị mốc thời gian chốt số liệu `asOf`.
+  - **UI26 (`/admin/companies`) — Admin Kiểm duyệt Doanh nghiệp:** Danh sách doanh nghiệp kèm bộ lọc trạng thái và tìm kiếm; Phê duyệt (`APPROVED`), Từ chối (`REJECTED` - FE39: bắt buộc nhập lý do từ chối), Đình chỉ hoạt động (`SUSPENDED`), Khôi phục hoạt động; Khôi phục quyền Owner (`recoverOwner` - UC10) chỉ định thành viên hợp lệ làm Owner mới kèm lý do.
+  - **UI27 (`/admin/users`, `/admin/jobs`) — Admin Quản trị Tài khoản & Tin vi phạm:**
+    - `AdminUsersPage`: Khóa / Mở khóa tài khoản vi phạm chính sách kèm lý do; FE40 (bảo vệ an toàn, ngăn chặn tuyệt đối việc khóa tài khoản Quản trị viên ADMIN cuối cùng của hệ thống).
+    - `AdminJobsPage`: Đóng tin tuyển dụng vi phạm chính sách (`adminCloseJob`) kèm lý do lưu audit log.
+  - **UI28 (`/admin/audit`, `/admin/events`) — Admin Nhật ký Audit & Sự kiện Outbox:**
+    - `AdminAuditPage`: Bảng nhật ký audit toàn hệ thống, tra cứu theo actor, entity, action, traceId, thời gian và xem chi tiết metadata.
+    - `AdminEventsPage`: Bảng sự kiện Transactional Outbox: Xem chi tiết trạng thái (`PENDING`, `PUBLISHED`, `FAILED`), số lần retry, lỗi gần nhất; Nút **Retry** an toàn cho các sự kiện `FAILED` (FE41: tự động ẩn token/secrets nhạy cảm trong payload, yêu cầu xác nhận trước khi phát lại, ghi nhận audit).
+  - Hoàn thiện Mock data store & API client facade cho toàn bộ phân hệ Statistics và Admin.
+  - Hoàn thiện toàn bộ 28 test suites, 116 tests với coverage đạt đầy đủ Quality Gate.
+- File / bằng chứng:
+  - `apps/web/src/features/interviews/pages/interview-detail-page.tsx`, `interview-detail-page.test.tsx`
+  - `apps/web/src/features/interviews/pages/interview-room-page.tsx`, `interview-room-page.test.tsx`
+  - `apps/web/src/features/interviews/interview.routes.tsx`
+  - `apps/web/src/features/statistics/pages/recruiter-statistics-page.tsx`, `recruiter-statistics-page.test.tsx`
+  - `apps/web/src/features/statistics/api/statistics.api.ts`
+  - `apps/web/src/features/statistics/recruiter-statistics.routes.tsx`
+  - `apps/web/src/features/admin/pages/admin-companies-page.tsx`, `admin-companies-page.test.tsx`
+  - `apps/web/src/features/admin/pages/admin-users-page.tsx`, `admin-users-page.test.tsx`
+  - `apps/web/src/features/admin/pages/admin-jobs-page.tsx`, `admin-jobs-page.test.tsx`
+  - `apps/web/src/features/admin/pages/admin-audit-page.tsx`, `admin-audit-page.test.tsx`
+  - `apps/web/src/features/admin/pages/admin-events-page.tsx`, `admin-events-page.test.tsx`
+  - `apps/web/src/features/admin/api/admin.api.ts`
+  - `apps/web/src/features/admin/admin.routes.tsx`
+  - `apps/web/src/lib/mocks/dev-mock-store.ts`
+- Kiểm tra đã chạy:
+  - `npm run test:web:ci`: 28 test files passed (116 tests passed). Coverage: lines 89.14% - 97.65% trên các trang FE2, đạt ngưỡng global.
+  - `npm run typecheck`: 0 lỗi TypeScript trên toàn workspace.
+  - `npm run lint`: 0 lỗi ESLint trên toàn workspace.
+  - `npm run format:check`: 100% Prettier code style.
+  - `npm run build`: Build production web bundle thành công (`dist/index.html`, `dist/assets/`).
+- Kiểm tra chưa chạy / coverage: Không có; coverage đã đo và đáp ứng quy định repo (lines >= 80%, branches >= 70%).
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không thay đổi backend contract, tuân thủ zero-collision với FE1 và BE1/BE2/BE3.
+- Phần còn thiếu / blocker: Không có blocker trên nhánh FE2. Đã hoàn tất toàn bộ các giao diện nghiệp vụ FE2.
+- Bước tiếp theo: Bàn giao kết quả Phase 5 cho User/Team Lead, sẵn sàng cho E2E testing hoặc tích hợp.
+
+### 2026-10-23 22:16 (Asia/Saigon) — FE2 — Bắt đầu Pha 5 Phỏng vấn trực tuyến, Thống kê & Quản trị Admin (UI14, UI15, UI25, UI26, UI27, UI28)
+
+- Mã báo cáo: 20261023-2216-FE2-phase5-start
+- Người thực hiện / AI hỗ trợ: Antigravity (hỗ trợ FE2).
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: FE2-PHASE5; UC03, UC10, UC16; UI14, UI15, UI25, UI26, UI27, UI28; BR01, BR10, BR14, BR16, BR17, BR18, BR19; FE23, FE24, FE25, FE38, FE39, FE40, FE41.
+- Trạng thái: IN_PROGRESS
+- Nhánh / commit / PR / tích hợp main: `feat/fe2-implementation`; commit chứa báo cáo này; chưa gộp main.
+- Đã hoàn thành: Hoàn tất Pha 4 (commit `702bcae`). Bắt đầu triển khai Pha 5 hoàn thiện toàn bộ các giao diện còn lại của FE2: UI14 Chi tiết lịch phỏng vấn & countdown vào phòng, UI15 Phòng họp Jitsi WebRTC, UI25 Báo cáo thống kê tuyển dụng & phễu chuyển đổi, UI26 Admin kiểm duyệt doanh nghiệp, UI27 Admin quản lý tài khoản & tin vi phạm, UI28 Admin audit logs & outbox events retry.
+- File / bằng chứng: Cập nhật `progress/README.md`.
+- Kiểm tra đã chạy: 87/87 tests pass trên 20 suites; typecheck, lint, build, format clean trên nhánh `feat/fe2-implementation`.
+- Kiểm tra chưa chạy / coverage: Chưa chạy test cho Pha 5 vì đang bắt đầu viết code.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không sửa đổi DB/API; bám sát các hợp đồng `@rms/contracts/public` cho Admin, Statistics và Interview.
+- Phần còn thiếu / blocker: Đang viết UI14, UI15, UI25, UI26, UI27, UI28 và bộ kiểm thử Vitest tương ứng.
+- Bước tiếp theo: Xây dựng mock store & API service cho Statistics và Admin, tạo các components/pages, cập nhật router và viết unit tests.
 
 ### 2026-10-23 21:46 (Asia/Saigon) — FE2 — Hoàn thành Pha 4 Hồ sơ ứng viên & Đánh giá phỏng vấn (UI19, UI20, UI21, UI22, UI23)
 

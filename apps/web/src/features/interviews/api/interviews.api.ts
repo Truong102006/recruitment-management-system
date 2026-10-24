@@ -80,4 +80,37 @@ export const interviewsApi = {
       throw err;
     }
   },
+
+  recordAttendance: async (
+    interviewId: string,
+    participantId: string,
+    status: 'ATTENDED' | 'ABSENT' | 'NO_SHOW',
+  ): Promise<DevInterviewItem> => {
+    try {
+      return await apiClient.post<DevInterviewItem>(`/interviews/${interviewId}/attendance`, {
+        participantId,
+        status,
+      });
+    } catch (err) {
+      if (isDevBrowser()) {
+        return devMockStore.recordAttendance(interviewId, participantId, status);
+      }
+      throw err;
+    }
+  },
+
+  getRoomToken: async (
+    interviewId: string,
+  ): Promise<{ token: string; roomName: string; domain: string }> => {
+    try {
+      return await apiClient.get<{ token: string; roomName: string; domain: string }>(
+        `/interviews/${interviewId}/token`,
+      );
+    } catch (err) {
+      if (isDevBrowser()) {
+        return devMockStore.getRoomToken(interviewId);
+      }
+      throw err;
+    }
+  },
 };
