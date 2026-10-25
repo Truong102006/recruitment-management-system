@@ -99,19 +99,26 @@ export function VerifyEmailPage() {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        minHeight: '70vh',
-        padding: 'var(--space-4) 0',
+        minHeight: '75vh',
+        padding: 'var(--space-8) var(--space-4)',
+        background: 'var(--canvas)',
+        backgroundImage: 'radial-gradient(var(--dot) 1px, transparent 1.2px)',
+        backgroundSize: '8px 8px',
+        borderRadius: '32px',
+        margin: 'var(--space-4) 0',
       }}
     >
       <div
+        className="card auth-card"
         style={{
           width: '100%',
           maxWidth: '480px',
-          backgroundColor: 'var(--color-surface)',
-          padding: 'var(--space-8)',
-          borderRadius: 'var(--radius-lg)',
-          boxShadow: 'var(--shadow-md)',
-          border: '1px solid var(--color-border)',
+          backgroundColor: 'var(--card)',
+          padding: '36px 32px 30px',
+          borderRadius: '28px',
+          boxShadow: 'var(--sh-m)',
+          border: '1px solid var(--hair)',
+          animation: 'rise 0.4s var(--spring)',
         }}
       >
         {status === 'verifying' && (

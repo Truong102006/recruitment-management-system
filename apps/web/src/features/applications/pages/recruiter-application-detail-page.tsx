@@ -237,27 +237,24 @@ export const RecruiterApplicationDetailPage: React.FC = () => {
         <div>
           <button
             type="button"
+            className="btn sm"
             data-testid="back-to-list-btn"
             onClick={() => navigate('/recruiter/applications')}
             style={{
-              background: 'none',
-              border: 'none',
-              color: 'var(--color-primary)',
-              cursor: 'pointer',
-              fontWeight: 600,
-              padding: 0,
-              marginBottom: '0.5rem',
+              padding: '6px 12px',
+              marginBottom: '0.75rem',
               display: 'inline-flex',
               alignItems: 'center',
+              gap: '6px',
             }}
           >
             ← Quay lại danh sách hồ sơ
           </button>
-          <h1 style={{ fontSize: '1.75rem', fontWeight: 700, margin: '0 0 0.25rem' }}>
+          <h1 style={{ fontFamily: 'var(--font-d)', fontSize: '1.85rem', fontWeight: 600, letterSpacing: '-0.02em', margin: '0 0 0.35rem' }}>
             Hồ sơ: {application.candidateSnapshot.name}
           </h1>
-          <p style={{ color: 'var(--color-text-muted)', margin: 0 }}>
-            Ứng tuyển vị trí: <strong>{application.jobTitle || application.jobId}</strong>
+          <p style={{ color: 'var(--ink2)', margin: 0, fontSize: '0.95rem' }}>
+            Ứng tuyển vị trí: <strong style={{ color: 'var(--blue)' }}>{application.jobTitle || application.jobId}</strong>
           </p>
         </div>
 
@@ -391,14 +388,12 @@ export const RecruiterApplicationDetailPage: React.FC = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           {/* Candidate Card */}
           <div
+            className="card"
             style={{
-              background: 'var(--color-bg-surface)',
-              border: '1px solid var(--color-border)',
-              borderRadius: '8px',
-              padding: '1.25rem',
+              padding: '1.4rem',
             }}
           >
-            <h3 style={{ margin: '0 0 1rem', fontSize: '1.1rem', fontWeight: 600 }}>
+            <h3 style={{ margin: '0 0 1rem', fontSize: '1.15rem', fontWeight: 600, fontFamily: 'var(--font-d)' }}>
               Thông tin Ứng viên (Snapshot)
             </h3>
             <div
@@ -411,35 +406,35 @@ export const RecruiterApplicationDetailPage: React.FC = () => {
             >
               <div>
                 <span
-                  style={{ color: 'var(--color-text-muted)', display: 'block', fontSize: '0.8rem' }}
+                  style={{ color: 'var(--muted)', display: 'block', fontSize: '0.8rem', marginBottom: '2px' }}
                 >
                   Họ và tên
                 </span>
-                <strong data-testid="candidate-name">{application.candidateSnapshot.name}</strong>
+                <strong data-testid="candidate-name" style={{ fontSize: '1rem', color: 'var(--ink)' }}>{application.candidateSnapshot.name}</strong>
               </div>
               <div>
                 <span
-                  style={{ color: 'var(--color-text-muted)', display: 'block', fontSize: '0.8rem' }}
+                  style={{ color: 'var(--muted)', display: 'block', fontSize: '0.8rem', marginBottom: '2px' }}
                 >
                   Địa chỉ Email
                 </span>
-                <span data-testid="candidate-email">{application.candidateSnapshot.email}</span>
+                <span data-testid="candidate-email" style={{ color: 'var(--ink2)' }}>{application.candidateSnapshot.email}</span>
               </div>
               <div>
                 <span
-                  style={{ color: 'var(--color-text-muted)', display: 'block', fontSize: '0.8rem' }}
+                  style={{ color: 'var(--muted)', display: 'block', fontSize: '0.8rem', marginBottom: '2px' }}
                 >
                   Số điện thoại
                 </span>
-                <span>{application.candidateSnapshot.phone || 'Chưa cung cấp'}</span>
+                <span style={{ color: 'var(--ink2)' }}>{application.candidateSnapshot.phone || 'Chưa cung cấp'}</span>
               </div>
               <div>
                 <span
-                  style={{ color: 'var(--color-text-muted)', display: 'block', fontSize: '0.8rem' }}
+                  style={{ color: 'var(--muted)', display: 'block', fontSize: '0.8rem', marginBottom: '2px' }}
                 >
                   Thời điểm nộp
                 </span>
-                <span>{formatDate(application.submittedAt)}</span>
+                <span style={{ color: 'var(--ink2)' }}>{formatDate(application.submittedAt)}</span>
               </div>
             </div>
 
@@ -448,15 +443,15 @@ export const RecruiterApplicationDetailPage: React.FC = () => {
                 style={{
                   marginTop: '1rem',
                   paddingTop: '1rem',
-                  borderTop: '1px solid var(--color-border)',
+                  borderTop: '1px solid var(--hair)',
                 }}
               >
                 <span
-                  style={{ color: 'var(--color-text-muted)', display: 'block', fontSize: '0.8rem' }}
+                  style={{ color: 'var(--muted)', display: 'block', fontSize: '0.8rem' }}
                 >
                   Tiêu đề nghề nghiệp
                 </span>
-                <p style={{ margin: '0.25rem 0 0', fontSize: '0.95rem' }}>
+                <p style={{ margin: '0.25rem 0 0', fontSize: '0.95rem', color: 'var(--ink)' }}>
                   {application.candidateSnapshot.headline}
                 </p>
               </div>
@@ -465,14 +460,12 @@ export const RecruiterApplicationDetailPage: React.FC = () => {
 
           {/* Cover Letter Card */}
           <div
+            className="card"
             style={{
-              background: 'var(--color-bg-surface)',
-              border: '1px solid var(--color-border)',
-              borderRadius: '8px',
-              padding: '1.25rem',
+              padding: '1.4rem',
             }}
           >
-            <h3 style={{ margin: '0 0 0.75rem', fontSize: '1.1rem', fontWeight: 600 }}>
+            <h3 style={{ margin: '0 0 0.75rem', fontSize: '1.15rem', fontWeight: 600, fontFamily: 'var(--font-d)' }}>
               Thư giới thiệu (Cover Letter)
             </h3>
             <p
@@ -480,7 +473,7 @@ export const RecruiterApplicationDetailPage: React.FC = () => {
                 margin: 0,
                 fontSize: '0.9rem',
                 lineHeight: 1.6,
-                color: 'var(--color-text)',
+                color: 'var(--ink2)',
                 whiteSpace: 'pre-wrap',
               }}
             >
@@ -493,26 +486,24 @@ export const RecruiterApplicationDetailPage: React.FC = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           {/* CV Version Card */}
           <div
+            className="card"
             style={{
-              background: 'var(--color-bg-surface)',
-              border: '1px solid var(--color-border)',
-              borderRadius: '8px',
-              padding: '1.25rem',
+              padding: '1.4rem',
             }}
           >
-            <h3 style={{ margin: '0 0 0.75rem', fontSize: '1.1rem', fontWeight: 600 }}>
+            <h3 style={{ margin: '0 0 0.75rem', fontSize: '1.15rem', fontWeight: 600, fontFamily: 'var(--font-d)' }}>
               Tệp CV Ứng tuyển
             </h3>
             <div style={{ fontSize: '0.85rem', marginBottom: '0.75rem' }}>
               <div style={{ marginBottom: '0.35rem' }}>
-                <span style={{ color: 'var(--color-text-muted)' }}>CV Gốc: </span>
-                <code style={{ fontSize: '0.8rem' }}>{application.originalCvVersionId}</code>
+                <span style={{ color: 'var(--muted)' }}>CV Gốc: </span>
+                <code style={{ fontSize: '0.8rem', background: 'var(--soft)', padding: '2px 6px', borderRadius: '4px' }}>{application.originalCvVersionId}</code>
               </div>
               <div>
-                <span style={{ color: 'var(--color-text-muted)' }}>CV Đang xét: </span>
+                <span style={{ color: 'var(--muted)' }}>CV Đang xét: </span>
                 <code
                   data-testid="current-cv-id"
-                  style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--color-primary)' }}
+                  style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--blue)', background: 'var(--tint-bg)', padding: '2px 6px', borderRadius: '4px' }}
                 >
                   {application.currentCvVersionId}
                 </code>
@@ -521,17 +512,12 @@ export const RecruiterApplicationDetailPage: React.FC = () => {
 
             <button
               type="button"
+              className="btn sm"
               data-testid="preview-cv-btn"
               onClick={() => setShowCvModal(true)}
               style={{
                 width: '100%',
-                padding: '0.55rem',
-                borderRadius: '6px',
-                border: '1px solid var(--color-primary)',
-                background: 'var(--color-primary-subtle)',
-                color: 'var(--color-primary)',
                 fontWeight: 600,
-                cursor: 'pointer',
               }}
             >
               📄 Xem tệp PDF CV
@@ -540,14 +526,12 @@ export const RecruiterApplicationDetailPage: React.FC = () => {
 
           {/* Workflow Action Panel (UC07, UC09, BR09) */}
           <div
+            className="card"
             style={{
-              background: 'var(--color-bg-surface)',
-              border: '1px solid var(--color-border)',
-              borderRadius: '8px',
-              padding: '1.25rem',
+              padding: '1.4rem',
             }}
           >
-            <h3 style={{ margin: '0 0 1rem', fontSize: '1.1rem', fontWeight: 600 }}>
+            <h3 style={{ margin: '0 0 1rem', fontSize: '1.15rem', fontWeight: 600, fontFamily: 'var(--font-d)' }}>
               Thao tác Xử lý Hồ sơ
             </h3>
 
@@ -556,17 +540,13 @@ export const RecruiterApplicationDetailPage: React.FC = () => {
                 {application.status === 'SUBMITTED' && (
                   <button
                     type="button"
+                    className="btn primary"
                     data-testid="move-to-screening-btn"
                     disabled={updatingStatus}
                     onClick={() => void handleTransitionStatus('SCREENING')}
                     style={{
-                      padding: '0.6rem 1rem',
-                      borderRadius: '6px',
-                      border: 'none',
-                      background: 'var(--color-primary)',
-                      color: '#fff',
+                      width: '100%',
                       fontWeight: 600,
-                      cursor: 'pointer',
                     }}
                   >
                     Chuyển sang Sàng lọc (SCREENING)
@@ -576,17 +556,13 @@ export const RecruiterApplicationDetailPage: React.FC = () => {
                 {(application.status === 'SUBMITTED' || application.status === 'SCREENING') && (
                   <button
                     type="button"
+                    className="btn"
                     data-testid="move-to-shortlisted-btn"
                     disabled={updatingStatus}
                     onClick={() => void handleTransitionStatus('SHORTLISTED')}
                     style={{
-                      padding: '0.6rem 1rem',
-                      borderRadius: '6px',
-                      border: '1px solid var(--color-primary)',
-                      background: 'transparent',
-                      color: 'var(--color-primary)',
+                      width: '100%',
                       fontWeight: 600,
-                      cursor: 'pointer',
                     }}
                   >
                     Đưa vào Danh sách ngắn (SHORTLISTED)
@@ -596,16 +572,15 @@ export const RecruiterApplicationDetailPage: React.FC = () => {
                 {/* Xếp lịch phỏng vấn */}
                 <button
                   type="button"
+                  className="btn"
                   data-testid="schedule-interview-btn"
                   onClick={() => navigate('/interviews')}
                   style={{
-                    padding: '0.6rem 1rem',
-                    borderRadius: '6px',
-                    border: '1px solid #d97706',
-                    background: '#fef3c7',
-                    color: '#92400e',
+                    width: '100%',
                     fontWeight: 600,
-                    cursor: 'pointer',
+                    background: 'var(--p1b)',
+                    color: 'var(--p1f)',
+                    borderColor: 'var(--amber)',
                   }}
                 >
                   🗓️ Xem lịch phỏng vấn
@@ -615,16 +590,15 @@ export const RecruiterApplicationDetailPage: React.FC = () => {
                 {application.status === 'INTERVIEWED' && (
                   <button
                     type="button"
+                    className="btn"
                     data-testid="publish-result-modal-btn"
                     onClick={() => setShowResultModal(true)}
                     style={{
-                      padding: '0.65rem 1rem',
-                      borderRadius: '6px',
-                      border: 'none',
-                      background: '#16a34a',
+                      width: '100%',
+                      background: 'var(--green)',
+                      borderColor: 'var(--green)',
                       color: '#fff',
                       fontWeight: 600,
-                      cursor: 'pointer',
                     }}
                   >
                     📢 Công bố kết quả tuyển dụng (UI23)
@@ -634,11 +608,11 @@ export const RecruiterApplicationDetailPage: React.FC = () => {
             ) : (
               <div
                 style={{
-                  padding: '0.75rem',
-                  background: 'var(--color-bg-secondary)',
-                  borderRadius: '6px',
+                  padding: '0.85rem',
+                  background: 'var(--soft)',
+                  borderRadius: '10px',
                   fontSize: '0.85rem',
-                  color: 'var(--color-text-muted)',
+                  color: 'var(--muted)',
                 }}
               >
                 Hồ sơ đã đạt trạng thái kết thúc ({application.status}). Không thể chuyển trạng thái
@@ -651,15 +625,13 @@ export const RecruiterApplicationDetailPage: React.FC = () => {
 
       {/* Application Timeline / History (CandidateHistoryDto) */}
       <div
+        className="card"
         style={{
-          background: 'var(--color-bg-surface)',
-          border: '1px solid var(--color-border)',
-          borderRadius: '8px',
-          padding: '1.25rem',
+          padding: '1.4rem',
           marginTop: '1.5rem',
         }}
       >
-        <h3 style={{ margin: '0 0 1rem', fontSize: '1.1rem', fontWeight: 600 }}>
+        <h3 style={{ margin: '0 0 1.25rem', fontSize: '1.15rem', fontWeight: 600, fontFamily: 'var(--font-d)' }}>
           Dòng thời gian & Lịch sử xử lý hồ sơ (History Timeline)
         </h3>
 

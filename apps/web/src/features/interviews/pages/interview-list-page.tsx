@@ -167,7 +167,7 @@ export const InterviewListPage: React.FC = () => {
     <div
       className="interview-list-page"
       data-testid="ui13-interviews"
-      style={{ maxWidth: '1240px', margin: '0 auto', padding: '1.5rem' }}
+      style={{ maxWidth: '1280px', margin: '0 auto', padding: '1.5rem' }}
     >
       <div
         style={{
@@ -175,11 +175,24 @@ export const InterviewListPage: React.FC = () => {
           justifyContent: 'space-between',
           alignItems: 'center',
           marginBottom: '1.5rem',
+          flexWrap: 'wrap',
+          gap: '12px',
         }}
       >
         <div>
-          <h1 style={{ fontSize: '1.75rem', fontWeight: 700, margin: 0 }}>Lịch phỏng vấn (UI13)</h1>
-          <p style={{ color: 'var(--color-text-muted)', margin: '0.25rem 0 0' }}>
+          <h1
+            style={{
+              fontSize: '28px',
+              fontWeight: 600,
+              fontFamily: 'var(--font-d)',
+              letterSpacing: '-0.02em',
+              color: 'var(--ink)',
+              margin: 0,
+            }}
+          >
+            Lịch phỏng vấn (UI13)
+          </h1>
+          <p style={{ color: 'var(--muted)', fontSize: '14px', margin: '4px 0 0' }}>
             Xem toàn bộ lịch theo định dạng Lịch tháng (Month Calendar) hoặc Dòng thời gian
             (Agenda).
           </p>
@@ -188,16 +201,8 @@ export const InterviewListPage: React.FC = () => {
         <button
           type="button"
           data-testid="open-schedule-modal-btn"
+          className="btn primary sm"
           onClick={() => setShowScheduleModal(true)}
-          style={{
-            padding: '0.6rem 1.25rem',
-            borderRadius: '6px',
-            border: 'none',
-            background: 'var(--color-primary)',
-            color: '#fff',
-            fontWeight: 600,
-            cursor: 'pointer',
-          }}
         >
           + Xếp lịch phỏng vấn (UI21)
         </button>

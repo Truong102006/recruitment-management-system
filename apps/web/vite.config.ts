@@ -12,5 +12,14 @@ export default defineConfig({
       '@rms/contracts/public': path.resolve(__dirname, '../../libs/contracts/public/index.ts'),
     },
   },
-  server: { port: 5173, strictPort: true },
+  server: {
+    port: 5173,
+    strictPort: true,
+    proxy: {
+      '/api': {
+        target: 'http://127.0.0.1:3000',
+        changeOrigin: true,
+      },
+    },
+  },
 });

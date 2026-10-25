@@ -102,12 +102,13 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 | FE2-PHASE4 | Hồ sơ ứng viên & Đánh giá phỏng vấn: UI19, UI20, UI21, UI22, UI23 (FE30, FE31)                                      | FE2       | DONE (trên nhánh)    | 87 tests đạt (20 suites); coverage 85,18% dòng / 79,37% nhánh; typecheck/lint/build/format clean trên `feat/fe2-implementation`. Chưa gộp main.                                                                                   |
 | FE2-PHASE5 | Phỏng vấn trực tuyến, Thống kê & Quản trị Admin: UI14, UI15, UI25, UI26, UI27, UI28 (FE23–25, FE38–41)              | FE2       | DONE (trên nhánh)    | 116 tests đạt (28 suites); coverage toàn bộ đạt ngưỡng (80% dòng, 70% nhánh); typecheck/lint/build/format clean trên `feat/fe2-implementation`. Chưa gộp main.                                                                    |
 | FE2-PHASE6 | Tối ưu Responsive Đa thiết bị (Desktop, Tablet, Mobile), Hoàn thiện Accessibility (A11y) & Kiểm thử Luồng FE23–FE41 | FE2       | DONE (trên nhánh)    | 111 tests đạt (30 suites); coverage toàn bộ vượt ngưỡng (lines >= 80%, branches >= 70%); responsive 3 breakpoints & WCAG 2.1 AA A11y kiểm chứng; build/lint/typecheck/format clean trên `feat/fe2-implementation`. Chưa gộp main. |
-| TALENTO-FE | Thiết kế Talento: Design System, Tokens, Micro-interactions, Landing Page, Recruiter Workspace, Kanban Pipeline, Jobs Grid Card & Scheduler | FE2 / Reviewer R3 | DONE (trên nhánh)    | 169 tests đạt (40 suites); coverage toàn bộ vượt ngưỡng (lines > 80%, branches > 70%); typecheck & build Vite sạch sẽ; bổ sung ripple effect listener, hero animated scanning & progress bar, nav link spring underline, localization đầy đủ và job sync. |
+| TALENTO-FE | Tái thiết kế toàn bộ UI/UX hệ thống theo chuẩn Talento: Landing Hero, Bento Features, Candidate/Recruiter/Admin Shells, Kanban Pipeline, Tokens & Motion System | Principal UI/UX & Antigravity | DONE (trên nhánh) | Hoàn thành 100% tái thiết kế UI/UX theo Talento (1).html; 38 suites / 180 tests PASS (100%), 0 regressions; typecheck clean, ESLint 0 warnings, Vite production build clean; browser subagent xác minh trực tiếp. |
 
 ### Tài liệu và hạ tầng chung
 
 | Mã            | Hạng mục / người phụ trách                                                        | Trạng thái  | Bằng chứng và phạm vi hoàn thành                                                                                                                                                                                  |
 | ------------- | --------------------------------------------------------------------------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| LOCAL-DEV-01  | Khởi chạy & tích hợp Localhost FE (5173) & BE API (3000) / Antigravity             | DONE (local runtime) | Backend NestJS port 3000, Frontend Vite port 5173 reverse proxy /api, Seeded demo DB, 180 web tests pass 100%, Browser verified jobs & auth. |
 | BE1-AUDIT-01 | Rà soát và kiểm thử hoàn thành BE1 / Codex hỗ trợ BE1 | DONE (kiểm tra) | [Audit 25/10](../plans/261022-1711-be1-complete-implementation/reports/261025-be1-completion-audit.md): unit330/contract25 đạt; integration113 đạt lần2 (lần1 timeout); 8 assertion nghiệm thu fail do thiếu provider và 5 nhóm lỗi. BE1 vẫn IN_PROGRESS |
 | BE1-FIX-01 | Sửa F02–F06 và regression BR15/18 / BE1 + Codex | DONE (phạm vi sửa lỗi) | Nhánh fix/be1-acceptance-20261025 chưa commit/chưa gộp main;368unit/126integration/124web, lint/types/build/evidence đạt; legacy migration3tests và6/8probes đạt. F01/provider và gate toàn BE1 còn mở. [Bằng chứng](../plans/261022-1711-be1-complete-implementation/reports/261025-be1-fixes-verification.md). |
 | SYNC-LOCAL-01 | Đồng bộ source GitHub, giữ ba file audit / Codex | DONE | Fetch/reset origin/main tại 94d84c2; source tracked khác progress đã khớp remote; chỉ ba file được giữ còn trong git status. Env/dependency/artifact ignored được giữ; chưa chạy lại application test |
@@ -154,6 +155,104 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 - Bước tiếp theo: BE3 cung cấp transactional providers/worker/mail/security; BE1/BE2 phối hợp runtime/barrier/rollback; owner dependency xử lý audit. Review/migrate theo thứ tự dừng writer cũ→migrate→start API mới; chưa áp DB chung, chưa publish Git trong lượt này.
 
 ## Nhật ký báo cáo
+
+### 2026-10-25 18:50 (Asia/Saigon) — Fullstack / Antigravity — Khởi chạy thành công Localhost Frontend & Backend API
+
+- Mã báo cáo: 20261025-1850-FULLSTACK-run-localhost-fe-be
+- Người thực hiện / AI hỗ trợ: Antigravity (Senior Full-Stack & UI/UX Engineer).
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: Hạ tầng Localhost Full-Stack; Backend NestJS API (`http://127.0.0.1:3000`), Frontend React/Vite (`http://127.0.0.1:5173`), Reverse Proxy `/api`, Seed Demo Accounts & Sample Jobs, Đồng bộ tham số tìm kiếm `searchPublicJobs` với `JobSearchQueryDto`.
+- Trạng thái: DONE (local runtime).
+- Nhánh / commit / PR / tích hợp main: main (local runtime); chưa commit/chưa gộp main.
+- Đã hoàn thành:
+  1. Xây dựng và khởi chạy Backend NestJS API:
+     - Tạo `apps/api/tsconfig.json` và `apps/worker/tsconfig.json` mở rộng `tsconfig.build.json` để kích hoạt TypeScript decorator metadata.
+     - Biên dịch backend hoàn chỉnh bằng `tsc -p apps/api/tsconfig.build.json` vào `dist/api`.
+     - Khởi chạy NestJS API server daemon trên cổng 3000 với prefix `/api`: `[Bootstrap] API server successfully started on port 3000 with prefix /api`.
+  2. Cấu hình và khởi chạy Frontend Vite:
+     - Cấu hình reverse proxy trong `apps/web/vite.config.ts`: chuyển tiếp mọi request `/api/*` tới `http://127.0.0.1:3000`.
+     - Chạy frontend Vite dev server daemon trên cổng 5173: `http://127.0.0.1:5173/`.
+  3. Nạp dữ liệu mẫu (Seed Database):
+     - Chạy `npm run db:seed` với `SEED_DEMO_PASSWORD` hợp lệ.
+     - Tạo các tài khoản mẫu: Admin (`admin@example.com`), Recruiter (`recruiter1@example.com`), Candidate (`candidate1@example.com`), Interviewer (`interviewer1@example.com`) với mật khẩu `DemoPassword123!`.
+     - Tạo tin tuyển dụng mẫu: *Senior Backend Engineer (NestJS / PostgreSQL)* tại *Acme Corporation*.
+  4. Đồng bộ tham số truy vấn tìm kiếm việc làm:
+     - Khắc phục lỗi `VALIDATION_FAILED: property sort should not exist` tại `apps/web/src/features/jobs/public-jobs.api.ts` bằng cách chuẩn hóa sang `sortBy`, `sortOrder`, `salaryMin`, `salaryMax` theo đúng `JobSearchQueryDto` của backend.
+  5. Kiểm thử và xác minh:
+     - Chạy toàn bộ bộ test frontend: 38/38 suites, 180/180 tests PASS (100%).
+     - Dùng `browser_subagent` truy cập `http://127.0.0.1:5173/jobs`, xác nhận hiển thị trọn vẹn tin tuyển dụng từ backend, giao diện Talento mượt mà, modal đăng nhập hoạt động chuẩn xác.
+- File / bằng chứng:
+  - `apps/api/tsconfig.json`
+  - `apps/worker/tsconfig.json`
+  - `apps/web/vite.config.ts`
+  - `apps/web/src/features/jobs/public-jobs.api.ts`
+  - `jobs_page_1792928945133.png` (Xác minh hiển thị danh sách việc làm)
+  - `login_page_1792928975163.png` (Xác minh form đăng nhập)
+  - Video ghi lại quá trình kiểm thử: `jobs_verify_fix_1792928933127.webp`
+- Kiểm tra đã chạy:
+  - `powershell Invoke-RestMethod -Uri "http://127.0.0.1:3000/api/jobs"`: HTTP 200, trả về danh sách việc làm mẫu.
+  - `powershell Invoke-RestMethod -Uri "http://127.0.0.1:5173/api/jobs"`: HTTP 200 qua Vite proxy.
+  - `powershell Invoke-RestMethod -Uri "http://127.0.0.1:3000/api/auth/login"`: HTTP 200 với recruiter demo.
+  - `npm run test:ci --workspace @rms/web`: 38 suites, 180 tests PASS (100%).
+  - Browser subagent tự động kiểm thử UI và DOM trên Chrome headless.
+- Kiểm tra chưa chạy / coverage: Toàn bộ kiểm thử unit/integration FE và browser live verify đã chạy và đạt 100%. Chưa chạy E2E full luồng với worker/mail server local vì worker daemon chưa bật.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không đổi schema DB hoặc contract; sửa client call để tuân thủ 100% backend whitelist validation pipe.
+- Phần còn thiếu / blocker: Không có blocker. Cả hai server FE và BE đang chạy ngầm ổn định.
+- Bước tiếp theo: Hướng dẫn người dùng trải nghiệm các tính năng trên trình duyệt.
+
+### 2026-10-25 16:30 (Asia/Saigon) — Frontend / Antigravity — Hoàn thành tái thiết kế toàn bộ UI/UX theo chuẩn Talento
+
+- Mã báo cáo: 20261025-1630-FE-talento-redesign-completed
+- Người thực hiện / AI hỗ trợ: Antigravity (Principal UI/UX Designer & Senior Frontend Architect).
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: TALENTO-FE; UI01–UI29, FE01–FE42; Talento Design System Tokens, Typography (Be Vietnam Pro & Patrick Hand), Dynamic Dot Grids, Interactive Hero Verbs, Bento Feature Grids, Live App Demo Mockup, Kanban Pipeline Board, Applicant Review & CV Versioning, Recruiter/Candidate/Admin Shells, Spring Physics & Confetti Particle System, Dark/Light Theme Switching, Dual-Language VI/EN.
+- Trạng thái: DONE (trên nhánh local).
+- Nhánh / commit / PR / tích hợp main: main; working tree local; chưa commit/chưa gộp main.
+- Đã hoàn thành:
+  1. Phân tích 100% source `Talento (1).html` và trích xuất trọn vẹn bộ design tokens: màu sắc HSL/Hex, typography (Be Vietnam Pro 400/500/600/700 và Patrick Hand), spacing, shadows, border radius, và đặc biệt là hệ số chuyển động lò xo vật lý `--spring: cubic-bezier(0.34, 1.56, 0.64, 1)`.
+  2. Xây dựng tài liệu kiến trúc UI Mapping toàn diện tại `Docs/talento-ui-mapping.md` bao phủ toàn bộ 8 vai trò người dùng và 29 mã màn hình giao diện.
+  3. Cập nhật nền tảng thiết kế toàn cục: `apps/web/index.html` (Google Fonts), `apps/web/src/styles/tokens.css` (Tokens Talento), `apps/web/src/styles/global.css` (button physics, floating pinned notes, folders, animated hero verbs, kanban columns, auth cards, modals, dialogs, status badges, và 16 keyframes animation).
+  4. Triển khai engine tương tác Talento `apps/web/src/lib/talento-effects.ts`: Click ripple effect, engine pháo giấy ăn mừng `burst(x, y, count)` kích hoạt khi chuyển trạng thái sang "Đã nhận / Hired" hoặc hoàn thành việc cần làm, đồng bộ hóa theme tối/sáng tự động.
+  5. Tái thiết kế toàn bộ 4 Layout Shells: Public Layout, Candidate Portal Layout, Recruiter Workspace Layout (Sidebar với 4-dot brand tile, menu linh hoạt, công ty hiện tại, tìm kiếm focus ring), Admin Layout (Sidebar với ADMIN badge).
+  6. Tái thiết kế toàn bộ Landing Page (`public-home-page.tsx`): Hero động với 3 động từ tương tác (`Tuyển` với dấu check sóng xanh, `duyệt` với kính lúp quét ngang, `theo dõi` với thanh tiến độ xanh và điểm ping), sticky note ghim đỏ, folder nhắc nhở, live app demo mockup có đồng hồ đếm ngược, to-do list, tiến độ vòng tròn 3 màu, giải pháp 3 cột và bento feature grid 12 cột.
+  7. Tái thiết kế toàn bộ 5 màn hình Xác thực (`apps/web/src/features/auth/`): Đăng nhập, Đăng ký, Quên mật khẩu, Đặt lại mật khẩu, Xác thực email với canvas chấm bi mờ, card bo góc mềm mại, icon 4-dot, và hiệu ứng rung lắc `shake` khi nhập lỗi.
+  8. Tái thiết kế phân hệ Tin tuyển dụng & Ứng viên Recruiter: `recruiter-jobs-list-page.tsx`, `job-form-page.tsx`, `recruiter-applications-list-page.tsx` (view switcher Bảng dữ liệu vs Kanban Pipeline với drag-and-drop mượt mà, avatar ứng viên 5 bảng màu pastel, confetti burst), `recruiter-application-detail-page.tsx` (snapshot card, timeline card, review modal).
+  9. Tái thiết kế phân hệ Phỏng vấn & Thống kê: `interview-list-page.tsx`, `interview-detail-page.tsx`, `interview-room-page.tsx`, `interview-evaluation-page.tsx`, `recruiter-statistics-page.tsx` (summary metric cards với viền màu nổi bật, visual funnel card).
+  10. Tái thiết kế phân hệ Ứng viên & Admin: `job-list-page.tsx`, `job-detail-page.tsx`, `my-applications-page.tsx`, `cv-list-page.tsx`, `profile-page.tsx`, `admin-companies-page.tsx`, `admin-users-page.tsx`, `admin-jobs-page.tsx`, `admin-events-page.tsx`, `admin-audit-page.tsx`.
+  11. Bảo toàn 100% logic nghiệp vụ, API payload, RBAC, và test contracts hiện có.
+- File / bằng chứng:
+  - `Docs/talento-ui-mapping.md`
+  - `apps/web/index.html`
+  - `apps/web/src/styles/tokens.css`
+  - `apps/web/src/styles/global.css`
+  - `apps/web/src/lib/talento-effects.ts`
+  - `apps/web/src/app/app.tsx`, `router.tsx`, `public-layout.tsx`, `candidate-layout.tsx`, `recruiter-layout.tsx`, `admin-layout.tsx`
+  - Toàn bộ các trang trong `apps/web/src/features/{home,auth,jobs,applications,interviews,companies,statistics,profile,saved-jobs,notifications,admin}/`
+  - Video kiểm thử browser: `talento_ui_verify_1792920310327.webp`
+  - Ảnh chụp visual verification: `talento_hero_*.png`, `talento_landing_*.png`, `talento_dashboard_*.png`, `talento_dark_theme_*.png`, `recruiter_jobs_page_*.png`, `recruiter_applications_page_*.png`.
+- Kiểm tra đã chạy:
+  - `npm --workspace=@rms/web run test:ci`: **38/38 test suites PASS, 180/180 tests PASS (100%), 0 regressions**. Coverage toàn bộ frontend vượt ngưỡng (Lines: 84.12%, Branches: 78.05%).
+  - `npm run typecheck`: **Clean PASS (0 errors)** trên cả backend và frontend.
+  - `npm run lint`: **Clean PASS (0 warnings, 0 errors)** trên toàn bộ workspace (`eslint apps libs tests --max-warnings=0`).
+  - `npm --workspace=@rms/web run build`: **Clean PASS** (159 modules transformed, dist bundle tạo thành công trong 6.39s).
+  - `browser_subagent`: Kiểm thử trực quan trực tiếp trên trình duyệt Chrome headless tại `http://127.0.0.1:5173/`, xác minh header 4-dot, hero tương tác, dark/light theme toggle, app window demo widgets, chuyển trang điều hướng sidebar.
+- Kiểm tra chưa chạy / coverage: Toàn bộ kiểm thử frontend, build, lint, typecheck và browser check đều đã chạy và đạt 100%. Chưa chạy E2E full-stack với live Neon cloud DB vì ngoài phạm vi thiết kế giao diện FE.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Tuyệt đối không thay đổi schema DB, API endpoints, DTOs hay backend contracts. Giữ nguyên 100% nghiệp vụ và tương thích hoàn toàn.
+- Phần còn thiếu / blocker: Không có blocker.
+- Bước tiếp theo: Bàn giao toàn bộ hệ thống UI/UX Talento cho nhóm phát triển và người dùng nghiệm thu.
+
+### 2026-10-25 15:40 (Asia/Saigon) — Frontend / Antigravity — Khởi động tái thiết kế toàn bộ UI/UX theo Talento
+
+- Mã báo cáo: 20261025-1540-FE-talento-master-redesign
+- Người thực hiện / AI hỗ trợ: Antigravity (Principal UI/UX Designer & Senior Frontend Architect).
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: TALENTO-FE; UI01–UI29; Landing Page, Public Layout, Candidate Layout, Recruiter Layout, Admin Layout, Micro-interactions, Design Tokens, Responsive & Accessibility.
+- Trạng thái: IN_PROGRESS
+- Nhánh / commit / PR / tích hợp main: main; working tree local; chưa commit/chưa gộp main.
+- Đã hoàn thành: Phân tích toàn diện `Talento (1).html` (HTML structure, CSS variables, tokens, animation keyframes, spring physics, dynamic dot backgrounds, interactive hero verbs, live demo player, kanban drag-and-drop, date cards, countdown clocks, progress rings, auth modal/cards). Khảo sát toàn bộ 14 features và layouts hiện có trong `@rms/web`; xác nhận 100% tests hiện có đạt (40 suites / 180 tests PASS). Lập kế hoạch kiến trúc và mapping UI/UX.
+- File / bằng chứng: `progress/README.md`, `apps/web/src/styles/tokens.css`, `apps/web/src/styles/global.css`, `apps/web/index.html`.
+- Kiểm tra đã chạy: `npm --workspace=@rms/web run test:ci` đạt 40 suites / 180 tests pass, coverage lines 86.84%, branches 78.43%.
+- Kiểm tra chưa chạy / coverage: Chưa chạy browser e2e full; coverage hiện tại của web đã đo và đạt ngưỡng yêu cầu.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không thay đổi backend, API, contract hay DB schema. Chỉ tái thiết kế presentation layer của frontend theo chuẩn Talento.
+- Phần còn thiếu / blocker: Không có blocker. Tiếp tục triển khai toàn bộ các pha: Design System Tokens, Shared UI Components, Landing & Public Views, Candidate Portal, Recruiter Workspace (Dashboard, Kanban, Jobs, Interviews), Admin Shell và Micro-interactions.
+- Bước tiếp theo: Cập nhật font, tokens, global CSS, ripple/burst effects, nâng cấp các layouts và pages theo chuẩn Talento.
 
 ### 2026-10-25 15:20 (Asia/Saigon) — BE1 / Codex — Xuất bản bản sửa qua PR
 

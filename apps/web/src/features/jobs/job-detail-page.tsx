@@ -169,13 +169,10 @@ export function JobDetailPage() {
 
       {/* Main Job Card Header */}
       <div
+        className="card"
         style={{
-          backgroundColor: 'var(--color-surface)',
-          borderRadius: 'var(--radius-lg)',
-          border: '1px solid var(--color-border)',
-          padding: 'var(--space-8)',
-          boxShadow: 'var(--shadow-sm)',
-          marginBottom: 'var(--space-6)',
+          padding: '1.75rem',
+          marginBottom: '1.5rem',
         }}
       >
         <div
@@ -190,26 +187,28 @@ export function JobDetailPage() {
           <div>
             <h1
               style={{
-                fontSize: 'var(--font-size-2xl)',
-                fontWeight: 'var(--font-weight-bold)',
-                color: 'var(--color-foreground)',
-                marginBottom: 'var(--space-2)',
+                fontFamily: 'var(--font-d)',
+                fontSize: '1.85rem',
+                fontWeight: 600,
+                letterSpacing: '-0.02em',
+                color: 'var(--ink)',
+                marginBottom: '0.35rem',
               }}
             >
               {job.title}
             </h1>
             <div
               style={{
-                fontSize: 'var(--font-size-lg)',
-                fontWeight: 'var(--font-weight-medium)',
-                color: 'var(--color-muted)',
+                fontSize: '1.05rem',
+                fontWeight: 500,
+                color: 'var(--blue)',
               }}
             >
               {job.companyName}
             </div>
           </div>
 
-          <div style={{ display: 'flex', gap: 'var(--space-2)', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
             <StatusBadge status={job.jobType} />
             <StatusBadge status={job.workplaceMode} />
             {isExpired && <StatusBadge status="CLOSED" />}
@@ -221,20 +220,19 @@ export function JobDetailPage() {
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: 'var(--space-4)',
-            marginTop: 'var(--space-6)',
-            paddingTop: 'var(--space-4)',
-            borderTop: '1px solid var(--color-border)',
-            fontSize: 'var(--font-size-sm)',
+            gap: '1rem',
+            marginTop: '1.5rem',
+            paddingTop: '1.25rem',
+            borderTop: '1px solid var(--hair)',
+            fontSize: '0.9rem',
           }}
         >
           <div>
-            <div style={{ color: 'var(--color-muted)' }}>Địa điểm làm việc</div>
+            <div style={{ color: 'var(--muted)', fontSize: '0.8rem', marginBottom: '2px' }}>Địa điểm làm việc</div>
             <div
               style={{
-                fontWeight: 'var(--font-weight-medium)',
-                color: 'var(--color-foreground)',
-                marginTop: 'var(--space-1)',
+                fontWeight: 600,
+                color: 'var(--ink)',
               }}
             >
               {job.location}
@@ -242,12 +240,11 @@ export function JobDetailPage() {
           </div>
 
           <div>
-            <div style={{ color: 'var(--color-muted)' }}>Mức lương</div>
+            <div style={{ color: 'var(--muted)', fontSize: '0.8rem', marginBottom: '2px' }}>Mức lương</div>
             <div
               style={{
-                fontWeight: 'var(--font-weight-medium)',
-                color: 'var(--color-foreground)',
-                marginTop: 'var(--space-1)',
+                fontWeight: 600,
+                color: 'var(--green)',
               }}
             >
               {job.salary
@@ -257,12 +254,11 @@ export function JobDetailPage() {
           </div>
 
           <div>
-            <div style={{ color: 'var(--color-muted)' }}>Số lượng tuyển</div>
+            <div style={{ color: 'var(--muted)', fontSize: '0.8rem', marginBottom: '2px' }}>Số lượng tuyển</div>
             <div
               style={{
-                fontWeight: 'var(--font-weight-medium)',
-                color: 'var(--color-foreground)',
-                marginTop: 'var(--space-1)',
+                fontWeight: 600,
+                color: 'var(--ink)',
               }}
             >
               {job.headcount} người
@@ -270,12 +266,11 @@ export function JobDetailPage() {
           </div>
 
           <div>
-            <div style={{ color: 'var(--color-muted)' }}>Hạn nộp hồ sơ</div>
+            <div style={{ color: 'var(--muted)', fontSize: '0.8rem', marginBottom: '2px' }}>Hạn nộp hồ sơ</div>
             <div
               style={{
-                fontWeight: 'var(--font-weight-medium)',
-                color: 'var(--color-foreground)',
-                marginTop: 'var(--space-1)',
+                fontWeight: 600,
+                color: 'var(--ink)',
               }}
             >
               {new Date(job.deadline).toLocaleDateString('vi-VN')}
@@ -284,13 +279,13 @@ export function JobDetailPage() {
         </div>
 
         {/* Action buttons */}
-        <div style={{ display: 'flex', gap: 'var(--space-3)', marginTop: 'var(--space-6)' }}>
+        <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.5rem' }}>
           <Button
             variant="primary"
             size="lg"
             disabled={isExpired}
             onClick={handleApplyClick}
-            style={{ flex: 1, maxWidth: '240px' }}
+            style={{ flex: 1, maxWidth: '240px', fontWeight: 600 }}
           >
             {isExpired ? 'Hết hạn ứng tuyển' : 'Ứng tuyển ngay'}
           </Button>
@@ -300,6 +295,7 @@ export function JobDetailPage() {
             size="lg"
             isLoading={isSaving}
             onClick={() => void handleToggleSave()}
+            style={{ fontWeight: 600 }}
           >
             {isSaved ? '★ Đã lưu tin' : '☆ Lưu tin tuyển dụng'}
           </Button>
@@ -309,35 +305,32 @@ export function JobDetailPage() {
       {/* Skills Required */}
       {job.skills && job.skills.length > 0 && (
         <div
+          className="card"
           style={{
-            backgroundColor: 'var(--color-surface)',
-            borderRadius: 'var(--radius-lg)',
-            border: '1px solid var(--color-border)',
-            padding: 'var(--space-6)',
-            boxShadow: 'var(--shadow-sm)',
-            marginBottom: 'var(--space-6)',
+            padding: '1.5rem',
+            marginBottom: '1.5rem',
           }}
         >
           <h2
             style={{
-              fontSize: 'var(--font-size-lg)',
-              fontWeight: 'var(--font-weight-bold)',
-              marginBottom: 'var(--space-3)',
+              fontFamily: 'var(--font-d)',
+              fontSize: '1.15rem',
+              fontWeight: 600,
+              marginBottom: '0.75rem',
+              color: 'var(--ink)',
             }}
           >
             Kỹ năng yêu cầu
           </h2>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-2)' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
             {job.skills.map((skill) => (
               <span
                 key={skill.id}
+                className="chip"
                 style={{
-                  fontSize: 'var(--font-size-sm)',
-                  backgroundColor: 'var(--color-secondary)',
-                  color: 'var(--color-secondary-foreground)',
-                  padding: 'var(--space-1) var(--space-3)',
-                  borderRadius: 'var(--radius-md)',
-                  fontWeight: 'var(--font-weight-medium)',
+                  fontSize: '0.85rem',
+                  padding: '4px 12px',
+                  fontWeight: 500,
                 }}
               >
                 {skill.name}
@@ -349,29 +342,27 @@ export function JobDetailPage() {
 
       {/* Job Description */}
       <div
+        className="card"
         style={{
-          backgroundColor: 'var(--color-surface)',
-          borderRadius: 'var(--radius-lg)',
-          border: '1px solid var(--color-border)',
-          padding: 'var(--space-8)',
-          boxShadow: 'var(--shadow-sm)',
+          padding: '1.75rem',
         }}
       >
         <h2
           style={{
-            fontSize: 'var(--font-size-xl)',
-            fontWeight: 'var(--font-weight-bold)',
-            marginBottom: 'var(--space-4)',
-            color: 'var(--color-foreground)',
+            fontFamily: 'var(--font-d)',
+            fontSize: '1.25rem',
+            fontWeight: 600,
+            marginBottom: '1rem',
+            color: 'var(--ink)',
           }}
         >
           Mô tả công việc & Yêu cầu chi tiết
         </h2>
         <div
           style={{
-            color: 'var(--color-foreground)',
-            lineHeight: 'var(--line-height-relaxed)',
-            fontSize: 'var(--font-size-base)',
+            color: 'var(--ink2)',
+            lineHeight: 1.65,
+            fontSize: '0.95rem',
             whiteSpace: 'pre-wrap',
           }}
         >

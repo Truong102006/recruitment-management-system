@@ -1,28 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../features/auth/context/auth-context';
-import { Button } from '../../components/ui/button';
+import { toggleTheme, getTheme } from '../../lib/talento-effects';
 
 export function CandidateLayout() {
   const { actor, logout } = useAuth();
   const navigate = useNavigate();
+  const [currentTheme, setCurrentTheme] = useState<'light' | 'dark'>(() => getTheme());
+  const [lang, setLang] = useState<'vi' | 'en'>('vi');
 
   const handleLogout = async () => {
     await logout();
     navigate('/login');
   };
 
-  const navItemStyle = ({ isActive }: { isActive: boolean }): React.CSSProperties => ({
-    fontSize: 'var(--font-size-sm)',
-    fontWeight: isActive ? 'var(--font-weight-bold)' : 'var(--font-weight-medium)',
-    color: isActive ? 'var(--color-primary)' : 'var(--color-foreground)',
-    borderBottom: isActive ? '2px solid var(--color-primary)' : '2px solid transparent',
-    padding: 'var(--space-2) 0',
-    textDecoration: 'none',
-  });
+  const handleToggleTheme = () => {
+    const next = toggleTheme();
+    setCurrentTheme(next);
+  };
+
+  const initials = ((actor?.fullName || actor?.email || 'U').trim().split(/\s+/).slice(-2).map((w) => w[0]).join('') || 'U').toUpperCase();
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: 'var(--bg)' }}>
       <a href="#candidate-main" className="skip-link">
         Chuyển đến nội dung chính
       </a>
@@ -30,11 +30,12 @@ export function CandidateLayout() {
       {/* Top Header */}
       <header
         style={{
-          borderBottom: '1px solid var(--color-border)',
-          backgroundColor: 'var(--color-surface)',
+          borderBottom: '1px solid var(--hair2)',
+          backgroundColor: 'var(--card)',
           position: 'sticky',
           top: 0,
           zIndex: 100,
+          boxShadow: 'var(--sh-s)',
         }}
       >
         <div
@@ -43,72 +44,152 @@ export function CandidateLayout() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            height: '64px',
-            flexWrap: 'wrap',
+            height: '68px',
+            gap: '16px',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-6)' }}>
-            <Link
-              to="/jobs"
-              style={{
-                fontSize: 'var(--font-size-xl)',
-                fontWeight: 'var(--font-weight-bold)',
-                color: 'var(--color-primary)',
-                textDecoration: 'none',
-              }}
-            >
-              RecruitFlow
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+            <Link to="/jobs" className="logo">
+              <span className="dots">
+                <i />
+                <i />
+                <i />
+                <i />
+              </span>
+              <span>Talento</span>
             </Link>
-          </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
             <span
               style={{
-                fontSize: 'var(--font-size-sm)',
-                fontWeight: 'var(--font-weight-medium)',
-                color: 'var(--color-foreground)',
+                fontSize: '11px',
+                padding: '2px 8px',
+                borderRadius: '999px',
+                background: 'var(--tint-bg)',
+                color: 'var(--tint-fg)',
+                fontWeight: 600,
+                letterSpacing: '0.04em',
               }}
             >
-              {actor?.fullName || actor?.email}
+              CANDIDATE
             </span>
-            <Button variant="outline" size="sm" onClick={handleLogout}>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            {/* Lang toggle */}
+            <button
+              type="button"
+              className="lang"
+              onClick={() => setLang((prev) => (prev === 'vi' ? 'en' : 'vi'))}
+              aria-label="Đổi ngôn ngữ"
+            >
+              <span className={lang === 'vi' ? 'on' : ''}>VI</span>
+              <span className={lang === 'en' ? 'on' : ''}>EN</span>
+            </button>
+
+            {/* Theme toggle */}
+            <button
+              type="button"
+              className="thm"
+              onClick={handleToggleTheme}
+              aria-label="Đổi giao diện sáng hoặc tối"
+            >
+              {currentTheme === 'dark' ? (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="4" />
+                  <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+                </svg>
+              ) : (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z" />
+                </svg>
+              )}
+            </button>
+
+            <div className="me">
+              <span className="av p0" style={{ width: '32px', height: '32px' }}>
+                {initials}
+              </span>
+              <span
+                style={{
+                  fontSize: '13.5px',
+                  fontWeight: 500,
+                  color: 'var(--ink)',
+                  maxWidth: '160px',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {actor?.fullName || actor?.email}
+              </span>
+            </div>
+
+            <button
+              type="button"
+              className="btn sm danger"
+              onClick={() => void handleLogout()}
+            >
               Đăng xuất
-            </Button>
+            </button>
           </div>
         </div>
 
         {/* Sub-nav for candidate */}
         <div
           style={{
-            backgroundColor: 'var(--color-surface)',
-            borderTop: '1px solid var(--color-secondary)',
+            backgroundColor: 'var(--soft2)',
+            borderTop: '1px solid var(--hair2)',
           }}
         >
           <div
             className="container"
             style={{
               display: 'flex',
-              gap: 'var(--space-6)',
+              gap: '6px',
               overflowX: 'auto',
               whiteSpace: 'nowrap',
+              padding: '6px 16px',
             }}
           >
-            <NavLink to="/jobs" style={navItemStyle}>
+            <NavLink
+              to="/jobs"
+              className={({ isActive }) => `nv ${isActive ? 'on' : ''}`}
+              style={{ width: 'auto', padding: '6px 14px', borderRadius: '8px', fontSize: '13.5px' }}
+            >
               Tìm việc
             </NavLink>
-            <NavLink to="/candidate/applications" style={navItemStyle}>
+            <NavLink
+              to="/candidate/applications"
+              className={({ isActive }) => `nv ${isActive ? 'on' : ''}`}
+              style={{ width: 'auto', padding: '6px 14px', borderRadius: '8px', fontSize: '13.5px' }}
+            >
               Hồ sơ của tôi
             </NavLink>
-            <NavLink to="/candidate/profile" style={navItemStyle}>
+            <NavLink
+              to="/candidate/profile"
+              className={({ isActive }) => `nv ${isActive ? 'on' : ''}`}
+              style={{ width: 'auto', padding: '6px 14px', borderRadius: '8px', fontSize: '13.5px' }}
+            >
               Hồ sơ cá nhân
             </NavLink>
-            <NavLink to="/candidate/cvs" style={navItemStyle}>
+            <NavLink
+              to="/candidate/cvs"
+              className={({ isActive }) => `nv ${isActive ? 'on' : ''}`}
+              style={{ width: 'auto', padding: '6px 14px', borderRadius: '8px', fontSize: '13.5px' }}
+            >
               Kho CV
             </NavLink>
-            <NavLink to="/candidate/saved-jobs" style={navItemStyle}>
+            <NavLink
+              to="/candidate/saved-jobs"
+              className={({ isActive }) => `nv ${isActive ? 'on' : ''}`}
+              style={{ width: 'auto', padding: '6px 14px', borderRadius: '8px', fontSize: '13.5px' }}
+            >
               Tin đã lưu
             </NavLink>
-            <NavLink to="/notifications" style={navItemStyle}>
+            <NavLink
+              to="/notifications"
+              className={({ isActive }) => `nv ${isActive ? 'on' : ''}`}
+              style={{ width: 'auto', padding: '6px 14px', borderRadius: '8px', fontSize: '13.5px' }}
+            >
               Thông báo
             </NavLink>
           </div>
@@ -116,7 +197,7 @@ export function CandidateLayout() {
       </header>
 
       {/* Main Content */}
-      <main id="candidate-main" style={{ flex: 1, padding: 'var(--space-6) 0' }}>
+      <main id="candidate-main" style={{ flex: 1, padding: '24px 0' }}>
         <div className="container">
           <Outlet />
         </div>
@@ -125,16 +206,17 @@ export function CandidateLayout() {
       {/* Footer */}
       <footer
         style={{
-          borderTop: '1px solid var(--color-border)',
-          backgroundColor: 'var(--color-surface)',
-          padding: 'var(--space-4) 0',
-          color: 'var(--color-muted)',
-          fontSize: 'var(--font-size-xs)',
+          borderTop: '1px solid var(--hair2)',
+          backgroundColor: 'var(--card)',
+          padding: '24px 0',
+          color: 'var(--muted)',
+          fontSize: '13px',
           textAlign: 'center',
         }}
       >
-        <div className="container">RecruitFlow - Cổng thông tin ứng viên và quản lý tuyển dụng</div>
+        <div className="container">Talento — Cổng thông tin ứng viên và quản lý tuyển dụng</div>
       </footer>
     </div>
   );
 }
+

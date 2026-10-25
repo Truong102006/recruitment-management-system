@@ -419,10 +419,19 @@ export const JobFormPage: React.FC = () => {
       style={{ maxWidth: '960px', margin: '0 auto', padding: '1.5rem' }}
     >
       <div style={{ marginBottom: '1.5rem' }}>
-        <h1 style={{ fontSize: '1.75rem', fontWeight: 700, margin: 0 }}>
+        <h1
+          style={{
+            fontSize: '28px',
+            fontWeight: 600,
+            fontFamily: 'var(--font-d)',
+            letterSpacing: '-0.02em',
+            color: 'var(--ink)',
+            margin: 0,
+          }}
+        >
           {isEdit ? 'Chỉnh sửa Tin tuyển dụng' : 'Đăng Tin tuyển dụng mới'}
         </h1>
-        <p style={{ color: 'var(--color-text-muted)', margin: '0.25rem 0 0' }}>
+        <p style={{ color: 'var(--muted)', fontSize: '14px', margin: '4px 0 0' }}>
           Tuân thủ quy tắc nghiệp vụ: Có thể lưu nháp thiếu trường (FE28); khi công bố kiểm tra chặt
           chẽ tiêu đề, mô tả, hạn nộp tương lai và mức lương (FE28, FE29, BR03).
         </p>
@@ -502,11 +511,13 @@ export const JobFormPage: React.FC = () => {
       <form
         onSubmit={(e) => e.preventDefault()}
         data-testid="job-form"
+        className="card"
         style={{
-          background: 'var(--color-bg-surface)',
-          padding: '1.75rem',
-          borderRadius: '8px',
-          border: '1px solid var(--color-border)',
+          background: 'var(--card)',
+          padding: '2rem',
+          borderRadius: '24px',
+          border: '1px solid var(--hair)',
+          boxShadow: 'var(--sh-s)',
         }}
       >
         {/* Title */}

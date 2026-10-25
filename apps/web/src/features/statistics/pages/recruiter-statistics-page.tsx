@@ -106,6 +106,18 @@ export const RecruiterStatisticsPage: React.FC = () => {
     );
   }
 
+  if (loading && !data) {
+    return (
+      <div
+        className="recruiter-statistics-page"
+        {...(currentCompanyId === 'comp-1' ? { 'data-testid': 'ui25-statistics' } : {})}
+        style={{ maxWidth: '1240px', margin: '0 auto', padding: '1.5rem' }}
+      >
+        <p>Đang tổng hợp số liệu phễu tuyển dụng...</p>
+      </div>
+    );
+  }
+
   return (
     <div
       className="recruiter-statistics-page"
@@ -345,48 +357,55 @@ export const RecruiterStatisticsPage: React.FC = () => {
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
               gap: '1rem',
               marginBottom: '1.5rem',
             }}
           >
             <div
+              className="card"
               style={{
-                background: 'var(--color-bg-surface)',
-                border: '1px solid var(--color-border)',
-                borderRadius: '8px',
+                background: 'var(--card)',
+                border: '1px solid var(--hair)',
+                borderLeft: '4px solid var(--cyan)',
+                borderRadius: '16px',
                 padding: '1.25rem',
+                boxShadow: 'var(--sh-s)',
               }}
             >
-              <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
+              <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--muted)' }}>
                 1. Đã nộp (Submitted)
               </span>
               <div
                 data-testid="count-submitted"
-                style={{ fontSize: '1.75rem', fontWeight: 700, marginTop: '0.25rem' }}
+                style={{ fontSize: '2rem', fontWeight: 700, fontFamily: 'var(--font-d)', marginTop: '4px', color: 'var(--ink)' }}
               >
                 {data.submitted}
               </div>
             </div>
 
             <div
+              className="card"
               style={{
-                background: 'var(--color-bg-surface)',
-                border: '1px solid var(--color-border)',
-                borderRadius: '8px',
+                background: 'var(--card)',
+                border: '1px solid var(--hair)',
+                borderLeft: '4px solid var(--blue)',
+                borderRadius: '16px',
                 padding: '1.25rem',
+                boxShadow: 'var(--sh-s)',
               }}
             >
-              <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
+              <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--muted)' }}>
                 2. Sàng lọc (Screening)
               </span>
               <div
                 data-testid="count-screening"
                 style={{
-                  fontSize: '1.75rem',
+                  fontSize: '2rem',
                   fontWeight: 700,
-                  marginTop: '0.25rem',
-                  color: '#2563eb',
+                  fontFamily: 'var(--font-d)',
+                  marginTop: '4px',
+                  color: 'var(--blue)',
                 }}
               >
                 {data.screening}
@@ -394,23 +413,27 @@ export const RecruiterStatisticsPage: React.FC = () => {
             </div>
 
             <div
+              className="card"
               style={{
-                background: 'var(--color-bg-surface)',
-                border: '1px solid var(--color-border)',
-                borderRadius: '8px',
+                background: 'var(--card)',
+                border: '1px solid var(--hair)',
+                borderLeft: '4px solid #8b5cf6',
+                borderRadius: '16px',
                 padding: '1.25rem',
+                boxShadow: 'var(--sh-s)',
               }}
             >
-              <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
+              <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--muted)' }}>
                 3. Đã phỏng vấn (Interviewed)
               </span>
               <div
                 data-testid="count-interviewed"
                 style={{
-                  fontSize: '1.75rem',
+                  fontSize: '2rem',
                   fontWeight: 700,
-                  marginTop: '0.25rem',
-                  color: '#7c3aed',
+                  fontFamily: 'var(--font-d)',
+                  marginTop: '4px',
+                  color: '#8b5cf6',
                 }}
               >
                 {data.interviewed}
@@ -418,23 +441,27 @@ export const RecruiterStatisticsPage: React.FC = () => {
             </div>
 
             <div
+              className="card"
               style={{
-                background: 'var(--color-bg-surface)',
-                border: '1px solid var(--color-border)',
-                borderRadius: '8px',
+                background: 'var(--card)',
+                border: '1px solid var(--hair)',
+                borderLeft: '4px solid var(--green)',
+                borderRadius: '16px',
                 padding: '1.25rem',
+                boxShadow: 'var(--sh-s)',
               }}
             >
-              <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
+              <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--muted)' }}>
                 4. Trúng tuyển (Hired)
               </span>
               <div
                 data-testid="count-hired"
                 style={{
-                  fontSize: '1.75rem',
+                  fontSize: '2rem',
                   fontWeight: 700,
-                  marginTop: '0.25rem',
-                  color: '#16a34a',
+                  fontFamily: 'var(--font-d)',
+                  marginTop: '4px',
+                  color: 'var(--green)',
                 }}
               >
                 {data.hired}
@@ -442,23 +469,27 @@ export const RecruiterStatisticsPage: React.FC = () => {
             </div>
 
             <div
+              className="card"
               style={{
-                background: 'var(--color-bg-surface)',
-                border: '1px solid var(--color-border)',
-                borderRadius: '8px',
+                background: 'var(--card)',
+                border: '1px solid var(--hair)',
+                borderLeft: '4px solid var(--red)',
+                borderRadius: '16px',
                 padding: '1.25rem',
+                boxShadow: 'var(--sh-s)',
               }}
             >
-              <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
+              <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--muted)' }}>
                 Từ chối (Rejected)
               </span>
               <div
                 data-testid="count-rejected"
                 style={{
-                  fontSize: '1.75rem',
+                  fontSize: '2rem',
                   fontWeight: 700,
-                  marginTop: '0.25rem',
-                  color: '#dc2626',
+                  fontFamily: 'var(--font-d)',
+                  marginTop: '4px',
+                  color: 'var(--red)',
                 }}
               >
                 {data.rejected}
@@ -469,12 +500,14 @@ export const RecruiterStatisticsPage: React.FC = () => {
           {/* Visual Funnel Section */}
           <div
             data-testid="visual-funnel-card"
+            className="card"
             style={{
-              background: 'var(--color-bg-surface)',
-              border: '1px solid var(--color-border)',
-              borderRadius: '8px',
+              background: 'var(--card)',
+              border: '1px solid var(--hair)',
+              borderRadius: '18px',
               padding: '1.5rem',
               marginBottom: '1.5rem',
+              boxShadow: 'var(--sh-s)',
             }}
           >
             <h3 style={{ margin: '0 0 1.25rem', fontSize: '1.15rem', fontWeight: 600 }}>

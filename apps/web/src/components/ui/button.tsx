@@ -79,12 +79,17 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     }
   };
 
+  const variantClass = variant === 'primary' ? 'primary' : variant === 'danger' ? 'danger' : '';
+  const sizeClass = size === 'sm' ? 'sm' : size === 'lg' ? 'lg' : '';
+  const combinedClassName = `btn ${variantClass} ${sizeClass} ${props.className || ''}`.trim();
+
   return (
     <button
       ref={ref}
       type={type}
       disabled={disabled || isLoading}
       aria-busy={isLoading ? 'true' : undefined}
+      className={combinedClassName}
       style={{
         display: 'inline-flex',
         alignItems: 'center',
