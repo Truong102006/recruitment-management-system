@@ -3,13 +3,53 @@ import {
   ForbiddenError,
   ValidationError,
 } from '../../../../../../libs/platform/errors/domain.error';
+import { normalizeText } from '../../../common/validation/text';
 
 export class CompanyRules {
   private static readonly TAX_CODE_REGEX = /^[A-Z0-9-]{8,50}$/;
 
   public static normalizeTaxCode(taxCode: string): string {
     if (!taxCode) return '';
-    return taxCode.trim().toUpperCase();
+    return normalizeText(taxCode).toUpperCase();
+  }
+
+  public static normalizeRequiredText(value: unknown, field: 'name' | 'address'): string {
+    const [min, max]: [number, number] = field === 'name' ? [2, 255] : [5, 500];
+    if (typeof value !== 'string') {
+      throw new ValidationError(`Company ${field} must be text.`, {
+        [field]: ['Text is required'],
+      });
+    }
+    const normalized = normalizeText(value);
+    const length = [...normalized].length;
+    if (length < min || length > max) {
+      throw new ValidationError(
+        `Company ${field} must contain between ${min} and ${max} characters.`,
+        {
+          [field]: [`Length must be between ${min} and ${max} Unicode code points`],
+        },
+      );
+    }
+    return normalized;
+  }
+
+  public static normalizeNullableText(
+    value: unknown,
+    field: 'website' | 'description',
+  ): string | null | undefined {
+    if (value === undefined || value === null) return value;
+    if (typeof value !== 'string') {
+      throw new ValidationError(`Company ${field} must be text.`, {
+        [field]: ['Text is required'],
+      });
+    }
+    const normalized = normalizeText(value);
+    if (field === 'website' && [...normalized].length > 255) {
+      throw new ValidationError('Company website must contain at most 255 characters.', {
+        website: ['Length must be at most 255 Unicode code points'],
+      });
+    }
+    return normalized || null;
   }
 
   public static validateTaxCode(taxCode: string): void {

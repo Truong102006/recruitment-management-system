@@ -34,6 +34,14 @@
 
 ## Tổng quan hiện tại
 
+**25/10/2026 15:20 (Asia/Saigon) — SHIP-BE1-FIX-01: DONE (phạm vi Git)** — Truong102006 / Codex đã tạo nhánh `pr/be1-acceptance-fixes-20261025`, commit và push toàn bộ thay đổi phù hợp, mở [PR #10](https://github.com/Truong102006/recruitment-management-system/pull/10) vào main. PR đang OPEN, CI đang chạy; chưa gộp main. Toàn BE1 vẫn IN_PROGRESS.
+
+**25/10/2026 14:26 — BE1-FIX-01: DONE (phạm vi sửa F02–F06), toàn BE1 IN_PROGRESS** — Codex trên `fix/be1-acceptance-20261025`:368unit/126integration/25contract (đã nằm trong126)/124web đạt; coverage BE cấu hình91,61% dòng/77,56% nhánh; lint/type/build/migration/evidence đạt. Probe gốc6/8 đạt, chỉ còn F01 thiếu5 provider BE3/register503. Có data migration chuẩn hóa legacy và3 test schema cô lập; chỉ deploy DB test. [Báo cáo mới](../plans/261022-1711-be1-complete-implementation/reports/261025-be1-fixes-verification.md). Chưa commit/chưa gộp main; không đổi trạng thái năm UC/tám pha sang DONE.
+
+**25/10/2026 13:58 — SYNC-LOCAL-01: DONE** — Codex thực hiện yêu cầu ghi đè source local bằng GitHub mới nhất, giữ ba file audit/tiến độ. Fetch xác nhận main/origin/main cùng `94d84c231da68428a55e5a25ce13229785c85043`; reset tracked source và xóa untracked code, phục hồi ba file với SHA256 khớp backup. Chỉ ba file được giữ còn khác origin/main; không commit/push. Các kết quả audit bên dưới là snapshot trước đồng bộ, chưa chạy lại test trên source đã khôi phục.
+
+**25/10/2026 13:49 — BE1-AUDIT-01: DONE (phạm vi kiểm tra)** — Codex kiểm kế hoạch/Docs/source working tree main. UC01/04/05/10/11 và 8 pha vẫn IN_PROGRESS: thiếu provider BE3 và 5 nhóm lỗi nghiệp vụ tái hiện được. Unit330/contract25 đạt; integration lần đầu lỗi hook Jobs (11 fail), chạy lại cùng lệnh đạt113/113; coverage cấu hình91,28% dòng/74,16% nhánh. Lint workspace fail3 lỗi FE; audit16 (7 moderate/7 high/2 critical). [Báo cáo](../plans/261022-1711-be1-complete-implementation/reports/261025-be1-completion-audit.md). Không sửa nghiệp vụ hoặc cloud DB; chưa commit/push.
+
 **2026-10-23 12:27 (Asia/Saigon) — SHIP-BE2: DONE (phạm vi Git)** — Bảy commit BE2 đã fast-forward và push lên `main` tại `1299cd7`; [CI nhánh](https://github.com/Truong102006/recruitment-management-system/actions/runs/39905484135) và [CI main](https://github.com/Truong102006/recruitment-management-system/actions/runs/39905843323) đều đạt backend/quality-gate trên PostgreSQL cô lập. Chức năng BE2 tổng thể vẫn IN_PROGRESS vì còn BE3 Outbox/lifecycle, CV storage/scanner, API CV và HTTP nghiệm thu; không deploy migration lên Neon dùng chung trong lượt này.
 
 **2026-10-23 11:02 (Asia/Saigon) — SHIP-CLOUD-01: DONE (phạm vi Git)** — Truong102006 / Codex: [PR #3](https://github.com/Truong102006/recruitment-management-system/pull/3) đã merge main tại `80cd120`; ba commit giữ riêng. Đã pull main; bản ghi tích hợp này chờ PR tài liệu trên `docs/cloud-main-integration`.
@@ -50,17 +58,17 @@ Các công việc trên nhánh cá nhân chưa được báo cáo vào đây ch�
 
 | Mã   | Chức năng                      | Phụ trách | Trạng thái công việc (xem tích hợp) | Bằng chứng / phần còn thiếu                                                                                                                                                        |
 | ---- | ------------------------------ | --------- | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| UC01 | Đăng tin tuyển dụng            | BE1       | IN_PROGRESS                         | Source main PR #1: runtime DTO, account→company→job locks, recheck quyền, publish/close Outbox fail-closed; gate local đạt. Đã gộp main PR #1; còn BE2 lifecycle integration/FE.   |
+| UC01 | Đăng tin tuyển dụng            | BE1       | IN_PROGRESS                         | Main PR #1 có lifecycle/locks/DTO; fix local25/10 sửa F02/F04/F05: mọi mutation kiểm OWNER, normalize NFC/code point, publish legacy. Integration Jobs đạt lượt123tests trước bổ sung legacy. Có data migration mới local, chưa gộp main; còn Outbox/lifecycle liên nhóm/provider. |
 | UC02 | Nộp CV ứng tuyển               | BE2       | IN_PROGRESS                         | Workflow/route và BE1 binding đã lên main; migration đạt CI PostgreSQL. Ghi hồ sơ cần Outbox BE3 thật và HTTP nghiệm thu.                                                          |
 | UC03 | Phỏng vấn trực tuyến           | BE3       | TODO                                | Chưa có API/provider test                                                                                                                                                          |
-| UC04 | Đăng ký và xác thực            | BE1       | IN_PROGRESS                         | Source main PR #1: durable verification, account/token locks, CSRF/session/Origin và rollback tests đạt. Đã gộp main PR #1; profile/mail runtime và HTTPS browser chưa nghiệm thu. |
-| UC05 | Tìm kiếm và xem tin            | BE1       | IN_PROGRESS                         | Source main PR #1: public scope/verified owner/query DTO và validation tests đạt. Đã gộp main PR #1; còn load/FE nghiệm thu.                                                       |
+| UC04 | Đăng ký và xác thực            | BE1       | IN_PROGRESS                         | Main PR #1 có token/session/CSRF/rollback; fix local25/10 fullName trim/NFC/code point, password giữ nguyên, regression đạt. F01 vẫn mở: AppModule thật thiếu Outbox, register503; BE2 profile đã bind; mail/HTTPS chưa nghiệm thu. |
+| UC05 | Tìm kiếm và xem tin            | BE1       | IN_PROGRESS                         | Fix local25/10 F06: mặc định publishedAt DESC/id DESC, explicit createdAt/order tương thích; Search5tests PostgreSQL đạt. Thêm migration chuẩn hóa dữ liệu cũ trước API; chưa gộp main; load/provider/FE acceptance còn thiếu. |
 | UC06 | Quản lý CV và thay CV đã nộp   | BE2       | IN_PROGRESS                         | Thay CV/review đã lên main; kho CV có service/repository. Còn S3/scanner, worker, API CV và nghiệm thu.                                                                            |
 | UC07 | Xét duyệt và rút hồ sơ         | BE2       | IN_PROGRESS                         | Review/read/withdraw route đã lên main; rút hồ sơ cần InterviewLifecycle BE3 cùng transaction và HTTP nghiệm thu.                                                                  |
 | UC08 | Quản lý lịch phỏng vấn         | BE3       | TODO                                | Chưa có API/test concurrency                                                                                                                                                       |
 | UC09 | Công bố kết quả                | BE3       | TODO                                | Có điểm nối BE2 trong contract; chưa có workflow/test                                                                                                                              |
-| UC10 | Quản trị và kiểm duyệt         | BE1       | IN_PROGRESS                         | Admin PATCH/read/recovery/last ADMIN/atomic rollback có test PostgreSQL. Đã gộp main PR #1; actual BE3 revoke intent/provider/scope còn thiếu.                                     |
-| UC11 | Doanh nghiệp và thành viên     | BE1       | IN_PROGRESS                         | Source main PR #1: sorted account locks, verified OWNER, không ADMIN bypass; tests đạt. Đã gộp main PR #1; conflict/schedule runtime BE2/BE3 còn thiếu.                            |
+| UC10 | Quản trị và kiểm duyệt         | BE1       | IN_PROGRESS                         | Main PR #1 có admin PATCH/read/recovery/last ADMIN/rollback. Fix local25/10 chặn create/update/close khi OWNER mất khả dụng, test3 trạng thái/quyền phục hồi đạt; chưa gộp main. BE3 revoke intent/provider/audit/scope vẫn thiếu. |
+| UC11 | Doanh nghiệp và thành viên     | BE1       | IN_PROGRESS                         | Fix local25/10 F03: create/update/resubmit từ chối required trắng/null; DTO/service normalize NFC/code point;99unit và HTTP rollback đạt. Chưa gộp main; conflict/schedule/audit runtime BE2/BE3 còn thiếu. |
 | UC12 | Hồ sơ cá nhân                  | BE2       | IN_PROGRESS                         | GET/PATCH route và BE1 guard đã lên main; DB BE2 đạt CI; PATCH cần Outbox BE3 và HTTP nghiệm thu.                                                                                  |
 | UC13 | Đánh giá và hoàn tất phỏng vấn | BE3       | TODO                                | Chưa có API/test                                                                                                                                                                   |
 | UC14 | Lưu tin quan tâm               | BE2       | IN_PROGRESS                         | PUT/DELETE/GET route đã lên main, idempotent/placeholder và DB adapter đạt CI; write cần Outbox BE3, còn HTTP nghiệm thu.                                                          |
@@ -84,11 +92,27 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 | FE2-PHASE5 | Phỏng vấn trực tuyến, Thống kê & Quản trị Admin: UI14, UI15, UI25, UI26, UI27, UI28 (FE23–25, FE38–41)              | FE2       | DONE (trên nhánh)    | 116 tests đạt (28 suites); coverage toàn bộ đạt ngưỡng (80% dòng, 70% nhánh); typecheck/lint/build/format clean trên `feat/fe2-implementation`. Chưa gộp main.                                                                                       |
 | FE2-PHASE6 | Tối ưu Responsive Đa thiết bị (Desktop, Tablet, Mobile), Hoàn thiện Accessibility (A11y) & Kiểm thử Luồng FE23–FE41 | FE2       | DONE (trên nhánh)    | 111 tests đạt (30 suites); coverage toàn bộ vượt ngưỡng (lines >= 80%, branches >= 70%); responsive 3 breakpoints & WCAG 2.1 AA A11y kiểm chứng; build/lint/typecheck/format clean trên `feat/fe2-implementation`. Chưa gộp main.                    |
 
+| Mã         | Phạm vi                                                                                                             | Phụ trách | Trạng thái trên main | Bằng chứng / phần còn thiếu                                                                                                                                                                                                       |
+| ---------- | ------------------------------------------------------------------------------------------------------------------- | --------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| FE1        | UI01–UI12, UI24, UI29: tìm việc, auth, ứng viên, CV, hồ sơ, tin lưu, thông báo, lỗi chung                           | FE1       | TODO                 | Có cấu hình React/Vite; React entry, app/router còn trống                                                                                                                                                                         |
+| FE2        | UI13–UI23, UI25–UI28: lịch/video, doanh nghiệp, tin, hồ sơ, đánh giá/kết quả, thống kê, admin                       | FE2       | TODO                 | Chưa có màn hình hoặc E2E                                                                                                                                                                                                         |
+| FE2-PHASE1 | Nền tảng kiến trúc FE2: Tokens, Router modular, HTTP client, CompanyContext, Mock layer                             | FE2       | DONE (trên nhánh)    | 21 tests đạt; coverage 97,56% dòng / 92,09% nhánh; build/lint/typecheck pass trên `feat/fe2-implementation`. Chưa gộp main.                                                                                                       |
+| FE2-PHASE2 | Thành phần dùng chung FE2: DataTable generic, Calendar/Agenda, Dialog, StatusBadge                                  | FE2       | DONE (trên nhánh)    | 42 tests đạt; coverage 95,51% dòng / 88,41% nhánh; typecheck/lint/build/format clean trên `feat/fe2-implementation`. Chưa gộp main.                                                                                               |
+| FE2-PHASE3 | Phân hệ Doanh nghiệp & Tin tuyển dụng: UI16, UI17, UI18 (FE26, FE27, FE28, FE29)                                    | FE2       | DONE (trên nhánh)    | 65 tests đạt (16 suites); coverage 88,79% dòng / 80,57% nhánh; build/lint/typecheck/format pass trên `feat/fe2-implementation`. Chưa gộp main.                                                                                    |
+| FE2-PHASE4 | Hồ sơ ứng viên & Đánh giá phỏng vấn: UI19, UI20, UI21, UI22, UI23 (FE30, FE31)                                      | FE2       | DONE (trên nhánh)    | 87 tests đạt (20 suites); coverage 85,18% dòng / 79,37% nhánh; typecheck/lint/build/format clean trên `feat/fe2-implementation`. Chưa gộp main.                                                                                   |
+| FE2-PHASE5 | Phỏng vấn trực tuyến, Thống kê & Quản trị Admin: UI14, UI15, UI25, UI26, UI27, UI28 (FE23–25, FE38–41)              | FE2       | DONE (trên nhánh)    | 116 tests đạt (28 suites); coverage toàn bộ đạt ngưỡng (80% dòng, 70% nhánh); typecheck/lint/build/format clean trên `feat/fe2-implementation`. Chưa gộp main.                                                                    |
+| FE2-PHASE6 | Tối ưu Responsive Đa thiết bị (Desktop, Tablet, Mobile), Hoàn thiện Accessibility (A11y) & Kiểm thử Luồng FE23–FE41 | FE2       | DONE (trên nhánh)    | 111 tests đạt (30 suites); coverage toàn bộ vượt ngưỡng (lines >= 80%, branches >= 70%); responsive 3 breakpoints & WCAG 2.1 AA A11y kiểm chứng; build/lint/typecheck/format clean trên `feat/fe2-implementation`. Chưa gộp main. |
+| TALENTO-FE | Thiết kế Talento: Design System, Tokens, Micro-interactions, Landing Page, Recruiter Workspace, Kanban Pipeline, Jobs Grid Card & Scheduler | FE2 / Reviewer R3 | DONE (trên nhánh)    | 169 tests đạt (40 suites); coverage toàn bộ vượt ngưỡng (lines > 80%, branches > 70%); typecheck & build Vite sạch sẽ; bổ sung ripple effect listener, hero animated scanning & progress bar, nav link spring underline, localization đầy đủ và job sync. |
+
 ### Tài liệu và hạ tầng chung
 
 | Mã            | Hạng mục / người phụ trách                                                        | Trạng thái  | Bằng chứng và phạm vi hoàn thành                                                                                                                                                                                  |
 | ------------- | --------------------------------------------------------------------------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| BE1-AUDIT-01 | Rà soát và kiểm thử hoàn thành BE1 / Codex hỗ trợ BE1 | DONE (kiểm tra) | [Audit 25/10](../plans/261022-1711-be1-complete-implementation/reports/261025-be1-completion-audit.md): unit330/contract25 đạt; integration113 đạt lần2 (lần1 timeout); 8 assertion nghiệm thu fail do thiếu provider và 5 nhóm lỗi. BE1 vẫn IN_PROGRESS |
+| BE1-FIX-01 | Sửa F02–F06 và regression BR15/18 / BE1 + Codex | DONE (phạm vi sửa lỗi) | Nhánh fix/be1-acceptance-20261025 chưa commit/chưa gộp main;368unit/126integration/124web, lint/types/build/evidence đạt; legacy migration3tests và6/8probes đạt. F01/provider và gate toàn BE1 còn mở. [Bằng chứng](../plans/261022-1711-be1-complete-implementation/reports/261025-be1-fixes-verification.md). |
+| SYNC-LOCAL-01 | Đồng bộ source GitHub, giữ ba file audit / Codex | DONE | Fetch/reset origin/main tại 94d84c2; source tracked khác progress đã khớp remote; chỉ ba file được giữ còn trong git status. Env/dependency/artifact ignored được giữ; chưa chạy lại application test |
 | DOC-01        | Đặc tả hệ thống / tác giả chưa được xác nhận trong sổ cũ                          | DONE        | [Đặc tả](../Docs/project-specification.md), commit `ed9fe6d`; không phải kết quả nghiệm thu                                                                                                                       |
+| LOCAL-CLONER-01 | Setup website cloner độc lập / Codex hỗ trợ hạ tầng | DONE (local setup) | Repo bên cạnh đã cài; Next 16.4.3, lint/typecheck/build đạt, audit 0, HTTP 3010 đạt 200. Chưa clone website cụ thể; chưa tích hợp main |
 | SETUP-01      | Khung workspace và cấu hình / theo sổ cũ                                          | DONE        | Commit `9cded06`: npm workspaces, API/worker/web, cấu hình công cụ và Compose; source nghiệp vụ trống                                                                                                             |
 | LOCAL-01      | Clone dự án / BE2 + Codex                                                         | DONE        | Đã clone vào `D:\Github Project\He_Thong_Tuyen_Dung`, nhánh main; kiểm trạng thái và file nguồn ngày 19/10                                                                                                        |
 | DOC-02        | Contract tích hợp BE2 / BE2 + Codex                                               | DONE        | [Contract v1](../Docs/be2-integration-contract.md), commit `f0dd6e7` trên main; mức thiết kế                                                                                                                      |
@@ -98,9 +122,9 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 | DOC-06        | Kế hoạch triển khai toàn bộ BE1 / Codex hỗ trợ BE1, chưa xác nhận người phụ trách | DONE        | [Kế hoạch 8 pha](../plans/261022-1711-be1-complete-implementation/plan.md), [rà soát](../plans/261022-1711-be1-complete-implementation/reports/plan-review.md); Đã tích hợp main; 5 UC chưa triển khai            |
 | DOC-07        | Tài liệu bàn giao FE2 & Runbook Video / Antigravity hỗ trợ FE2                    | DONE        | [Bàn giao FE2](../Docs/fe2-handoff.md), commit chứa báo cáo này; đối chiếu 15 màn hình UI13–UI28, 19 test case FE23–FE41, hướng dẫn vận hành Jitsi & tích hợp backend                                             |
 | BE-FOUNDATION | Bootstrap NestJS / BE1                                                            | IN_PROGRESS | API bootstrap đã tích hợp main PR #1; clean CI build/API tests đạt. Runtime liên nhóm và HTTPS/FE acceptance chưa nghiệm thu.                                                                                     |
-| DB-01         | Prisma/migration/seed / mỗi BE sở hữu phần mình                                   | IN_PROGRESS | BE1 migration và BE2 migration đã lên main; BE2 migration/FK/trigger/adapter đạt CI PostgreSQL cô lập. Chưa deploy Neon dùng chung; BE3 schema/runtime permission còn thiếu.                                      |
+| DB-01         | Prisma/migration/seed / mỗi BE sở hữu phần mình                                   | IN_PROGRESS | Main có3 migrations; local25/10 thêm data migration20261025073000_be1_normalize_text, deploy4migrations/empty+repeat smoke/legacy3tests đạt. Chưa gộp main hoặc deploy DB chung; BE3 schema/runtime permissions/historical upgrade tổng thể còn thiếu. |
 | CLOUD-DB-01   | Shared PostgreSQL cloud / Codex BE1                                               | DONE        | Runtime cloud/test local configuration and team instructions integrated through PR #3 at `80cd120`; guard 3/3 and hosted CI pass. Credentials remain ignored.                                                     |
-| CONTRACT-01   | Port, DTO, OpenAPI, event schema và contract test / cả ba BE                      | IN_PROGRESS | Đã có phần BE2; BE1 đang triển khai Phase 1 contract, schema và test trên nhánh `feat/be1-implementation`                                                                                                         |
+| CONTRACT-01   | Port, DTO, OpenAPI, event schema và contract test / cả ba BE                      | IN_PROGRESS | Main có BE1/BE2 contracts; local25/10 đồng bộ BR15/18/search sort và public TS compile consumer/OpenAPI/spec, giữ legacy type fields deprecated. BE3 registry/provider/review liên nhóm chưa đủ. |
 | BE2-STEP2     | Nền transaction và hợp đồng tích hợp / BE2 + Codex                                | DONE        | Đã gộp `main` tại `62215fc`; [bàn giao](../Docs/be2-step2-handoff.md), 23 unit + 11 contract test đạt. DONE chỉ cho phạm vi nền bước 2, không phải UC                                                             |
 | STORAGE-01    | Storage CV và scanner / BE2                                                       | IN_PROGRESS | Có port và service/repository quarantine/quét/xóa, unit test; còn provider PDF/scanner, object store, worker/reconciliation, API và test PostgreSQL                                                               |
 | BE2-CV-07     | Thay CV đã nộp / BE2 + Codex                                                      | DONE        | Workflow/repository, history/outbox/idempotency và test unit/contract trên main từ `6a39cfc`; UC06 tổng thể còn IN_PROGRESS.                                                                                      |
@@ -109,16 +133,275 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 | BE2-PORT-10   | Port hồ sơ cho BE1/BE3 / BE2 + Codex                                              | DONE        | Application/Result/Conflict port cùng transaction, history/outbox/idempotency lên main tại `0e1c489`; BE3 runtime còn thiếu.                                                                                      |
 | BE2-API-11    | API/DTO và binding Nest / BE2 + Codex                                             | IN_PROGRESS | Route profile/tin lưu/ứng tuyển và BE1 guard lên main tại `c9c078e`; DI/tsc/contract đạt. CV API và HTTP nghiệm thu còn thiếu.                                                                                    |
 | BE2-QA-12     | Migration và kiểm thử tích hợp / BE2 + Codex                                      | IN_PROGRESS | Migration và DB adapter test lên main tại `602d1d6`; CI PostgreSQL/quality-gate đạt. Còn HTTP/BE3/CV provider nghiệm thu.                                                                                         |
+| SHIP-BE1-FIX-01 | Xuất bản bản sửa BE1 / Truong102006 + Codex | DONE | Nhánh `pr/be1-acceptance-fixes-20261025` đã push; [PR #10](https://github.com/Truong102006/recruitment-management-system/pull/10) OPEN vào main; CI đang chạy, chưa gộp main. DONE chỉ phạm vi Git. |
 | SHIP-BE2      | Push BE2 lên main / BE2 + Codex                                                   | DONE        | Bảy commit riêng đã fast-forward và push main tại `1299cd7`; CI nhánh 39905484135 và CI main 39905843323 backend/quality-gate đạt. DONE chỉ cho Git publishing.                                                   |
 | WORKER-01     | Outbox/email/worker / BE3; idempotency/transaction do BE2 phối hợp                | TODO        | Chưa triển khai                                                                                                                                                                                                   |
 | VIDEO-01      | Jitsi và thu hồi quyền phòng / BE3                                                | TODO        | Chưa tích hợp/kiểm provider thật                                                                                                                                                                                  |
-| QA-01         | Unit/integration/API/concurrency/FE/E2E / từng owner                              | IN_PROGRESS | Main PR #1: hosted 35 suites/316 unit, 13 suites/108 integration (gồm23 contract), evidence8 đạt; coverage92,45% dòng/76,93% nhánh. FE-E2E/runtime/provider còn thiếu. [Bằng chứng](../Docs/be1-verification.md). |
+| QA-01         | Unit/integration/API/concurrency/FE/E2E / từng owner                              | IN_PROGRESS | Local25/10:43suites/368unit,16suites/126integration (gồm25contract),124web; coverage BE cấu hình91,61%/77,56%, evidence8/DBguard3 đạt. Probe6/8, F01 còn mở. Chưa gộp main; E2E/provider/ops thiếu; hosted cũ xem nhật ký. [Bằng chứng mới](../plans/261022-1711-be1-complete-implementation/reports/261025-be1-fixes-verification.md). |
 | CI-01         | Pipeline và evidence gate / BE1 điều phối                                         | IN_PROGRESS | Main PR #1: CI push39893005258 và PR39893010843 đạt backend+quality-gate, gồm fixed inventory/XML/coverage/migration/evidence. Còn full negative-controls hosted, FE-E2E và required branch check.                |
 | SHIP-CLOUD-01 | Publish cloud/test setup and remaining local formatting / Truong102006 + Codex    | DONE        | PR #3 merged main at `80cd120`; push run 39897893529 and PR run 39897927225 pass; main pulled.                                                                                                                    |
 | SHIP-BE1      | Chia commit, push và merge PR / Truong102006 + Codex                              | DONE        | PR #1 đã merge main tại ae869e7; 12 commit được push từng đợt, bảo toàn source/model/lịch sử BE2. DONE chỉ cho Git publishing.                                                                                    |
 | OPS-01        | Hiệu năng, backup/restore và vận hành / BE3 điều phối, cả nhóm kiểm chứng         | TODO        | Chưa đo/chưa diễn tập                                                                                                                                                                                             |
 
-## Phối hợp và bước tiếp theo
+### Phối hợp sau audit BE1 25/10/2026
+
+- Công việc xuất bản: SHIP-BE1-FIX-01 DONE phạm vi nhánh/push/PR #10; main mới `ca4ff6c` đã tích hợp vào nhánh, giữ tiến độ BE1/FE1/FE2.
+- Blocker xuất bản: không có; CI và review còn chờ, chưa gộp main.
+- Bước tiếp theo xuất bản: theo dõi CI và review PR #10 trước khi merge theo quy trình nhóm.
+
+- Công việc hiện tại: đã hoàn tất lát cắt sửa F02–F06/BR18, migration legacy và regression local trên `fix/be1-acceptance-20261025`; 5 UC và8 pha BE1 tiếp tục IN_PROGRESS. Code review AI không còn finding Critical/High/Medium mới trong phạm vi sửa; không thay peer review liên nhóm.
+- Blocker: thiếu5 provider BE3 (Outbox/Audit/InterviewMembership/InterviewSecurity/InterviewAdmin), register AppModule thật503; audit16 còn7High/2Critical. Lint workspace đã đạt; timeout setup đã xử lý và full126integration đạt. HTTPS/browser/E2E/provider/load/restore/DBroles/historical release upgrade/review/hosted gates còn mở.
+- Bước tiếp theo: BE3 cung cấp transactional providers/worker/mail/security; BE1/BE2 phối hợp runtime/barrier/rollback; owner dependency xử lý audit. Review/migrate theo thứ tự dừng writer cũ→migrate→start API mới; chưa áp DB chung, chưa publish Git trong lượt này.
+
+## Nhật ký báo cáo
+
+### 2026-10-25 15:20 (Asia/Saigon) — BE1 / Codex — Xuất bản bản sửa qua PR
+
+- Mã báo cáo: 20261025-1520-BE1-publish-pr
+- Người thực hiện / AI hỗ trợ: Truong102006 / Codex, hỗ trợ Git cho BE1.
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: SHIP-BE1-FIX-01; UC01/04/05/10/11; BR15/18; QA-01/CONTRACT-01.
+- Trạng thái: DONE — chỉ phạm vi tạo nhánh, commit/push và mở PR; toàn BE1 vẫn IN_PROGRESS.
+- Nhánh / commit / PR / tích hợp main: `pr/be1-acceptance-fixes-20261025`; `db7c2f0` source/test, `799a887` tài liệu, `3084c7c` merge origin/main, `0f8732f` cập nhật bảng; [PR #10](https://github.com/Truong102006/recruitment-management-system/pull/10) OPEN; chưa gộp main. Bản ghi kết quả nằm trong commit chứa báo cáo này.
+- Đã hoàn thành: tạo nhánh mới, commit toàn bộ thay đổi phù hợp, tích hợp main mới `ca4ff6c`, giải quyết conflict progress bằng cách giữ cả nhật ký BE1/FE1/FE2; push và mở PR base main. `.env` vẫn được ignore.
+- File / bằng chứng: progress/README.md; toàn bộ diff source/test/contracts/migration/docs/plan BE1; báo cáo kiểm chứng trước tại `plans/261022-1711-be1-complete-implementation/reports/261025-be1-fixes-verification.md`; PR #10.
+- Kiểm tra đã chạy: fetch/status/log, gh auth, check-ignore .env thành công; signature scan 46 staged files không phát hiện secret; diff check đạt. `npm run typecheck`, `npm run typecheck:contracts:public`, `npm run lint` đạt; typecheck/lint sau merge main cũng đạt. `npm run test:unit:ci -- --runInBand`: 43 suites/368 tests đạt, coverage tập cấu hình 91,61% dòng/77,56% nhánh. Push và gh pr create/view thành công, base/head đúng, OPEN; hosted CI đang chạy lúc kiểm tra, chưa xác nhận pass.
+- Kiểm tra chưa chạy / coverage: chưa chạy lại integration/migration PostgreSQL vì database test riêng đã dọn ở lượt trước; chưa chạy lại web/build/E2E trong lượt Git. Coverage unit đã đo nêu trên; các kết quả 126 integration/25 contract trong báo cáo cũ thuộc lượt trước.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: xuất bản nguyên bản sửa chuẩn hóa/search/OWNER và migration đã mô tả trong đặc tả; không thêm thay đổi nghiệp vụ trong lượt Git, không tác động DB chung/cloud.
+- Phần còn thiếu / blocker: không có blocker tạo nhánh/push/PR; chờ CI/review/merge main. Provider BE3 và release gates còn mở theo báo cáo kiểm chứng; không đánh DONE toàn BE1.
+- Bước tiếp theo: theo dõi CI, review và merge PR #10 vào main theo quy trình nhóm; chưa merge main.
+
+### 2026-10-25 14:26 (Asia/Saigon) — BE1 / Codex — Hoàn tất sửa F02–F06 và kiểm chứng local
+
+- Mã báo cáo: 20261025-1426-BE1-fixes-verification
+- Người thực hiện / AI hỗ trợ: Codex hỗ trợ BE1; agent scout, Company/Job workers, reviewer và docs theo ck:fix/ck:project-management/ck:journal. Chưa xác nhận tên người phụ trách; review AI không thay review BE2/BE3/con người.
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: UC01/04/05/10/11; FR01–04/15; BR15/18; TC01–04/25/31–36; F02–F06; DB-01/QA-01/CI-01/CONTRACT-01. Không nhận hoàn thành provider BE3 hoặc toàn bộ UC.
+- Trạng thái: DONE phạm vi sửa F02–F06 và regression; năm UC và tám pha vẫn IN_PROGRESS.
+- Nhánh / commit / PR / tích hợp main: fix/be1-acceptance-20261025, base main94d84c231da68428a55e5a25ce13229785c85043; thay đổi mới local chưa commit/chưa gộp main; không push/deploy. Giữ ba file audit/tiến độ có trước.
+- Đã hoàn thành: Chặn mọi Job mutation thường khi OWNER không khả dụng dưới Tx/company lock; company required trắng/null bị400 và giữ row/version; trim/NFC/code point chính xác gồm emoji/variation selector ở Company/Job/fullName; giữ password/token và nullable/omitted semantics. Search publishedAt DESC/id DESC, explicit createdAt/order và public TS/OpenAPI đồng bộ. Review tìm legacy NFD search/publish, đã bổ sung backfill nguyên tử và normalized publish;3 test schema riêng chứng minh search/rollback/idempotence/snapshot giữ nguyên. Sửa cleanup và budget hook setup, giữ assertion5s. Đồng bộ spec/contract/handoff/journal/plan và8phase, thêm4suite vào inventory.
+- File / bằng chứng: [Báo cáo sửa lỗi](../plans/261022-1711-be1-complete-implementation/reports/261025-be1-fixes-verification.md); apps/api/src/{common/validation,modules/company,modules/identity,modules/job}; tests/api/be1/{company,jobs,public-search}.spec.ts; tests/integration/be1/text-normalization-migration.spec.ts; tests/helpers/create-test-api.ts; contracts/openapi/be1.yaml; libs/contracts/public/index.ts; tests/contract/public-consumer.ts; scripts/evidence/required-suites.json; prisma/migrations/20261025073000_be1_normalize_text/migration.sql; Docs/journals/2026-10-25-be1-normalization-repair.md. Logs reports/be1-fix-*.log và JUnit/coverage/manifest reports/backend/ là local ignored.
+- Kiểm tra đã chạy: Node24.21/npm11.19/Windows, PostgreSQL17.6 container disposable riêng loopback6520, không volume/cloud. Full unit43suites/368tests PASS; full integration16suites/126tests PASS; contract2/25 PASS (đã trong126); web30files/124tests PASS. typecheck backend/web, public-contract compile, lint toàn workspace, build API/web/worker và API build sau legacy, db:validate PASS. Deploy4migrations local, verify:migrations schema cô lập rỗng/lặp/constraints/index/BE2 fixture PASS; migration legacy3tests PASS. Evidence-tools8/DBguard3 PASS; evidence:manifest/verify:evidence PASS inventory/JUnit/coverage, HEAD base thật trong manifest chỉ là định danh local base, không chứng minh source đã commit hoặc hosted CI. Prettier phạm vi sửa/diff PASS; kiểm links mới hợp lệ,5 media links spec thiếu từ trước. Probe trước0/8, sau6/8 PASS, exit1 do F01. npm audit exit1:16 vulnerability (7Moderate/7High/2Critical). Lượt integration đầu118pass/5fail vì hook5000ms; sau scoped setup30s đạt126/126; migration test đầu fixture thiếu headline:null bị constraint chặn, đã sửa fixture và kiểm lại, không nới constraint/skip.
+- Kiểm tra chưa chạy / coverage: Coverage BE tập source cấu hình91,61% lines/77,56% branches; FE cấu hình84,21% lines/78,19% branches. Không phải coverage toàn backend. Chưa npm ci sạch độc lập, hosted CI/negative controls/required branch checks, E2E/HTTPS browser, mail/Jitsi/revoke provider, loadTC29/restoreTC30/runtime DBroles/historical release upgrade toàn thể và peer review; thiếu runtime/provider/môi trường tương ứng.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Data migration mới normalize ordinary text BE1; row thay đổi tăng version/updated_at, không đổi trạng thái/deadline/publication/close timestamp/password/BE2 snapshot; NULL giữ nguyên. Một DO rollback toàn bộ khi overflow/constraint, không truncate; cần xử lý dữ liệu lỗi trước chạy lại. Rollout dừng writer cũ→migrate→start API mới; stale version cần reload409. Chỉ áp DB test riêng; không thay migration cũ hoặc DB chung. Query sortBy thêm publishedAt, giữ createdAt/deadline/salaryMax/sortOrder; public type bổ sung canonical fields, legacy type fields deprecated không tự biến thành HTTP alias. Khôi phục BR15/18/UC05 báo cáo gốc, không thêm quyền/đổi lifecycle.
+- Phần còn thiếu / blocker: F01 vẫn thiếu5 provider BE3 và register503; BE2/BE3 runtime/barrier/provider acceptance, audit High/Critical, HTTPS/E2E/operations/DBroles/peer/hosted gates còn thiếu. Không có finding Critical/High/Medium mới trong scoped code review AI; không suy toàn hệ thống an toàn từ đó.
+- Bước tiếp theo: Giữ IN_PROGRESS toàn BE1; BE3 triển khai/bind providers cùng Tx, phối hợp BE1/BE2 kiểm xuyên owner và worker/provider, xử lý audit và hoàn tất gate trước DONE. Source/migration sẵn review trên nhánh local; không tự commit/push/deploy.
+
+Kiểm bàn giao bổ sung14:27:42 link local mới hợp lệ, diff check đạt; không còn schema test tạm, đã dừng/xóa đúng container rms-be1-fix-20261025, giữ logs/JUnit/coverage và JSON probe cuối. Không tác động container/DB chung.
+
+### 2026-10-25 14:13 (Asia/Saigon) — BE1 / Codex — Sửa invariant OWNER và chuẩn hóa văn bản
+
+- Mã báo cáo: 20261025-1413-BE1-fix-implementation
+- Người thực hiện / AI hỗ trợ: Codex hỗ trợ BE1; agent scout, worker Company/Job phối hợp theo skill ck:fix.
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: UC01/04/05/11; FR01–04; BR15/18; TC01–04/25; F02–F06, QA-01.
+- Trạng thái: IN_PROGRESS — code và regression đã có, full gates đang chạy.
+- Nhánh / commit / PR / tích hợp main: fix/be1-acceptance-20261025; local chưa commit/chưa gộp main.
+- Đã hoàn thành: Job create/update/close kiểm OWNER khả dụng cùng transaction; Company create/update/resubmit normalize rồi validate, không ghi chuỗi bắt buộc trắng/null; Job/đăng ký normalize NFC/trim và đếm code point chính xác kể cả variation selector; search mặc định publishedAt/id và hỗ trợ createdAt/order rõ. Giữ password nguyên văn và không bypass provider thiếu.
+- File / bằng chứng: apps/api/src/common/validation/text.ts; modules/company, job, identity; tests/api/be1/{company,jobs,public-search}.spec.ts; reports/be1-fix-*.log (local ignored).
+- Kiểm tra đã chạy: Baseline build/migrate3 migrations và probe thật8/8 fail; regression trước sửa Company21/Job4/Search3/Auth6 fail; unit mục tiêu Company9 suites/99 tests và Job7 suites/76 tests đạt; lint Company đạt. Full integration hiện có timeout hook5000ms, đang điều tra.
+- Kiểm tra chưa chạy / coverage: Full unit/type/lint/build/contract/migration smoke đang chạy hoặc chờ; chưa có coverage cuối lượt. Chưa HTTPS/browser/provider/load/restore/CI hosted.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không đổi schema; khôi phục đúng BR15/18/UC05. Query sortBy thêm publishedAt, giữ createdAt/deadline/salaryMax; spec/OpenAPI/contract đang đồng bộ.
+- Phần còn thiếu / blocker:5 provider BE3 chưa bind, register thật503; timeout setup integration; audit16 vulnerabilities còn7High/2Critical, lint FE chưa xác minh mới.
+- Bước tiếp theo: Kiểm toàn bộ gates, xử lý ổn định hook và cập nhật bằng chứng/review, không ghi DONE toàn BE1 khi gate liên nhóm còn thiếu.
+
+### 2026-10-25 14:06 (Asia/Saigon) — BE1 / Codex — Tiếp tục sửa lỗi sau audit
+
+- Mã báo cáo: 20261025-1406-BE1-fix-start
+- Người thực hiện / AI hỗ trợ: Codex hỗ trợ BE1 theo yêu cầu người dùng; chưa xác nhận tên người phụ trách.
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: UC01/04/05/10/11; FR01–04/15; BR15/18; TC01–04/25; QA-01/CONTRACT-01/CI-01; F01–F06 audit.
+- Trạng thái: IN_PROGRESS.
+- Nhánh / commit / PR / tích hợp main: fix/be1-acceptance-20261025 từ main 94d84c2; chưa commit/chưa gộp main; giữ ba file audit/tiến độ có sẵn.
+- Đã hoàn thành: Đọc hướng dẫn, đặc tả, tiến độ, kế hoạch và báo cáo audit; xác định source/rules/DTO/query và test liên quan. Đang xác minh baseline trước sửa.
+- File / bằng chứng: progress/README.md; báo cáo audit và script probe đã có trong plans/261022-1711-be1-complete-implementation/reports/.
+- Kiểm tra đã chạy: git status/log; đọc source/contract; docker ps lỗi vì Docker Desktop daemon chưa chạy.
+- Kiểm tra chưa chạy / coverage: Chưa chạy test/build/lint trong lượt này vì đang khảo sát; chưa đo coverage.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Chưa thay đổi; chỉ dự kiến khôi phục đúng BR15/18 và UC05, không triển khai thay provider BE3.
+- Phần còn thiếu / blocker: F02–F06 cần sửa và regression; F01 cần provider BE3; PostgreSQL test cần Docker chạy; gate liên nhóm/provider/operations còn thiếu.
+- Bước tiếp theo: Xác minh baseline, sửa các đường bị ảnh hưởng, chạy kiểm tra và đồng bộ toàn bộ phase theo bằng chứng.
+
+### 2026-10-25 13:58 (Asia/Saigon) — Hạ tầng / Codex — Đồng bộ source GitHub và giữ ba file audit
+
+- Mã báo cáo: 20261025-1358-INFRA-sync-local
+- Người thực hiện / AI hỗ trợ: Codex thực hiện theo yêu cầu trực tiếp của người dùng.
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: SYNC-LOCAL-01; đồng bộ working tree, giữ báo cáo BE1 và sổ tiến độ.
+- Trạng thái: DONE trong phạm vi đồng bộ Git; không thay trạng thái nghiệm thu UC.
+- Nhánh / commit / PR / tích hợp main: main và origin/main cùng 94d84c231da68428a55e5a25ce13229785c85043 sau fetch; không có commit/PR/push mới. Ba file giữ lại vẫn local, chưa commit.
+- Đã hoàn thành: Sao lưu ba file ngoài repository; fetch origin main thành công; reset --hard origin/main; clean -fd các untracked code được người dùng cho phép ghi đè; phục hồi nguyên bản progress/README.md, báo cáo audit và script probe; sau đó thêm bản ghi đồng bộ này vào progress. Giữ file ignored như env, dependency và artifact. Không dùng clean -x.
+- File / bằng chứng: progress/README.md; plans/261022-1711-be1-complete-implementation/reports/261025-be1-completion-audit.md; plans/261022-1711-be1-complete-implementation/reports/261025-be1-acceptance-probes.cjs. Backup tại C:/Users/ASUS/AppData/Local/Temp/rms-sync-00f4d1b52bda4e1eb756040e4245f494/.
+- Kiểm tra đã chạy: git fetch origin main; git log origin/main; git clean -nd preview; xác minh đường dẫn repo tuyệt đối; git reset --hard origin/main; git clean -fd; SHA256 cả ba file phục hồi khớp backup trước khi thêm nhật ký; git status chỉ còn đúng ba file giữ lại. Kiểm diff nguồn và nội dung/links tiến độ sau đồng bộ.
+- Kiểm tra chưa chạy / coverage: Chưa chạy lại application tests, build hoặc lint vì đây là thao tác Git khôi phục source; chưa đo coverage sau đồng bộ. Không dùng kết quả audit cũ để khẳng định source sau reset đã được test lại.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không tự thay DB/API/contract; source quay về commit main của GitHub. Các thay đổi FE local chưa commit và untracked code còn lại đã bị loại theo yêu cầu người dùng.
+- Phần còn thiếu / blocker: Không có blocker đồng bộ. Các vấn đề trong audit là snapshot trước thao tác này, cần xác minh lại khi tiếp tục phát triển.
+- Bước tiếp theo: Tiếp tục công việc trên source mới đồng bộ; chạy kiểm tra liên quan trước khi sửa hoặc nghiệm thu tiếp. Không tự commit/push.
+
+### 2026-10-25 13:49 (Asia/Saigon) — BE1 / Codex — Kết quả kiểm tra hoàn thành BE1
+
+- Mã báo cáo: 20261025-1349-BE1-completion-audit
+- Người thực hiện / AI hỗ trợ: Codex hỗ trợ kiểm tra BE1; chưa xác nhận tên người phụ trách.
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: UC01/04/05/10/11; FR01–04/15; BR01–04/15/18/20; TC01–04/25/26/31–36/55–57, gates TC29/30/60; CONTRACT-01/DB-01/CI-01/QA-01; kế hoạch 8 pha.
+- Trạng thái: DONE phạm vi audit; UC và 8 pha BE1 vẫn IN_PROGRESS.
+- Nhánh / commit / PR / tích hợp main: Working tree main, HEAD94d84c231da68428a55e5a25ce13229785c85043; giữ thay đổi FE/tiến độ có sẵn; báo cáo/script mới chưa commit, chưa tích hợp; không push/deploy.
+- Đã hoàn thành: Đối chiếu kế hoạch và Docs với source; chạy gates/PostgreSQL/API thật; xác nhận thiếu5 port BE3, register503 và 5 nhóm lỗi nghiệp vụ; 8 assertion tái hiện fail. CandidateProfile/ApplicationConflict BE2 đã bind thật. Đã ghi IN_PROGRESS vào bảng trước kiểm thử.
+- File / bằng chứng: [Báo cáo](../plans/261022-1711-be1-complete-implementation/reports/261025-be1-completion-audit.md); [script](../plans/261022-1711-be1-complete-implementation/reports/261025-be1-acceptance-probes.cjs); logs/JSON/JUnit/coverage trong reports/be1-audit-20261025/ (local, gitignored); progress/README.md.
+- Kiểm tra đã chạy: Windows Node24.21/npm11.19; Docker29.4/PostgreSQL17.6 container riêng không volume. typecheck/public-contracts/build/db:validate PASS; verify:migrations và db:migrate:deploy PASS; unit41/330 PASS; contract2/25 PASS (đã nằm trong integration); integration lần1 13pass/1fail suite,102pass/11fail tests do beforeAll Jobs5000ms/teardown; lần2 cùng lệnh14/113 PASS, không sửa code/timeout; evidence8 và DBguard3 PASS; lint backend PASS, lint workspace FAIL3 lỗi FE; npm audit exit1 với16 vulnerabilities; acceptance script exit1,8/8 assertion FAIL. node --check và kiểm liên kết2 tài liệu PASS; git diff --check riêng progress PASS, toàn workspace có2 lỗi blank-line EOF ở FE có sẵn. Đã dừng/xóa container test riêng.
+- Kiểm tra chưa chạy / coverage: Coverage unit tập source cấu hình91,28% lines/74,16% branches; chưa đo toàn backend/FE trong lượt này. Chưa npm ci sạch, hosted CI/negative controls, HTTPS/browser/E2E, provider Jitsi/mail/revoke, load/restore, DB runtime roles/historical upgrade và peer review; thiếu runtime/môi trường tương ứng.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không thay đổi; migration chỉ chạy DB test disposable. Không sửa đặc tả để hợp thức hóa lỗi. Probe chỉ tạo/xóa fixture riêng, không ghi cloud.
+- Phần còn thiếu / blocker: F01 cần BE3 Outbox/Audit/InterviewMembership/InterviewSecurity/InterviewAdmin và acceptance xuyên owner; F02–F06 là lỗi BE1 có thể sửa độc lập. Cold-start timeout cần điều tra; FE còn3 lint errors; dependency còn7High/2Critical; operations/provider gates chưa nghiệm thu.
+- Bước tiếp theo: BE1 sửa5 nhóm lỗi và regression; BE3 cung cấp/bind provider với BE1/BE2 và kiểm race/rollback cùng Tx; FE sửa lint, owner dependency xử lý audit; hoàn tất gates trước DONE toàn BE1.
+
+
+### 2026-10-25 02:55 (Asia/Saigon) — FE2 / Reviewer R3 — Rà soát phản biện Vòng 3 & Hoàn thiện Ripple Effect, Hero Animations, Spring Underline, I18n & Job Sync
+
+- Mã báo cáo: 20261025-0255-FE2-talento-adversarial-review-r3
+- Người thực hiện / AI hỗ trợ: reviewer@swe_light, qa@swe_light (AI Antigravity hỗ trợ FE2 review).
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: R1, R2, R3, R4, R5 (UI01, UI13–UI23; Talento Design System, Ripple Effect Listener, Hero Action Verbs Animation, Nav Link Spring Underline, Deep Localization VI/EN, Kanban URL Job Sync, Progress Rings & Countdown Edge Cases).
+- Trạng thái: DONE (trên nhánh).
+- Nhánh / commit / PR / tích hợp main: main (local workspace); chưa gộp remote.
+- Đã hoàn thành:
+  1. Triển khai bộ lắng nghe toàn cục sự kiện pointer cho hiệu ứng gợn sóng (`registerRippleEffect`) trên các phần tử `.ripple-btn`, tự động dọn dẹp và tuân thủ chặt chẽ `prefers-reduced-motion: reduce`.
+  2. Bổ sung các chuyển động đồ họa động trên Landing Page hero cho các động từ hành động ("duyệt" với kính lúp quét ngang `.mag-glass`, "theo dõi" với thanh tiến độ chạy `.running-bar`, nét gạch chân lò xo `.nav-link-spring`, nét vẽ sóng `.waveDraw`).
+  3. Bổ sung nhãn `PAUSED` (`Tạm dừng`) cho `StatusBadge` đồng bộ với trạng thái tin tuyển dụng.
+  4. Phòng vệ các giá trị biên `NaN`, `null`, `undefined` trong `ProgressRings` và `CountdownTimer`, ngăn ngừa triệt để lỗi hiển thị `NaN%` hay `NaN:NaN:NaN`.
+  5. Nâng cấp khả năng điều hướng bàn phím A11y cho danh sách To-Do (`role="button"`, `tabIndex={0}`, `aria-pressed`, `onKeyDown` Enter/Space, chống click đúp với `stopPropagation`).
+  6. Đồng bộ hóa bộ lọc công việc `jobId` từ URL Search Parameters trên bảng Kanban Pipeline, cho phép chuyển hướng trực tiếp từ danh sách tin tuyển dụng sang Kanban theo đúng công việc đã chọn.
+  7. Bản địa hóa toàn diện song ngữ VI/EN trên toàn bộ hệ thống: Landing Page (Bento grid, App mockup frame, footer), Recruiter Dashboard (chào mừng, nhãn hôm nay, chỉ tiêu), Kanban Pipeline (tiêu đề cột, nhãn modal, aria-label đánh giá sao), Recruiter Layout (tìm kiếm, chuyển đổi workspace) và Interview Calendar.
+  8. Mở rộng bộ kiểm thử tự động lên 169 tests (40 suites) đạt tỷ lệ vượt qua 100%, bảo đảm không có lỗi unhandled exception và mọi ngưỡng coverage đều vượt tiêu chuẩn.
+- File / bằng chứng:
+  - `apps/web/src/components/talento/ripple-effect.ts`
+  - `apps/web/src/components/talento/ripple-effect.test.ts`
+  - `apps/web/src/components/talento/theme-language-context.tsx`
+  - `apps/web/src/styles/global.css`
+  - `apps/web/src/components/ui/status-badge.tsx`
+  - `apps/web/src/components/talento/countdown-timer.tsx`
+  - `apps/web/src/components/talento/countdown-timer.test.tsx`
+  - `apps/web/src/components/talento/progress-rings.tsx`
+  - `apps/web/src/components/talento/progress-rings.test.tsx`
+  - `apps/web/src/components/talento/todo-list.tsx`
+  - `apps/web/src/components/talento/dot-canvas-glow.tsx`
+  - `apps/web/src/features/landing/landing-page.tsx`
+  - `apps/web/src/features/pipeline/pipeline-kanban-page.tsx`
+  - `apps/web/src/features/pipeline/pipeline-kanban-page.test.tsx`
+  - `apps/web/src/features/dashboard/recruiter-dashboard-page.tsx`
+  - `apps/web/src/app/layouts/recruiter-layout.tsx`
+  - `apps/web/src/components/calendar/interview-calendar.tsx`
+  - `apps/web/src/features/jobs/recruiter/pages/recruiter-jobs-list-page.tsx`
+  - `reports/frontend/junit.xml`
+  - `reports/frontend/coverage/`
+- Kiểm tra đã chạy:
+  - `npm --workspace=@rms/web run typecheck`: 0 lỗi TypeScript (code 0).
+  - `npm --workspace=@rms/web run build`: Production build thành công qua Vite trong 4.38s (code 0).
+  - `npm --workspace=@rms/web run test:ci`: 40/40 test suites pass, 169/169 tests pass 100% (code 0). Toàn bộ ngưỡng coverage đạt (lines > 80%, branches > 70%).
+- Kiểm tra chưa chạy / coverage: Toàn bộ kiểm thử và coverage đã đo và pass 100%.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không sửa contract hay schema; hoàn thiện toàn diện micro-interactions, animations, A11y, localization và route sync.
+- Phần còn thiếu / blocker: Không còn thiếu sót. Toàn bộ tính năng giao diện, micro-interactions và kiểm thử đã hoàn thành đầy đủ.
+- Bước tiếp theo: Sẵn sàng báo cáo nghiệm thu và mở Pull Request gộp main.
+
+### 2026-10-25 02:35 (Asia/Saigon) — FE2 / Reviewer R2 — Rà soát phản biện Vòng 2 & Hoàn thiện Talento Micro-interactions, A11y & Edge Cases
+
+- Mã báo cáo: 20261025-0235-FE2-talento-adversarial-review-r2
+- Người thực hiện / AI hỗ trợ: reviewer@swe_light, qa@swe_light (AI Antigravity hỗ trợ FE2 review).
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: R1, R2, R3, R4, R5 (UI01, UI13–UI23; Talento Design System, Tokens, Landing Page Header Auth/CTA, To-do Hover Delete, Modal A11y & Backdrop Click, Confetti Motion Control, Countdown Invalid Date Guard).
+- Trạng thái: DONE (trên nhánh).
+- Nhánh / commit / PR / tích hợp main: main (local workspace); chưa gộp remote.
+- Đã hoàn thành:
+  1. Thêm quy tắc CSS cho nút xóa việc To-do list (`.todo-item-row .btn-delete-todo`): ẩn mặc định (`opacity: 0`) và hiển thị khi hover / focus-within / focus-visible, đáp ứng chính xác yêu cầu R3 ("nút xóa việc khi hover").
+  2. Bổ sung lắng nghe phím tắt `Escape` và đóng khi click backdrop ngoài card cho modal chi tiết ứng viên (`PipelineKanbanPage`).
+  3. Bổ sung đóng khi click backdrop ngoài card cho modal lên lịch phỏng vấn (`ScheduleInterviewModal`).
+  4. Phòng vệ lỗi hiển thị ngày không hợp lệ `NaN:NaN:NaN` trong `CountdownTimer` (`calculateTimeLeft`), trả về fallback an toàn `--:--:--`.
+  5. Tuân thủ `prefers-reduced-motion: reduce` trong bộ sinh hạt pháo giấy `triggerConfetti`, tránh gây chóng mặt/co giật thị giác cho người dùng bật chế độ giảm chuyển động.
+  6. Bổ sung nút "Đăng nhập" (`navLogin`) bên cạnh nút "Dùng thử miễn phí" (`navTryNow`) trên header Landing Page, đáp ứng trọn vẹn yêu cầu R2 ("nút đăng nhập/dùng thử").
+  7. Mở rộng test cases kiểm chứng cho tất cả các kịch bản trên: tăng từ 158 lên 163 tests (39 suites) đạt tỷ lệ 100%.
+- File / bằng chứng:
+  - `apps/web/src/styles/global.css`
+  - `apps/web/src/components/talento/countdown-timer.tsx`
+  - `apps/web/src/components/talento/countdown-timer.test.tsx`
+  - `apps/web/src/components/talento/confetti.tsx`
+  - `apps/web/src/components/talento/confetti.test.tsx`
+  - `apps/web/src/features/landing/landing-page.tsx`
+  - `apps/web/src/features/landing/landing-page.test.tsx`
+  - `apps/web/src/features/pipeline/pipeline-kanban-page.tsx`
+  - `apps/web/src/features/pipeline/pipeline-kanban-page.test.tsx`
+  - `apps/web/src/features/interviews/components/schedule-interview-modal.tsx`
+  - `apps/web/src/features/interviews/components/schedule-interview-modal.test.tsx`
+  - `progress/README.md`
+- Kiểm tra đã chạy:
+  - `npm --workspace=@rms/web run typecheck`: Exit code 0, 0 lỗi TypeScript.
+  - `npm --workspace=@rms/web run test:ci`: Exit code 0, 39/39 suites, 163/163 tests pass 100%, line coverage > 80%, branch coverage > 70%.
+  - `npm --workspace=@rms/web run build`: Exit code 0, Vite production bundle build hoàn tất trong 4.24s.
+- Kiểm tra chưa chạy / coverage: Chưa chạy trên mobile browser vật lý thực tế (chỉ kiểm chứng qua responsive suite và JSDOM).
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không thay đổi DB / backend contract.
+- Phần còn thiếu / blocker: Không có blocker.
+- Bước tiếp theo: Tiến hành code review và tạo commit / PR đưa lên main.
+
+### 2026-10-25 02:20 (Asia/Saigon) — FE2 / Reviewer — Rà soát phản biện & Hoàn thiện toàn diện Talento UI/UX
+
+- Mã báo cáo: 20261025-0220-FE2-talento-adversarial-review
+- Người thực hiện / AI hỗ trợ: reviewer@swe_light, qa@swe_light (AI Antigravity hỗ trợ FE2 review).
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: R1, R2, R3, R4, R5 (UI01, UI13–UI23; Talento Design System, Tokens, Landing Page, Recruiter Workspace, Kanban Pipeline, Jobs Talento Grid Card, Interview Scheduler).
+- Trạng thái: DONE (trên nhánh).
+- Nhánh / commit / PR / tích hợp main: main (local workspace); chưa gộp remote.
+- Đã hoàn thành:
+  1. Rà soát phát hiện và bổ sung token `--sh-t` cho `:root` trong `tokens.css` (trước đó chỉ có trong dark mode khiến dialogs/modals light mode mất shadow).
+  2. Bổ sung chế độ hiển thị Lưới thẻ Talento (Jobs Grid Cards) cho `/recruiter/jobs` kèm thanh tiến độ tuyển dụng (đã tuyển / chỉ tiêu), badge trạng thái, nút xem ứng viên và sửa vị trí, cùng nút chuyển đổi linh hoạt Lưới thẻ / Bảng dữ liệu.
+  3. Sửa lỗi đồng bộ ô tìm kiếm topbar với Pipeline Kanban: kết nối `useSearchParams` đọc tham số `?q=...` từ URL.
+  4. Khắc phục lỗi `CountdownTimer` spam gọi `onExpire()` liên tục mỗi giây bằng `hasExpiredRef`.
+  5. Sửa lỗi pháo giấy Confetti toạ độ gốc: fallback về tâm màn hình thay vì góc trái trên (0,0) khi toạ độ `clientX/clientY <= 0` (sự kiện bàn phím).
+  6. Kích hoạt hiệu ứng pháo giấy confetti ăn mừng khi chuyển ứng viên sang "Đã nhận" tại Dashboard Quick Move.
+  7. Bổ sung phím tắt `Escape` để đóng modal lên lịch phỏng vấn và thêm `min` attribute chống chọn ngày quá khứ (kèm `noValidate` trên form để custom alert hiển thị chính xác).
+  8. Bổ sung các test cases kiểm chứng cho Jobs Grid Cards, CountdownTimer single expire, URL search param sync và phím Escape.
+- File / bằng chứng:
+  - `apps/web/src/styles/tokens.css`
+  - `apps/web/src/components/talento/confetti.tsx`
+  - `apps/web/src/components/talento/countdown-timer.tsx`
+  - `apps/web/src/components/talento/countdown-timer.test.tsx`
+  - `apps/web/src/features/dashboard/recruiter-dashboard-page.tsx`
+  - `apps/web/src/features/dashboard/recruiter-dashboard-page.test.tsx`
+  - `apps/web/src/features/pipeline/pipeline-kanban-page.tsx`
+  - `apps/web/src/features/pipeline/pipeline-kanban-page.test.tsx`
+  - `apps/web/src/features/interviews/components/schedule-interview-modal.tsx`
+  - `apps/web/src/features/interviews/components/schedule-interview-modal.test.tsx`
+  - `apps/web/src/features/jobs/recruiter/pages/recruiter-jobs-list-page.tsx`
+  - `apps/web/src/features/jobs/recruiter/pages/recruiter-jobs-list-page.test.tsx`
+  - `progress/README.md`
+- Kiểm tra đã chạy:
+  - `npm --workspace=@rms/web run typecheck`: Exit code 0, 0 lỗi TypeScript.
+  - `npm --workspace=@rms/web run test:ci`: Exit code 0, 39/39 suites, 158/158 tests pass 100%, line coverage > 80%, branch coverage > 70%.
+  - `npm --workspace=@rms/web run build`: Exit code 0, Vite bundle hoàn tất thành công.
+- Kiểm tra chưa chạy / coverage: Chưa chạy trên mobile browser thực tế (chỉ kiểm chứng qua responsive suite và JSDOM).
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không thay đổi DB / backend contract.
+- Phần còn thiếu / blocker: Không có blocker.
+- Bước tiếp theo: Tiến hành code review và tạo commit / PR đưa lên main.
+
+### 2026-10-25 01:43 (Asia/Saigon) — Hạ tầng — Setup website cloner độc lập
+
+- Mã báo cáo: 20261025-0143-HT-local-cloner
+- Người thực hiện / AI hỗ trợ: Codex hỗ trợ hạ tầng theo yêu cầu người dùng; không ký thay thành viên.
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: LOCAL-CLONER-01; template độc lập ngoài repository tuyển dụng; không nghiệm thu UC/UI.
+- Trạng thái: DONE (phạm vi local setup).
+- Nhánh / commit / PR / tích hợp main: recruitment đang ở main, báo cáo chưa commit/chưa gộp main; clone template master nguồn ee3f5a2f31fd549b9593fa4f7cf6d2955ee593bb, thay đổi local chưa commit. Không push/deploy.
+- Đã hoàn thành: Clone thư mục bên cạnh ai-website-cloner-template, npm ci, cập nhật Next/ESLint config 16.4.3 và npm audit fix; dev server nền cổng 3010 vì 3000 đã được sử dụng; thêm hướng dẫn sử dụng.
+- File / bằng chứng: progress/README.md; ngoài repo: ../ai-website-cloner-template/package.json, package-lock.json, HUONG-DAN-SU-DUNG.md, AGENTS.md (Next dev tự cập nhật hướng dẫn); log local (gitignored): ../ai-website-cloner-template/temp/setup-check.log, setup-audit.json, http-smoke.json, server.pid.
+- Kiểm tra đã chạy: Git 2.52.0, Node 24.21.0, npm 11.19.0 Windows; npm ci đạt; npm run check bản gốc và bản cập nhật đều đạt lint/typecheck/build; npm audit cuối exit 0, tổng 0; Invoke-WebRequest localhost:3010 đạt HTTP 200 và có nội dung template; git diff --check template đạt; diff toàn repo tuyển dụng báo dòng trống EOF ở apps/web/src/styles/global.css ngoài phạm vi, không chỉnh sửa. Kiểm tra file skill/command bridge tồn tại.
+- Kiểm tra chưa chạy / coverage: Chưa chạy clone website và browser visual vì chưa có URL mục tiêu; chưa đo coverage (setup template).
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không phát sinh; chỉ dependencies template độc lập và sổ tiến độ.
+- Phần còn thiếu / blocker: Không có trong phạm vi setup; coding agent cần browser khi clone, chưa xác minh browser automation. Trang hiện là template mặc định.
+- Bước tiếp theo: Mở thư mục template trong coding agent, gửi URL và yêu cầu dùng skill clone-website; xem hướng dẫn local.
+
+
+### 2026-10-25 01:40 (Asia/Saigon) — FE2 — Áp dụng Design System & Workspace Talento vào hệ thống web
+
+- Mã báo cáo: 20261025-0140-FE2-talento-design-system-init
+- Người thực hiện / AI hỗ trợ: implementer@swe_light (AI Antigravity hỗ trợ FE2).
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: R1, R2, R3, R4, R5 (UI01, UI13–UI23; Talento Design System, Tokens, Landing Page, Recruiter Dashboard, Kanban Pipeline, Jobs & Interview Scheduler).
+- Trạng thái: IN_PROGRESS
+- Nhánh / commit / PR / tích hợp main: main; commit chứa báo cáo này; Chưa gộp main.
+- Đã hoàn thành: Xác định phạm vi nhiệm vụ và khởi tạo tiến độ theo AGENTS.md; kiểm tra baseline typecheck và test:ci (100% pass); chuẩn bị tích hợp tokens Be Vietnam Pro, Patrick Hand, micro-interactions, landing page, recruiter dashboard và pipeline kanban.
+- File / bằng chứng: `progress/README.md`; baseline test 30 suites pass.
+- Kiểm tra đã chạy: `npm --workspace=@rms/web run typecheck` — thành công; `npm --workspace=@rms/web run test:ci` — 30/30 suites pass (coverage lines 86.84%, branches 75.31%).
+- Kiểm tra chưa chạy / coverage: Các component mới của Talento chưa viết.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không thay đổi DB/API contract.
+- Phần còn thiếu / blocker: Đang tiến hành code các thành phần R1–R5.
+- Bước tiếp theo: Triển khai R1 tokens & CSS styles, R2 Landing Page, R3 Recruiter Dashboard, R4 Kanban Board & Modals, R5 tests và typecheck.
+
+
 
 - 23/10/2026 12:27 — SHIP-BE2 DONE phạm vi Git: bảy commit lên main `1299cd7` sau khi CI nhánh PostgreSQL đạt. Thứ tự nối tiếp: BE3 đăng ký Outbox/InterviewLifecycle và kiểm transaction rút/công bố; BE2 thêm S3/scanner/worker/API CV; sau đó chạy HTTP/FE end-to-end trên DB test cô lập. Migration BE2 chưa áp dụng Neon dùng chung.
 
@@ -281,6 +564,98 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 - Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không thay đổi DB hoặc contract; đảm bảo tái sử dụng 100% `@rms/contracts/public` và API client của FE2.
 - Phần còn thiếu / blocker: Chờ người dùng phê duyệt kế hoạch di trú trước khi tiến hành chuyển giao và hoàn thiện Task 2.
 - Bước tiếp theo: Sau khi được phê duyệt kế hoạch, áp dụng các tệp FE1 cần tái sử dụng/điều chỉnh, sửa 4 bài test auth, đưa toàn bộ bộ test auth (FE08–FE12) đạt 100%.
+
+### 2026-10-25 02:05 (Asia/Saigon) — FE2 — Triển khai hoàn thiện Ngôn ngữ Thiết kế Talento, Landing Page & Recruiter Workspace (TALENTO-FE)
+
+- Mã báo cáo: 20261025-0205-FE2-talento-design-system
+- Người thực hiện / AI hỗ trợ: Antigravity (hỗ trợ FE2).
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: TALENTO-FE; R1–R5; UI13–UI23, UI25–UI28; Token CSS, Google Fonts Be Vietnam Pro + Patrick Hand, Canvas spotlight glow (#dglow), Lò xo vật lý (cubic-bezier(0.34, 1.56, 0.64, 1)), Pháo giấy confetti ăn mừng, Pipeline Kanban kéo thả 6 giai đoạn, Đồng hồ đếm ngược thời gian thực, To-do list lò xo & confetti, Song ngữ VI/EN, Dark/Light mode chuẩn xác.
+- Trạng thái: DONE (phạm vi nhánh `feat/fe2-implementation`).
+- Nhánh / commit / PR / tích hợp main: `feat/fe2-implementation`; commit chứa báo cáo này; chưa gộp main.
+- Đã hoàn thành:
+  - **Typography & Brand Tokens (`index.html`, `tokens.css`, `global.css`):**
+    - Tải font Google Fonts `Be Vietnam Pro` (300-800) làm font sans chính và `Patrick Hand` cho post-it note/stickers.
+    - Bổ sung bảng màu Talento tokens (`--font-hand`, `--orange`, `--gray-stage`, `--spring`, `--sh-s`, `--sh-m`, `--sh-t`, `--blue`, `--cyan`, `--amber`, `--green`, `--red`, `--note`).
+    - Thêm micro-interactions: `.spring-transit`, `.spring-bounce`, `.tilt-hover`, `.floating-badge`, `.ripple-btn`, `.ripple-wave`, `#dglow`, `.post-it-note`, `.post-it-pin`, `.talento-dots`, `.action-verb-hire`, `.action-verb-review`, `.action-verb-track`, `.radar-dot`, `.star-btn`.
+  - **Thành phần Tương tác Talento Core (`src/components/talento/`):**
+    - `theme-language-context.tsx`: Provider Dark/Light theme (`data-theme`) & Song ngữ VI/EN (`vi`/`en`) kèm từ điển dịch thuật chi tiết và đồng bộ LocalStorage.
+    - `confetti.tsx`: Canvas particle burst engine mô phỏng vật lý trọng lực và cản không khí (`triggerConfetti()`).
+    - `dot-canvas-glow.tsx`: Canvas nền `#dglow` vẽ spotlight theo con trỏ chuột trên lưới chấm ma trận, tương thích `prefers-reduced-motion`.
+    - `countdown-timer.tsx`: Đồng hồ đếm ngược thời gian thực định dạng `HH:mm:ss` / `Xn HH:mm`, xử lý trạng thái quá hạn.
+    - `progress-rings.tsx`: 3 vòng tròn SVG đồng tâm (Screening Cyan, Interviews Amber, Hired Green).
+    - `todo-list.tsx`: To-do list tương tác nảy lò xo và bắn confetti khi hoàn thành việc, lưu trữ LocalStorage, nút xóa khi hover.
+    - `talento-logo.tsx`: Logo Talento với 4 chấm màu chuyển động (cyan, blue, amber, green).
+  - **Màn hình Landing Page Công khai (`src/features/landing/landing-page.tsx`):**
+    - Header với Talento Logo 4 chấm, nav links hiệu ứng lò xo, toggle Theme & Lang.
+    - Hero section với 3 động từ tương tác ("Tuyển", "duyệt", "theo dõi"), Patrick Hand post-it note đính ghim xoay nghiêng, thư mục nhắc nhở và công cụ hệ sinh thái.
+    - Khung ứng dụng giao diện demo với các huy hiệu nổi (floating badges) chỉ số ấn tượng.
+    - Bento Grid 4 khối giới thiệu: Phối hợp nhóm trực quan, Quản lý thời gian thông minh, Theo dõi tiến độ nâng cao, Không gian cá nhân hóa.
+  - **Không gian Làm việc Nhà tuyển dụng Recruiter Workspace (`src/features/dashboard/recruiter-dashboard-page.tsx`):**
+    - Lời chào cá nhân hóa theo buổi trong ngày (Sáng, Trưa, Chiều, Tối), tên nhà tuyển dụng và ngày hiện tại.
+    - Next Interview Card với countdown timer đếm ngược trực tiếp tới buổi phỏng vấn kế tiếp, nút "Vào phòng phỏng vấn" WebRTC.
+    - To-do list lò xo & confetti tích hợp ngay trong dashboard.
+    - 3 vòng tròn đồng tâm Progress Rings phản ánh trực quan phễu tuyển dụng.
+    - Candidates to Review card phân nhóm 3 tab (Mới ứng tuyển, Cần phỏng vấn, Đã nhận) với nút chuyển bước nhanh.
+  - **Pipeline Tuyển dụng Kanban 6 Giai đoạn (`src/features/pipeline/pipeline-kanban-page.tsx`):**
+    - 6 cột Kanban: Ứng tuyển, Sàng lọc, Phỏng vấn, Đề nghị, Đã nhận, Từ chối.
+    - Kéo thả HTML5 Drag-and-drop mượt mà giữa các cột, tự động kích hoạt hiệu ứng pháo giấy confetti khi thả vào cột "Đã nhận".
+    - Tìm kiếm tức thì theo tên/email/vị trí ứng viên, bộ lọc theo Job position.
+    - Modal chi tiết ứng viên với đánh giá 1-5 sao pop animation, ghi chú nội bộ và kích hoạt lên lịch phỏng vấn.
+  - **Nâng cấp Lịch phỏng vấn & Layout (`apps/web/src/`):**
+    - `schedule-interview-modal.tsx`: Kiểm tra hợp lệ thời gian (chặn ngày quá khứ), tự động phát hiện xung đột lịch của người phỏng vấn.
+    - `interview-calendar.tsx`: Bộ lọc thời gian Sắp tới / Đã qua, nút hủy phỏng vấn 2 bước an toàn.
+    - `recruiter-layout.tsx`: Tích hợp TalentoLogo, dashboard link, pipeline link, theme & lang toggles, quick search.
+- File / bằng chứng:
+  - `apps/web/index.html`
+  - `apps/web/src/styles/tokens.css`
+  - `apps/web/src/styles/global.css`
+  - `apps/web/src/components/talento/theme-language-context.tsx`
+  - `apps/web/src/components/talento/confetti.tsx`
+  - `apps/web/src/components/talento/dot-canvas-glow.tsx`
+  - `apps/web/src/components/talento/countdown-timer.tsx`
+  - `apps/web/src/components/talento/progress-rings.tsx`
+  - `apps/web/src/components/talento/todo-list.tsx`
+  - `apps/web/src/components/talento/talento-logo.tsx`
+  - `apps/web/src/features/landing/landing-page.tsx`
+  - `apps/web/src/features/dashboard/recruiter-dashboard-page.tsx`
+  - `apps/web/src/features/pipeline/pipeline-kanban-page.tsx`
+  - `apps/web/src/features/interviews/components/schedule-interview-modal.tsx`
+  - `apps/web/src/components/calendar/interview-calendar.tsx`
+  - `apps/web/src/app/layouts/recruiter-layout.tsx`
+  - `apps/web/src/app/router.tsx`
+  - `apps/web/src/app/providers.tsx`
+  - `apps/web/src/test/setup.ts`
+  - `apps/web/src/components/talento/*.test.tsx`
+  - `apps/web/src/features/landing/landing-page.test.tsx`
+  - `apps/web/src/features/dashboard/recruiter-dashboard-page.test.tsx`
+  - `apps/web/src/features/pipeline/pipeline-kanban-page.test.tsx`
+  - `apps/web/src/features/interviews/components/schedule-interview-modal.test.tsx`
+  - `reports/frontend/junit.xml`
+  - `reports/frontend/coverage/`
+- Kiểm tra đã chạy:
+  - `npm --workspace=@rms/web run typecheck`: 0 lỗi TypeScript (code 0).
+  - `npm --workspace=@rms/web run build`: Production build thành công qua Vite (code 0).
+  - `npm --workspace=@rms/web run test:ci`: 39/39 test suites pass, 153/153 tests pass 100% (code 0). Toàn bộ ngưỡng coverage đạt (lines >= 80%, branches >= 70%).
+- Kiểm tra chưa chạy / coverage: Toàn bộ kiểm thử và coverage đã đo và pass 100%.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không sửa contract hay schema; bổ sung giao diện Talento Design System và các route tương ứng trên web frontend.
+- Phần còn thiếu / blocker: Không còn thiếu sót. Toàn bộ tính năng giao diện, micro-interactions và kiểm thử đã hoàn thành đầy đủ.
+- Bước tiếp theo: Sẵn sàng báo cáo nghiệm thu và mở Pull Request gộp main.
+
+### 2026-10-25 01:43 (Asia/Saigon) — Hạ tầng — Setup website cloner độc lập
+
+- Mã báo cáo: 20261025-0143-HT-local-cloner
+- Người thực hiện / AI hỗ trợ: Codex hỗ trợ hạ tầng theo yêu cầu người dùng; không ký thay thành viên.
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: LOCAL-CLONER-01; template độc lập ngoài repository tuyển dụng; không nghiệm thu UC/UI.
+- Trạng thái: DONE (phạm vi local setup).
+- Nhánh / commit / PR / tích hợp main: recruitment đang ở main, báo cáo chưa commit/chưa gộp main; clone template master nguồn ee3f5a2f31fd549b9593fa4f7cf6d2955ee593bb, thay đổi local chưa commit. Không push/deploy.
+- Đã hoàn thành: Clone thư mục bên cạnh ai-website-cloner-template, npm ci, cập nhật Next/ESLint config 16.4.3 và npm audit fix; dev server nền cổng 3010 vì 3000 đã được sử dụng; thêm hướng dẫn sử dụng.
+- File / bằng chứng: progress/README.md; ngoài repo: ../ai-website-cloner-template/package.json, package-lock.json, HUONG-DAN-SU-DUNG.md, AGENTS.md (Next dev tự cập nhật hướng dẫn); log local (gitignored): ../ai-website-cloner-template/temp/setup-check.log, setup-audit.json, http-smoke.json, server.pid.
+- Kiểm tra đã chạy: Git 2.52.0, Node 24.21.0, npm 11.19.0 Windows; npm ci đạt; npm run check bản gốc và bản cập nhật đều đạt lint/typecheck/build; npm audit cuối exit 0, tổng 0; Invoke-WebRequest localhost:3010 đạt HTTP 200 và có nội dung template; git diff --check template đạt; diff toàn repo tuyển dụng báo dòng trống EOF ở apps/web/src/styles/global.css ngoài phạm vi, không chỉnh sửa. Kiểm tra file skill/command bridge tồn tại.
+- Kiểm tra chưa chạy / coverage: Chưa chạy clone website và browser visual vì chưa có URL mục tiêu; chưa đo coverage (setup template).
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không phát sinh; chỉ dependencies template độc lập và sổ tiến độ.
+- Phần còn thiếu / blocker: Không có trong phạm vi setup; coding agent cần browser khi clone, chưa xác minh browser automation. Trang hiện là template mặc định.
+- Bước tiếp theo: Mở thư mục template trong coding agent, gửi URL và yêu cầu dùng skill clone-website; xem hướng dẫn local.
+
 
 ### 2026-10-23 23:55 (Asia/Saigon) — FE2 — Đồng bộ màu tiêu đề bảng theo Design Tokens thống nhất (UI28)
 

@@ -9,7 +9,7 @@ effort: ''
 
 ## Overview
 
-Chốt phạm vi, port, request/response/event và các milestone tích hợp trước khi code phần phụ thuộc. UC01/04/05/10/11; CONTRACT-01/DB-01/BE-FOUNDATION. Đọc [blueprint](architecture-and-contracts.md), [verification](verification-matrix.md) và kế hoạch BE3 liên kết từ plan chính. Pha đã hoàn thành.
+Chốt phạm vi, port, request/response/event và các milestone tích hợp trước khi code phần phụ thuộc. UC01/04/05/10/11; CONTRACT-01/DB-01/BE-FOUNDATION. Đọc [blueprint](architecture-and-contracts.md), [verification](verification-matrix.md) và kế hoạch BE3 liên kết từ plan chính. Pha giữ IN_PROGRESS theo các gate bên dưới.
 
 ## Requirements
 
@@ -55,3 +55,13 @@ Thiếu port BE2/BE3 không cản viết pure rules nhưng cản tích hợp reg
 ## Đồng bộ kiểm chứng 23/10/2026 — Codex hỗ trợ BE1
 
 Contract/type/fixture có source và test; còn registry BE3, scope discovery và review liên nhóm. Pha giữ IN_PROGRESS theo tiêu chí đầy đủ; không coi fake ports là runtime acceptance. Báo cáo lịch sử giữ trong sổ chung. Bằng chứng cuối xem [tiến độ](../../progress/README.md), [bàn giao](../../Docs/be1-handoff.md) và artifact local `reports/be1/final-verification.md`. Chưa commit/chưa gộp main.
+
+
+## Đồng bộ sửa lỗi 25/10/2026 — Codex hỗ trợ BE1
+
+Đã bổ sung mô tả BR15/18 và hợp đồng truy vấn UC05 trong đặc tả/hợp đồng BE2; `publishedAt` là lựa chọn sort tường minh, vẫn giữ `createdAt`. CandidateProfile/ApplicationConflict đã bind implementation BE2; baseline AppModule thật vẫn thiếu Outbox, Audit, InterviewMembership, InterviewSecurity và InterviewAdmin của BE3, đăng ký trả 503. Registry/event consumer, scope discovery/revalidation, A01–A15 và review liên nhóm chưa đủ bằng chứng.
+
+Trạng thái pha: **IN_PROGRESS**. Đợt sửa trên `fix/be1-acceptance-20261025`, chưa commit/chưa gộp main. Kết quả kiểm chứng cuối xem [sổ tiến độ](../../progress/README.md); các ghi nhận 23/10 phía trên là lịch sử, không thay kết quả mới.
+
+
+Cập nhật dữ liệu legacy cùng đợt: [`20261025073000_be1_normalize_text`](../../prisma/migrations/20261025073000_be1_normalize_text/migration.sql) chạy sau ba migration hiện có, trước API mới. Một DO nguyên tử trim đúng ECMAScript whitespace rồi NFC cho full_name/company/Job ordinary text; NULL giữ nguyên, chỉ hàng đổi tăng version/updated_at; giữ trạng thái/deadline/publication/close timestamp/password/BE2 snapshots. Overflow/constraint rollback toàn DO, không truncate; xử lý dữ liệu lỗi có kiểm soát. Publish draft legacy cũng normalize trước completeness. Chỉ migrate deploy local disposable đã chạy, không áp DB chung; regression legacy/migration và kết quả sau sửa cuối xem sổ tiến độ, pha vẫn IN_PROGRESS.

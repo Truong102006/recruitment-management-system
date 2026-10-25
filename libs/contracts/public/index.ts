@@ -360,10 +360,19 @@ export interface JobSearchQuery {
   jobType?: JobType;
   workplaceMode?: WorkplaceMode;
   skillIds?: string[];
+  skillMatchMode?: 'ANY' | 'ALL';
+  salaryMin?: number;
+  salaryMax?: number;
+  currency?: string;
+  sortBy?: 'publishedAt' | 'createdAt' | 'deadline' | 'salaryMax';
+  sortOrder?: 'asc' | 'desc';
+  /** @deprecated Legacy type field; HTTP API accepts salaryMin. */
   minSalary?: number;
+  /** @deprecated Legacy type field; HTTP API accepts salaryMax. */
   maxSalary?: number;
   page?: number;
   pageSize?: number;
+  /** @deprecated Legacy type field; HTTP API accepts sortBy and sortOrder. */
   sort?: 'createdAt' | 'deadline' | 'salary';
 }
 

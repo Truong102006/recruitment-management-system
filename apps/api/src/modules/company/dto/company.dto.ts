@@ -8,10 +8,10 @@ import {
   IsOptional,
   IsString,
   IsUUID,
-  Length,
-  MaxLength,
   Min,
+  ValidateIf,
 } from 'class-validator';
+import { CodePointLength, NormalizeText } from '../../../common/validation/text';
 import type {
   CreateCompanyRequest,
   UpdateCompanyRequest,
@@ -23,47 +23,56 @@ import type {
 } from '../../../../../../libs/contracts/public';
 
 export class CreateCompanyDto implements CreateCompanyRequest {
+  @NormalizeText()
   @IsString()
   @IsNotEmpty()
-  @Length(2, 255)
+  @CodePointLength(2, 255)
   name!: string;
 
+  @NormalizeText()
   @IsString()
   @IsNotEmpty()
-  @Length(8, 50)
+  @CodePointLength(8, 50)
   taxCode!: string;
 
+  @NormalizeText()
   @IsString()
   @IsNotEmpty()
-  @Length(5, 500)
+  @CodePointLength(5, 500)
   address!: string;
 
+  @NormalizeText()
   @IsOptional()
   @IsString()
-  @MaxLength(255)
+  @CodePointLength(0, 255)
   website?: string | null;
 
+  @NormalizeText()
   @IsOptional()
   @IsString()
   description?: string | null;
 }
 
 export class UpdateCompanyDto implements UpdateCompanyRequest {
-  @IsOptional()
+  @NormalizeText()
+  @ValidateIf((_, value) => value !== undefined)
   @IsString()
-  @Length(2, 255)
+  @CodePointLength(2, 255)
   name?: string;
 
-  @IsOptional()
+  @NormalizeText()
+  @ValidateIf((_, value) => value !== undefined)
   @IsString()
-  @Length(5, 500)
+  @CodePointLength(5, 500)
   address?: string;
 
+  @NormalizeText()
   @IsOptional()
   @IsString()
-  @MaxLength(255)
+  @CodePointLength(0, 255)
   website?: string | null;
 
+  @NormalizeText()
   @IsOptional()
   @IsString()
   description?: string | null;
@@ -74,21 +83,25 @@ export class UpdateCompanyDto implements UpdateCompanyRequest {
 }
 
 export class ResubmitCompanyDto implements ResubmitCompanyRequest {
-  @IsOptional()
+  @NormalizeText()
+  @ValidateIf((_, value) => value !== undefined)
   @IsString()
-  @Length(2, 255)
+  @CodePointLength(2, 255)
   name?: string;
 
-  @IsOptional()
+  @NormalizeText()
+  @ValidateIf((_, value) => value !== undefined)
   @IsString()
-  @Length(5, 500)
+  @CodePointLength(5, 500)
   address?: string;
 
+  @NormalizeText()
   @IsOptional()
   @IsString()
-  @MaxLength(255)
+  @CodePointLength(0, 255)
   website?: string | null;
 
+  @NormalizeText()
   @IsOptional()
   @IsString()
   description?: string | null;

@@ -78,11 +78,11 @@ export class CreateCompanyService {
         // 5. Create company with PENDING status
         const company = await this.companyRepo.create(
           {
-            name: dto.name.trim(),
+            name: CompanyRules.normalizeRequiredText(dto.name, 'name'),
             taxCode: normalizedTaxCode,
-            address: dto.address.trim(),
-            website: dto.website ? dto.website.trim() : null,
-            description: dto.description ? dto.description.trim() : null,
+            address: CompanyRules.normalizeRequiredText(dto.address, 'address'),
+            website: CompanyRules.normalizeNullableText(dto.website, 'website') ?? null,
+            description: CompanyRules.normalizeNullableText(dto.description, 'description') ?? null,
             createdBy: actor.userId,
           },
           tx,

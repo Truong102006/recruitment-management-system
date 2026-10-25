@@ -16,6 +16,8 @@ import {
 import { Prisma } from '@prisma/client';
 import { CandidateProfilePort, OutboxPort, PORTS } from '../../../../../../libs/contracts/backend';
 import { RegisterDto } from '../dto/auth.dto';
+import { normalizeText } from '../../../common/validation/text';
+import { ValidationError } from '../../../../../../libs/platform/errors/domain.error';
 
 export type RegisterResult =
   | { duplicate: true }
@@ -62,7 +64,12 @@ export class RegisterService {
     // 2. Normalization & validation
     const normalizedEmail = EmailRules.normalize(dto.email);
     PasswordRules.validate(dto.password);
-    const fullName = dto.fullName.trim().normalize('NFC');
+    const fullName = normalizeText(dto.fullName);
+    if ([...fullName].length < 1 || [...fullName].length > 120) {
+      throw new ValidationError('Full name must contain between 1 and 120 Unicode code points.', {
+        fullName: ['Length must be between 1 and 120 after trim and NFC normalization'],
+      });
+    }
 
     // 3. Hash password outside Tx (cost 10)
     const passwordHash = await bcrypt.hash(dto.password, 10);

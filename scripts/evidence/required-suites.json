@@ -1,6 +1,14 @@
 {
   "unit": [
     {
+      "file": "apps/api/src/modules/company/tests/company-text.spec.ts",
+      "suite": "UC11 BR18 company text normalization regression"
+    },
+    {
+      "file": "apps/api/src/modules/identity/tests/text-validation.spec.ts",
+      "suite": "UC04 normalized full name validation"
+    },
+    {
       "file": "apps/api/src/modules/admin/tests/admin-last-admin.spec.ts",
       "suite": "Last available ADMIN invariant"
     },
@@ -102,6 +110,14 @@
     }
   ],
   "integration": [
+    {
+      "file": "tests/integration/be1/text-normalization-migration.spec.ts",
+      "suite": "BE1 legacy text normalization migration (isolated PostgreSQL schema)"
+    },
+    {
+      "file": "tests/api/be1/public-search.spec.ts",
+      "suite": "UC05 public search publication order (real AppModule and PostgreSQL)"
+    },
     {
       "file": "tests/api/be1/admin-api.spec.ts",
       "suite": "Admin API guards and canonical PATCH"

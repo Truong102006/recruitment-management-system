@@ -143,3 +143,20 @@ Integration dùng PostgreSQL thật, kiểm constraint bằng insert sai và tes
 `user_account.email_verified_at` là nguồn xác minh bền vững; migration BE1 bổ sung phải chạy trước API mới. ACTIVE không tự đồng nghĩa verified. Candidate mutation, available OWNER/ADMIN và recovery dùng predicate này. Verify timestamp + consume token cùng Tx; cleanup token không xóa xác minh. Thứ tự khóa account UUID tăng dần trước company/job; token CAS sau account lock, TTL và deadline dùng DB clock sau chờ khóa.
 
 Admin cần PORTS.audit (AuditWriterPort.write) + PORTS.outbox; lock/suspend cần PORTS.interviewSecurity, security-cancel cần PORTS.interviewAdmin. Thiếu provider trả 503/rollback, không success noop. BE3 ghi audit/revoke intent trong opaque Tx do BE2 cấp. Security scope discovery/revalidation xuyên owner còn thiếu contract đủ; đây là gate tích hợp mở, không báo provider pass.
+
+
+## Bổ sung BE1 25/10/2026 — OWNER, văn bản và thứ tự tìm việc
+
+Thực thi trên `fix/be1-acceptance-20261025`, chưa commit/chưa gộp main; đây là sửa BR15/18 và cụ thể hóa UC05, không đổi chữ ký opaque Tx/port, cấu trúc schema hoặc nghiệp vụ Application của BE2; có migration bổ sung sửa văn bản BE1 đã ghi trước đây.
+
+- Ngoài `JobApplicationPort`/`CompanyAccessPort`, mọi lệnh Job thông thường create/update/publish/close phải kiểm company APPROVED còn OWNER khả dụng dưới cùng khóa company sau kiểm scope/membership. OWNER khả dụng dùng membership OWNER active + account ACTIVE verified; không có OWNER trả 409 và không mutation/version/event. Security lock OWNER cuối và ADMIN recovery vẫn đi workflow riêng, không bị gate ordinary chặn.
+- BE1 chuẩn hóa trim/NFC trước validation/persistence company name/address/website/description, Job title/description/location/close reason và truy vấn q/location. Đếm chính xác Unicode code point sau NFC (không bỏ variation selector); password/token giữ nguyên. Company name 2–255/address 5–500, name/address gửi null hoặc trắng trả 400, bỏ field PATCH/resubmit giữ cũ; website/description vẫn nullable. Register fullName 1–120 code point sau normalize, từ chối trắng tại DTO và service. Snapshot BE2 đã nộp vẫn bất biến theo contract; không cập nhật hồi tố dữ liệu cũ khi sửa profile/company/job.
+- Public jobs mặc định `publishedAt DESC, id DESC`. Query `sortBy` hỗ trợ `publishedAt|createdAt|deadline|salaryMax`, `sortOrder=asc|desc`, tie-break id DESC; thiếu sortOrder thì deadline ASC, còn lại DESC. Thêm lựa chọn publishedAt tường minh và giữ createdAt để client cũ chọn rõ; không đổi scope/detail/total hoặc eligibility nộp hồ sơ dưới khóa của BE2.
+- CandidateProfile/ApplicationConflict đã bind BE2 thật; AppModule baseline còn thiếu Outbox/Audit/InterviewMembership/InterviewSecurity/InterviewAdmin BE3, register trả 503. Test API có Outbox/interview double không thay kiểm nguyên tử xuyên owner/provider. Kết quả kiểm tra mới và phần còn thiếu ghi tại [sổ tiến độ](../progress/README.md).
+
+
+### Migration dữ liệu BE1 trước API mới
+
+Sau ba migration hiện có, chạy [`20261025073000_be1_normalize_text`](../prisma/migrations/20261025073000_be1_normalize_text/migration.sql) bằng migrate deploy trước khi triển khai API mới. Rollout phải tạm dừng API/worker cũ và các writer liên quan, migrate deploy, rồi khởi động phiên bản mới để writer cũ không tái ghi NFD sau backfill. Migration chỉ sửa ordinary text BE1: full_name, company name/address/website/description, Job title/description/location/close_reason; trim đúng ECMAScript whitespace rồi NFC, NULL giữ nguyên. Một câu DO nguyên tử; chỉ hàng đổi tăng version/updated_at, không đổi status/deadline/published_at/closed_at, password/session/token hoặc snapshot/application/history BE2. BE2/FE cần tải lại khi gặp version stale 409 sau migration.
+
+Lỗi overflow/constraint rollback toàn DO, không truncate; xử lý dữ liệu lỗi có kiểm soát rồi chạy lại. Publish draft legacy cũng chuẩn hóa văn bản trong transaction trước completeness/publication. Chỉ deploy trên PostgreSQL disposable local đã được thực hiện trong lượt này; không tự áp DB chung và không coi regression đang bổ sung là đã pass trước khi có kết quả trong sổ tiến độ.
