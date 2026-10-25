@@ -1,3 +1,4 @@
+import { normalizeText } from '../../../common/validation/text';
 import { ForbiddenError } from '../../../../../../libs/platform/errors/domain.error';
 import { Injectable, Inject } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
@@ -15,7 +16,7 @@ import {
   ManagedUnitOfWork,
   UNIT_OF_WORK,
 } from '../../../../../../libs/platform/database/unit-of-work';
-import { NotFoundError } from '../../../../../../libs/platform/errors/domain.error';
+import { ConflictError, NotFoundError } from '../../../../../../libs/platform/errors/domain.error';
 
 @Injectable()
 export class CreateJobService {
@@ -28,6 +29,13 @@ export class CreateJobService {
   ) {}
 
   public async createDraft(actor: Actor, dto: CreateJobDto): Promise<JobDetailDto> {
+    dto = {
+      ...dto,
+      title: typeof dto.title === 'string' ? normalizeText(dto.title) : dto.title,
+      description:
+        typeof dto.description === 'string' ? normalizeText(dto.description) : dto.description,
+      location: typeof dto.location === 'string' ? normalizeText(dto.location) : dto.location,
+    };
     // Validate draft inputs if provided
     if (dto.title !== undefined && dto.title !== null) {
       PublicationRules.validateTitle(dto.title, false);
@@ -66,6 +74,11 @@ export class CreateJobService {
         tx,
       );
       JobPolicy.assertCanManageCompanyJobs(actor, membership, company);
+      if ((await this.membershipRepo.countAvailableOwners(company.id, tx)) < 1) {
+        throw new ConflictError(
+          'Cannot manage jobs for a company without an available active owner.',
+        );
+      }
       const validSkillIds = dto.skillIds?.length
         ? await this.skillRepo.assertAllActive(dto.skillIds, tx)
         : [];

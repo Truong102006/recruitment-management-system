@@ -16,6 +16,7 @@ import {
 } from '../../../../../../libs/platform/database/unit-of-work';
 import { NotFoundError, ConflictError } from '../../../../../../libs/platform/errors/domain.error';
 import { randomUUID } from 'crypto';
+import { normalizeText } from '../../../common/validation/text';
 
 @Injectable()
 export class PublishJobService {
@@ -86,11 +87,15 @@ export class PublishJobService {
 
       // 5. Completeness validation
       const now = new Date();
+      const text = {
+        title: typeof job.title === 'string' ? normalizeText(job.title) : job.title,
+        description:
+          typeof job.description === 'string' ? normalizeText(job.description) : job.description,
+        location: typeof job.location === 'string' ? normalizeText(job.location) : job.location,
+      };
       PublicationRules.validateCompletenessForPublish(
         {
-          title: job.title,
-          description: job.description,
-          location: job.location,
+          ...text,
           headcount: job.headcount,
           jobType: job.jobType,
           workplaceMode: job.workplaceMode,
@@ -107,6 +112,7 @@ export class PublishJobService {
         jobId,
         dto.version,
         {
+          ...text,
           status: 'PUBLISHED',
           publishedAt: now,
           deadline: effectiveDeadline,

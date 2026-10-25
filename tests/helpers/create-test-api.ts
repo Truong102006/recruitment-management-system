@@ -31,7 +31,13 @@ export async function createTestApi(): Promise<INestApplication> {
   }).compile();
 
   const app = moduleFixture.createNestApplication();
-  configureApi(app);
-  await app.init();
-  return app;
+  try {
+    configureApi(app);
+    await app.init();
+    return app;
+  } catch (error) {
+    // Preserve the startup failure even if closing a partially initialized app fails.
+    await app.close().catch(() => undefined);
+    throw error;
+  }
 }

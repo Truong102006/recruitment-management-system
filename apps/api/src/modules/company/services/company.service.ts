@@ -59,16 +59,16 @@ export class CompanyService {
         companyId,
         dto.version,
         {
-          name: dto.name ? dto.name.trim() : undefined,
-          address: dto.address ? dto.address.trim() : undefined,
-          website:
-            dto.website !== undefined ? (dto.website ? dto.website.trim() : null) : undefined,
-          description:
-            dto.description !== undefined
-              ? dto.description
-                ? dto.description.trim()
-                : null
+          name:
+            dto.name !== undefined
+              ? CompanyRules.normalizeRequiredText(dto.name, 'name')
               : undefined,
+          address:
+            dto.address !== undefined
+              ? CompanyRules.normalizeRequiredText(dto.address, 'address')
+              : undefined,
+          website: CompanyRules.normalizeNullableText(dto.website, 'website'),
+          description: CompanyRules.normalizeNullableText(dto.description, 'description'),
         },
         tx,
       );
@@ -99,16 +99,16 @@ export class CompanyService {
         companyId,
         dto.version,
         {
-          name: dto.name ? dto.name.trim() : undefined,
-          address: dto.address ? dto.address.trim() : undefined,
-          website:
-            dto.website !== undefined ? (dto.website ? dto.website.trim() : null) : undefined,
-          description:
-            dto.description !== undefined
-              ? dto.description
-                ? dto.description.trim()
-                : null
+          name:
+            dto.name !== undefined
+              ? CompanyRules.normalizeRequiredText(dto.name, 'name')
               : undefined,
+          address:
+            dto.address !== undefined
+              ? CompanyRules.normalizeRequiredText(dto.address, 'address')
+              : undefined,
+          website: CompanyRules.normalizeNullableText(dto.website, 'website'),
+          description: CompanyRules.normalizeNullableText(dto.description, 'description'),
         },
         tx,
       );

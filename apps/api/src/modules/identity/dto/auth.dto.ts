@@ -1,13 +1,6 @@
-import {
-  IsEmail,
-  IsIn,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  MaxLength,
-  MinLength,
-} from 'class-validator';
+import { IsEmail, IsIn, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
 import { Transform } from 'class-transformer';
+import { CodePointLength, NormalizeText } from '../../../common/validation/text';
 
 export class RegisterDto {
   @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
@@ -19,9 +12,10 @@ export class RegisterDto {
   @MinLength(10, { message: 'password must be at least 10 characters long' })
   password!: string;
 
+  @NormalizeText()
   @IsString()
   @IsNotEmpty()
-  @MaxLength(120, { message: 'fullName must be at most 120 characters' })
+  @CodePointLength(1, 120)
   fullName!: string;
 
   @IsOptional()

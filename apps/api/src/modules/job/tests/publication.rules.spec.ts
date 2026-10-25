@@ -2,6 +2,18 @@ import { PublicationRules } from '../rules/publication.rules';
 import { ValidationError } from '../../../../../../libs/platform/errors/domain.error';
 
 describe('PublicationRules', () => {
+  it('counts normalized Unicode code points rather than UTF-16 units or graphemes', () => {
+    expect(() => PublicationRules.validateTitle('😀'.repeat(5))).toThrow(ValidationError);
+    expect(() => PublicationRules.validateTitle('😀'.repeat(150))).not.toThrow();
+    expect(() => PublicationRules.validateTitle('e\u0301'.repeat(151))).toThrow(ValidationError);
+    expect(() => PublicationRules.validateDescription('e\u0301'.repeat(99))).toThrow(
+      ValidationError,
+    );
+    expect(() => PublicationRules.validateDescription('😀'.repeat(100))).not.toThrow();
+    expect(() => PublicationRules.validateLocation('😀'.repeat(255))).not.toThrow();
+    expect(() => PublicationRules.validateTitle('a\uFE0F'.repeat(76))).toThrow(ValidationError);
+  });
+
   describe('validateTitle', () => {
     it('accepts valid title between 10 and 150 chars', () => {
       expect(() => PublicationRules.validateTitle('Software Engineer (Fullstack)')).not.toThrow();

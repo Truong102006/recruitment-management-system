@@ -31,7 +31,7 @@ describe('UC01, UC05: Jobs Publication, Search, and Skills (Phase 5 API Integrat
     app = await createTestApi();
     prisma = new PrismaClient();
     await prisma.$connect();
-  });
+  }, 30_000); // Nest/Prisma startup has its own budget; assertions retain Jest's default.
 
   beforeEach(() => {
     try {
@@ -40,8 +40,11 @@ describe('UC01, UC05: Jobs Publication, Search, and Skills (Phase 5 API Integrat
   });
 
   afterAll(async () => {
-    await app.close();
-    await prisma.$disconnect();
+    try {
+      await app?.close();
+    } finally {
+      await prisma?.$disconnect();
+    }
   });
 
   const uniqueId = Date.now();
@@ -116,6 +119,198 @@ describe('UC01, UC05: Jobs Publication, Search, and Skills (Phase 5 API Integrat
       csrfToken: sessionRes.body.data.csrfToken,
     };
   }
+
+  it.each(['locked', 'unverified', 'inactive'] as const)(
+    'blocks every job mutation with an %s sole OWNER without changing data or emitting events',
+    async (ownerState) => {
+      const recruiter = await createAndLoginUser(
+        `owner-${ownerState}-${uniqueId}@example.com`,
+        'RECRUITER',
+      );
+      const owner = await prisma.userAccount.create({
+        data: {
+          email: `owner-fixture-${ownerState}-${uniqueId}@example.com`,
+          passwordHash: 'not-a-login-fixture',
+          fullName: 'Owner fixture',
+          status: ownerState === 'locked' ? 'LOCKED' : 'ACTIVE',
+          emailVerifiedAt: ownerState === 'unverified' ? null : new Date(),
+        },
+      });
+      const company = await prisma.company.create({
+        data: {
+          name: 'Owner availability company',
+          taxCode: `OWNER-${ownerState.toUpperCase()}-${uniqueId}`,
+          address: 'Fixture address',
+          createdBy: recruiter.userId,
+          approvalStatus: 'APPROVED',
+          memberships: {
+            create: [
+              { userId: recruiter.userId, role: 'RECRUITER', permissions: ['RECRUITER'] },
+              {
+                userId: owner.id,
+                role: 'OWNER',
+                permissions: ['RECRUITER'],
+                active: ownerState !== 'inactive',
+              },
+            ],
+          },
+        },
+      });
+      const draft = await prisma.jobPost.create({
+        data: {
+          companyId: company.id,
+          createdBy: recruiter.userId,
+          title: 'Existing draft title',
+          status: 'DRAFT',
+        },
+      });
+      const outbox = app.get<{ append: (...args: any[]) => Promise<void> }>(PORTS.outbox);
+      const events = jest.spyOn(outbox, 'append');
+      const server = app.getHttpServer();
+      const mutate = (method: 'post' | 'patch', path: string) => {
+        const api = request(server);
+        return api[method](path)
+          .set('Origin', 'http://127.0.0.1:5173')
+          .set('Cookie', recruiter.cookie)
+          .set('X-CSRF-Token', recruiter.csrfToken);
+      };
+      try {
+        for (const res of [
+          await mutate('post', '/api/jobs').send({
+            companyId: company.id,
+            title: 'New draft title',
+          }),
+          await mutate('patch', `/api/jobs/${draft.id}`).send({
+            version: 0,
+            title: 'Changed draft title',
+          }),
+          await mutate('post', `/api/jobs/${draft.id}/publish`).send({ version: 0 }),
+          await mutate('post', `/api/jobs/${draft.id}/close`).send({
+            version: 0,
+            reason: 'Closing fixture',
+          }),
+        ])
+          expect(res.status).toBe(409);
+        expect(await prisma.jobPost.count({ where: { companyId: company.id } })).toBe(1);
+        expect(await prisma.jobPost.findUnique({ where: { id: draft.id } })).toMatchObject({
+          title: draft.title,
+          version: 0,
+          status: 'DRAFT',
+          closedAt: null,
+          publishedAt: null,
+        });
+        expect(events).not.toHaveBeenCalled();
+        // Restoring an available OWNER unblocks mutations without recreating the company.
+        await prisma.userAccount.update({
+          where: { id: owner.id },
+          data: { status: 'ACTIVE', emailVerifiedAt: new Date() },
+        });
+        await prisma.companyMembership.update({
+          where: { companyId_userId: { companyId: company.id, userId: owner.id } },
+          data: { active: true },
+        });
+        expect(
+          (
+            await mutate('post', '/api/jobs').send({
+              companyId: company.id,
+              title: 'Recovery draft title',
+            })
+          ).status,
+        ).toBe(201);
+      } finally {
+        events.mockRestore();
+      }
+    },
+  );
+
+  it('normalizes create/update text before Unicode code-point boundaries at the HTTP and DB layers', async () => {
+    const recruiter = await createAndLoginUser(`unicode-job-${uniqueId}@example.com`, 'RECRUITER');
+    const company = await prisma.company.create({
+      data: {
+        name: 'Unicode company',
+        taxCode: `UNICODE-${uniqueId}`,
+        address: 'Fixture address',
+        createdBy: recruiter.userId,
+        approvalStatus: 'APPROVED',
+        memberships: {
+          create: { userId: recruiter.userId, role: 'OWNER', permissions: ['RECRUITER'] },
+        },
+      },
+    });
+    const server = app.getHttpServer();
+    const mutate = (method: 'post' | 'patch', path: string) => {
+      const api = request(server);
+      return api[method](path)
+        .set('Origin', 'http://127.0.0.1:5173')
+        .set('Cookie', recruiter.cookie)
+        .set('X-CSRF-Token', recruiter.csrfToken);
+    };
+    for (const title of ['😀'.repeat(5), '😀'.repeat(151), 'a\uFE0F'.repeat(76)]) {
+      expect(
+        (await mutate('post', '/api/jobs').send({ companyId: company.id, title })).status,
+      ).toBe(400);
+    }
+    const created = await mutate('post', '/api/jobs').send({
+      companyId: company.id,
+      title: `  ${'😀'.repeat(150)}  `,
+      description: `  ${'e\u0301'.repeat(100)}  `,
+      location: '  HCM  ',
+    });
+    expect(created.status).toBe(201);
+    const jobId = created.body.data.id;
+    expect(await prisma.jobPost.findUnique({ where: { id: jobId } })).toMatchObject({
+      title: '😀'.repeat(150),
+      description: 'é'.repeat(100),
+      location: 'HCM',
+      version: 0,
+    });
+    const updated = await mutate('patch', `/api/jobs/${jobId}`).send({
+      version: 0,
+      title: `  ${'e\u0301'.repeat(150)}  `,
+      description: '😀'.repeat(100),
+      location: '  Đa\u0300 Na\u0306\u0303ng  ',
+    });
+    expect(updated.status).toBe(200);
+    expect(await prisma.jobPost.findUnique({ where: { id: jobId } })).toMatchObject({
+      title: 'é'.repeat(150),
+      description: '😀'.repeat(100),
+      location: 'Đà Nẵng',
+      version: 1,
+    });
+    const closed = await mutate('post', `/api/jobs/${jobId}/close`).send({
+      version: 1,
+      reason: '  Đa\u0303 tuye\u0302\u0309n  ',
+    });
+    expect(closed.status).toBe(200);
+    expect((await prisma.jobPost.findUniqueOrThrow({ where: { id: jobId } })).closeReason).toBe(
+      'Đã tuyển',
+    );
+
+    // Pre-fix data can still exist in an older draft when publication happens.
+    const legacy = await prisma.jobPost.create({
+      data: {
+        companyId: company.id,
+        createdBy: recruiter.userId,
+        title: `  ${'e\u0301'.repeat(10)}  `,
+        description: `  ${'e\u0301'.repeat(100)}  `,
+        location: '  Đa\u0300 Na\u0306\u0303ng  ',
+        headcount: 1,
+        jobType: 'FULL_TIME',
+        workplaceMode: 'ON_SITE',
+        deadline: new Date(Date.now() + 86_400_000),
+        status: 'DRAFT',
+      },
+    });
+    const publication = await mutate('post', `/api/jobs/${legacy.id}/publish`).send({ version: 0 });
+    expect(publication.status).toBe(200);
+    expect(await prisma.jobPost.findUniqueOrThrow({ where: { id: legacy.id } })).toMatchObject({
+      title: 'é'.repeat(10),
+      description: 'é'.repeat(100),
+      location: 'Đà Nẵng',
+      status: 'PUBLISHED',
+      version: 1,
+    });
+  });
 
   it('GET /api/skills returns active skills catalog', async () => {
     // Seed skills if not exist

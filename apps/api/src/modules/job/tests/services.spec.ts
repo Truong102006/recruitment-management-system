@@ -144,6 +144,78 @@ describe('Job Services Unit Tests', () => {
   });
 
   describe('PublishJobService', () => {
+    it.each([100, 99])(
+      'normalizes legacy draft text before publication, validating description of %i code points',
+      async (descriptionLength) => {
+        const legacyJob = {
+          id: 'j-legacy',
+          companyId: 'c-1',
+          status: 'DRAFT',
+          version: 0,
+          title: `  ${'e\u0301'.repeat(10)}  `,
+          description: `  ${'e\u0301'.repeat(descriptionLength)}  `,
+          location: '  Đa\u0300 Na\u0306\u0303ng  ',
+          headcount: 1,
+          jobType: 'FULL_TIME',
+          workplaceMode: 'ON_SITE',
+          deadline: new Date(Date.now() + 86_400_000),
+          salaryMin: null,
+          salaryMax: null,
+          currency: null,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          skills: [],
+        };
+        const jobs: any = {
+          findById: jest.fn().mockResolvedValue(legacyJob),
+          findByIdWithLock: jest.fn().mockResolvedValue(legacyJob),
+          update: jest.fn().mockImplementation(async (_id, _version, data) => ({
+            ...legacyJob,
+            ...data,
+            version: 1,
+          })),
+        };
+        const companies: any = {
+          findByIdWithLock: jest
+            .fn()
+            .mockResolvedValue({ id: 'c-1', name: 'Company', approvalStatus: 'APPROVED' }),
+        };
+        const memberships: any = {
+          findUniqueWithLock: jest.fn().mockResolvedValue({ role: 'OWNER', active: true }),
+        };
+        const events = { append: jest.fn() };
+        const service = publishJobService(jobs, companies, memberships, mockUow, events);
+        if (descriptionLength === 99) {
+          await expect(service.publishJob(actor, legacyJob.id, { version: 0 })).rejects.toThrow(
+            ValidationError,
+          );
+          expect(jobs.update).not.toHaveBeenCalled();
+          expect(events.append).not.toHaveBeenCalled();
+          return;
+        }
+        const result = await service.publishJob(actor, legacyJob.id, { version: 0 });
+        expect(jobs.update).toHaveBeenCalledWith(
+          legacyJob.id,
+          0,
+          expect.objectContaining({
+            title: 'é'.repeat(10),
+            description: 'é'.repeat(100),
+            location: 'Đà Nẵng',
+            status: 'PUBLISHED',
+            publishedAt: expect.any(Date),
+          }),
+          'mock-tx',
+        );
+        expect(result).toMatchObject({
+          title: 'é'.repeat(10),
+          description: 'é'.repeat(100),
+          location: 'Đà Nẵng',
+          version: 1,
+        });
+        expect(events.append).toHaveBeenCalledTimes(1);
+      },
+    );
+
     it('publishes valid draft job and emits outbox event', async () => {
       const mockJobRepo: any = {
         findById: jest.fn().mockResolvedValue({ id: 'j-1', companyId: 'c-1' }),
@@ -330,6 +402,7 @@ describe('Job Services Unit Tests', () => {
 
 function createJobService(...args: any[]): CreateJobService {
   const memberships = args[3];
+  memberships.countAvailableOwners ??= jest.fn().mockResolvedValue(1);
   memberships.lockRecoveryAccount ??= jest.fn().mockResolvedValue(true);
   memberships.findUniqueWithLock ??= memberships.findUnique;
   const companies = args[2];
@@ -341,6 +414,7 @@ function createJobService(...args: any[]): CreateJobService {
 
 function updateJobService(...args: any[]): UpdateJobService {
   const memberships = args[3];
+  memberships.countAvailableOwners ??= jest.fn().mockResolvedValue(1);
   memberships.lockRecoveryAccount ??= jest.fn().mockResolvedValue(true);
   memberships.findUniqueWithLock ??= memberships.findUnique;
   const companies = args[2];
@@ -352,6 +426,7 @@ function updateJobService(...args: any[]): UpdateJobService {
 
 function publishJobService(...args: any[]): PublishJobService {
   const memberships = args[2];
+  memberships.countAvailableOwners ??= jest.fn().mockResolvedValue(1);
   memberships.lockRecoveryAccount ??= jest.fn().mockResolvedValue(true);
   memberships.findUniqueWithLock ??= memberships.findUnique;
   const companies = args[1];
@@ -363,6 +438,7 @@ function publishJobService(...args: any[]): PublishJobService {
 
 function closeJobService(...args: any[]): CloseJobService {
   const memberships = args[2];
+  memberships.countAvailableOwners ??= jest.fn().mockResolvedValue(1);
   memberships.lockRecoveryAccount ??= jest.fn().mockResolvedValue(true);
   memberships.findUniqueWithLock ??= memberships.findUnique;
   const companies = args[1];

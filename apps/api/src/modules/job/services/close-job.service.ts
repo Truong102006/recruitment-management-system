@@ -1,3 +1,4 @@
+import { normalizeText } from '../../../common/validation/text';
 import { ForbiddenError } from '../../../../../../libs/platform/errors/domain.error';
 import { ServiceUnavailableError } from '../../../../../../libs/platform/errors/domain.error';
 import { Injectable, Optional, Inject } from '@nestjs/common';
@@ -31,7 +32,8 @@ export class CloseJobService {
   ) {}
 
   public async closeJob(actor: Actor, jobId: string, dto: CloseJobDto): Promise<JobDetailDto> {
-    if (!dto.reason || dto.reason.trim().length === 0) {
+    const reason = normalizeText(dto.reason || '');
+    if (!reason || [...reason].length > 500) {
       throw new ValidationError('Close reason is required.', {
         reason: ['Close reason cannot be empty'],
       });
@@ -68,6 +70,11 @@ export class CloseJobService {
         tx,
       );
       JobPolicy.assertCanManageCompanyJobs(actor, membership, company);
+      if ((await this.membershipRepo.countAvailableOwners(company.id, tx)) < 1) {
+        throw new ConflictError(
+          'Cannot manage jobs for a company without an available active owner.',
+        );
+      }
 
       // 4. Version check
       if (job.version !== dto.version) {
@@ -85,7 +92,7 @@ export class CloseJobService {
       const now = new Date();
 
       // 5. Update to CLOSED
-      const updated = await this.jobRepo.closeJob(jobId, dto.version, dto.reason.trim(), now, tx);
+      const updated = await this.jobRepo.closeJob(jobId, dto.version, reason, now, tx);
 
       if (!updated) {
         throw new NotFoundError(`Job post '${jobId}' not found.`);
@@ -104,7 +111,7 @@ export class CloseJobService {
             payload: {
               jobId,
               companyId: job.companyId,
-              reason: dto.reason.trim(),
+              reason: reason,
             },
           },
           tx,

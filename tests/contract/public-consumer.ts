@@ -9,9 +9,18 @@ import {
   type SubmitApplicationRequest,
   type UpdateCandidateProfileRequest,
   type WithdrawApplicationRequest,
+  type JobSearchQuery,
 } from '../../libs/contracts/public';
 
 export const commands = {
+  jobSearch: {
+    sortBy: 'publishedAt',
+    sortOrder: 'desc',
+    salaryMin: 1000,
+    salaryMax: 2000,
+    currency: 'USD',
+    skillMatchMode: 'ALL',
+  } satisfies JobSearchQuery,
   submit: { cvId: '00000000-0000-4000-8000-000000000001' } satisfies SubmitApplicationRequest,
   review: { status: 'SCREENING', version: 0 } satisfies ReviewApplicationRequest,
   withdraw: { version: 0 } satisfies WithdrawApplicationRequest,
@@ -29,4 +38,7 @@ const forbiddenReview: ReviewApplicationRequest = { status: 'HIRED', version: 0 
 // @ts-expect-error candidate DTO has no internal reason
 type ForbiddenField = CandidateApplicationDto['reason'];
 void forbiddenReview;
+// @ts-expect-error public search only accepts the runtime sort allowlist
+const forbiddenJobSort: JobSearchQuery = { sortBy: 'internalScore' };
+void forbiddenJobSort;
 export type { ForbiddenField };

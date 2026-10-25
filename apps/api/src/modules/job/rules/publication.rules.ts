@@ -1,3 +1,4 @@
+import { normalizeText } from '../../../common/validation/text';
 import { ValidationError } from '../../../../../../libs/platform/errors/domain.error';
 import { SalaryRules } from './salary.rules';
 import { JobType, WorkplaceMode } from '../dto/job.dto';
@@ -39,8 +40,8 @@ export class PublicationRules {
       return;
     }
 
-    const trimmed = title.trim();
-    if (trimmed.length < 10 || trimmed.length > 150) {
+    const length = [...normalizeText(title)].length;
+    if (length < 10 || length > 150) {
       throw new ValidationError('Job title must be between 10 and 150 characters.', {
         title: ['Length must be between 10 and 150 characters'],
       });
@@ -57,8 +58,8 @@ export class PublicationRules {
       return;
     }
 
-    const trimmed = description.trim();
-    if (trimmed.length < 100 || trimmed.length > 10000) {
+    const length = [...normalizeText(description)].length;
+    if (length < 100 || length > 10000) {
       throw new ValidationError('Job description must be between 100 and 10,000 characters.', {
         description: ['Length must be between 100 and 10,000 characters'],
       });
@@ -75,8 +76,8 @@ export class PublicationRules {
       return;
     }
 
-    const trimmed = location.trim();
-    if (trimmed.length < 1 || trimmed.length > 255) {
+    const length = [...normalizeText(location)].length;
+    if (length < 1 || length > 255) {
       throw new ValidationError('Job location must be between 1 and 255 characters.', {
         location: ['Length must be between 1 and 255 characters'],
       });

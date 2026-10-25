@@ -1,4 +1,5 @@
-﻿import { Transform, Type } from 'class-transformer';
+import { CodePointLength, NormalizeText } from '../../../common/validation/text';
+import { Transform, Type } from 'class-transformer';
 import {
   ArrayMaxSize,
   ArrayUnique,
@@ -12,7 +13,6 @@ import {
   IsUUID,
   Matches,
   Max,
-  MaxLength,
   Min,
   ValidateIf,
 } from 'class-validator';
@@ -30,9 +30,21 @@ export type JobStatus = 'DRAFT' | 'PUBLISHED' | 'CLOSED';
 
 export class CreateJobDto {
   @IsUUID('4') companyId!: string;
-  @ValidateIf((_, v) => v !== undefined) @IsString() @MaxLength(150) title?: string;
-  @ValidateIf((_, v) => v !== undefined) @IsString() @MaxLength(10000) description?: string;
-  @ValidateIf((_, v) => v !== undefined) @IsString() @MaxLength(255) location?: string;
+  @ValidateIf((_, v) => v !== undefined)
+  @IsString()
+  @NormalizeText()
+  @CodePointLength(0, 150)
+  title?: string;
+  @ValidateIf((_, v) => v !== undefined)
+  @IsString()
+  @NormalizeText()
+  @CodePointLength(0, 10000)
+  description?: string;
+  @ValidateIf((_, v) => v !== undefined)
+  @IsString()
+  @NormalizeText()
+  @CodePointLength(0, 255)
+  location?: string;
   @ValidateIf((_, v) => v !== undefined) @IsInt() @Min(1) @Max(100) headcount?: number;
   @ValidateIf((_, v) => v !== undefined)
   @IsIn(['FULL_TIME', 'PART_TIME', 'CONTRACT', 'INTERNSHIP'])
@@ -44,7 +56,7 @@ export class CreateJobDto {
     number | null;
   @IsOptional() @IsNumber({ maxDecimalPlaces: 2 }) @Min(0) @Max(9999999999999.99) salaryMax?:
     number | null;
-  @IsOptional() @IsString() @MaxLength(10) currency?: string | null;
+  @IsOptional() @IsString() @NormalizeText() @CodePointLength(0, 10) currency?: string | null;
   @ValidateIf((_, v) => v !== undefined)
   @IsISO8601({ strict: true })
   @Matches(/T.*(?:Z|[+-][0-9]{2}:[0-9]{2})$/)
@@ -58,9 +70,21 @@ export class CreateJobDto {
 }
 export class UpdateJobDto {
   @IsInt() @Min(0) version!: number;
-  @ValidateIf((_, v) => v !== undefined) @IsString() @MaxLength(150) title?: string;
-  @ValidateIf((_, v) => v !== undefined) @IsString() @MaxLength(10000) description?: string;
-  @ValidateIf((_, v) => v !== undefined) @IsString() @MaxLength(255) location?: string;
+  @ValidateIf((_, v) => v !== undefined)
+  @IsString()
+  @NormalizeText()
+  @CodePointLength(0, 150)
+  title?: string;
+  @ValidateIf((_, v) => v !== undefined)
+  @IsString()
+  @NormalizeText()
+  @CodePointLength(0, 10000)
+  description?: string;
+  @ValidateIf((_, v) => v !== undefined)
+  @IsString()
+  @NormalizeText()
+  @CodePointLength(0, 255)
+  location?: string;
   @ValidateIf((_, v) => v !== undefined) @IsInt() @Min(1) @Max(100) headcount?: number;
   @ValidateIf((_, v) => v !== undefined)
   @IsIn(['FULL_TIME', 'PART_TIME', 'CONTRACT', 'INTERNSHIP'])
@@ -72,7 +96,7 @@ export class UpdateJobDto {
     number | null;
   @IsOptional() @IsNumber({ maxDecimalPlaces: 2 }) @Min(0) @Max(9999999999999.99) salaryMax?:
     number | null;
-  @IsOptional() @IsString() @MaxLength(10) currency?: string | null;
+  @IsOptional() @IsString() @NormalizeText() @CodePointLength(0, 10) currency?: string | null;
   @ValidateIf((_, v) => v !== undefined)
   @IsISO8601({ strict: true })
   @Matches(/T.*(?:Z|[+-][0-9]{2}:[0-9]{2})$/)
@@ -93,15 +117,15 @@ export class PublishJobDto {
 }
 export class CloseJobDto {
   @IsInt() @Min(0) version!: number;
-  @IsString() @MaxLength(500) reason!: string;
+  @IsString() @NormalizeText() @CodePointLength(0, 500) reason!: string;
 }
 export class JobPageQueryDto {
   @IsOptional() @Type(() => Number) @IsInt() @Min(1) page?: number;
   @IsOptional() @Type(() => Number) @IsInt() @Min(1) @Max(50) pageSize?: number;
 }
 export class JobSearchQueryDto extends JobPageQueryDto {
-  @IsOptional() @IsString() @MaxLength(200) q?: string;
-  @IsOptional() @IsString() @MaxLength(255) location?: string;
+  @IsOptional() @IsString() @NormalizeText() @CodePointLength(0, 200) q?: string;
+  @IsOptional() @IsString() @NormalizeText() @CodePointLength(0, 255) location?: string;
   @IsOptional() @IsIn(['FULL_TIME', 'PART_TIME', 'CONTRACT', 'INTERNSHIP']) jobType?: JobType;
   @IsOptional() @IsIn(['ON_SITE', 'HYBRID', 'REMOTE']) workplaceMode?: WorkplaceMode;
   @IsOptional()
@@ -114,9 +138,9 @@ export class JobSearchQueryDto extends JobPageQueryDto {
   @IsOptional() @IsIn(['ANY', 'ALL']) skillMatchMode?: 'ANY' | 'ALL';
   @IsOptional() @Type(() => Number) @IsNumber({ maxDecimalPlaces: 2 }) @Min(0) salaryMin?: number;
   @IsOptional() @Type(() => Number) @IsNumber({ maxDecimalPlaces: 2 }) @Min(0) salaryMax?: number;
-  @IsOptional() @IsString() @MaxLength(10) currency?: string;
-  @IsOptional() @IsIn(['createdAt', 'deadline', 'salaryMax']) sortBy?:
-    'createdAt' | 'deadline' | 'salaryMax';
+  @IsOptional() @IsString() @NormalizeText() @CodePointLength(0, 10) currency?: string;
+  @IsOptional() @IsIn(['publishedAt', 'createdAt', 'deadline', 'salaryMax']) sortBy?:
+    'publishedAt' | 'createdAt' | 'deadline' | 'salaryMax';
   @IsOptional() @IsIn(['asc', 'desc']) sortOrder?: 'asc' | 'desc';
 }
 

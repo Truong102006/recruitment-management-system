@@ -3,6 +3,7 @@ import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../../common/prisma/prisma.service';
 import { JobSearchQueryDto, JobSummaryDto, JobDetailDto, SkillDto } from '../dto/job.dto';
 import { JobMapper } from '../mappers/job.mapper';
+import { normalizeText } from '../../../common/validation/text';
 
 @Injectable()
 export class JobQueryRepository {
@@ -64,7 +65,7 @@ export class JobQueryRepository {
 
     // Keyword search (q)
     if (query.q && query.q.trim().length > 0) {
-      const q = query.q.trim();
+      const q = normalizeText(query.q);
       where.OR = [
         { title: { contains: q, mode: 'insensitive' } },
         { description: { contains: q, mode: 'insensitive' } },
@@ -74,7 +75,7 @@ export class JobQueryRepository {
 
     // Location filter
     if (query.location && query.location.trim().length > 0) {
-      where.location = { contains: query.location.trim(), mode: 'insensitive' };
+      where.location = { contains: normalizeText(query.location), mode: 'insensitive' };
     }
 
     // JobType filter
@@ -89,7 +90,7 @@ export class JobQueryRepository {
 
     // Currency filter
     if (query.currency) {
-      where.currency = query.currency.toUpperCase();
+      where.currency = normalizeText(query.currency).toUpperCase();
     }
 
     // Salary range filters
@@ -121,8 +122,13 @@ export class JobQueryRepository {
     }
 
     // Order by
-    let orderBy: Prisma.JobPostOrderByWithRelationInput[] = [{ createdAt: 'desc' }, { id: 'desc' }];
-    if (query.sortBy === 'deadline') {
+    let orderBy: Prisma.JobPostOrderByWithRelationInput[] = [
+      { publishedAt: query.sortOrder === 'asc' ? 'asc' : 'desc' },
+      { id: 'desc' },
+    ];
+    if (query.sortBy === 'createdAt') {
+      orderBy = [{ createdAt: query.sortOrder === 'asc' ? 'asc' : 'desc' }, { id: 'desc' }];
+    } else if (query.sortBy === 'deadline') {
       orderBy = [{ deadline: query.sortOrder === 'desc' ? 'desc' : 'asc' }, { id: 'desc' }];
     } else if (query.sortBy === 'salaryMax') {
       orderBy = [{ salaryMax: query.sortOrder === 'asc' ? 'asc' : 'desc' }, { id: 'desc' }];

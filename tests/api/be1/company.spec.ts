@@ -82,6 +82,91 @@ describe('UC11: Company, Memberships, and Owner Operations (Phase 4)', () => {
     };
   }
 
+  it('BR18 rejects blank/null company fields without writes and persists NFC across create/update/resubmit', async () => {
+    const owner = await createAndLoginUser(`company-text-${uniqueId}@example.com`, 'RECRUITER');
+    const api = request(app.getHttpServer());
+    const mutate = (method: 'post' | 'patch', path: string) =>
+      api[method](path)
+        .set('Origin', 'http://127.0.0.1:5173')
+        .set('Cookie', owner.cookie)
+        .set('X-CSRF-Token', owner.csrfToken);
+    const taxCode = `TXT-${uniqueId}`;
+    const invalidCreate = await mutate('post', '/api/companies').send({
+      name: '  ',
+      address: 'Valid address',
+      taxCode,
+    });
+    expect(invalidCreate.status).toBe(400);
+    expect(await prisma.company.count({ where: { taxCode } })).toBe(0);
+
+    const created = await mutate('post', '/api/companies').send({
+      name: '  Cafe\u0301 company  ',
+      address: '  Le\u0301 Loi street  ',
+      taxCode,
+      description: '  Cafe\u0301  ',
+    });
+    expect(created.status).toBe(201);
+    const companyId = created.body.data.id as string;
+    const initial = await prisma.company.findUniqueOrThrow({ where: { id: companyId } });
+    expect(initial).toMatchObject({
+      name: 'Café company',
+      address: 'Lé Loi street',
+      description: 'Café',
+      version: 0,
+    });
+
+    for (const fields of [
+      { name: '  ' },
+      { address: '     ' },
+      { name: null },
+      { address: null },
+    ]) {
+      const rejected = await mutate('patch', `/api/companies/${companyId}`).send({
+        version: 0,
+        ...fields,
+      });
+      expect(rejected.status).toBe(400);
+      expect(await prisma.company.findUniqueOrThrow({ where: { id: companyId } })).toEqual(initial);
+    }
+
+    const updated = await mutate('patch', `/api/companies/${companyId}`).send({
+      version: 0,
+      name: `  ${'e\u0301'.repeat(255)}  `,
+      website: null,
+    });
+    expect(updated.status).toBe(200);
+    expect(updated.body.data).toMatchObject({
+      name: 'é'.repeat(255),
+      address: initial.address,
+      description: 'Café',
+      website: null,
+      version: 1,
+    });
+
+    await prisma.company.update({ where: { id: companyId }, data: { approvalStatus: 'REJECTED' } });
+    const beforeResubmit = await prisma.company.findUniqueOrThrow({ where: { id: companyId } });
+    const invalidResubmit = await mutate('post', `/api/companies/${companyId}/resubmit`).send({
+      version: 1,
+      address: '     ',
+    });
+    expect(invalidResubmit.status).toBe(400);
+    expect(await prisma.company.findUniqueOrThrow({ where: { id: companyId } })).toEqual(
+      beforeResubmit,
+    );
+    const resubmitted = await mutate('post', `/api/companies/${companyId}/resubmit`).send({
+      version: 1,
+      address: '  Le\u0301 Loi street  ',
+      description: null,
+    });
+    expect(resubmitted.status).toBe(200);
+    expect(resubmitted.body.data).toMatchObject({
+      address: 'Lé Loi street',
+      description: null,
+      approvalStatus: 'PENDING',
+      version: 2,
+    });
+  });
+
   describe('POST /api/companies (Company Registration)', () => {
     it('creates a new company in PENDING status with creator as OWNER', async () => {
       const recruiter = await createAndLoginUser(
