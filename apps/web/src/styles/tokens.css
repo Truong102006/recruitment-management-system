@@ -48,6 +48,76 @@
   --font-b: 'Be Vietnam Pro', 'Segoe UI', system-ui, sans-serif;
   --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   color-scheme: light;
+
+  /* FE1 Compatibility & Semantic Tokens */
+  --color-primary: var(--blue);
+  --color-primary-hover: var(--blue-d);
+  --color-primary-foreground: #ffffff;
+  --color-secondary: var(--soft2);
+  --color-secondary-hover: var(--sel);
+  --color-secondary-foreground: var(--ink);
+  --color-background: var(--bg);
+  --color-surface: var(--card);
+  --color-foreground: var(--ink);
+  --color-muted: var(--muted);
+  --color-muted-bg: var(--soft);
+  --color-muted-foreground: var(--faint);
+  --color-border: var(--line);
+  --color-border-hover: var(--line2);
+  --color-border-focus: var(--blue);
+  --color-destructive: var(--red);
+  --color-destructive-bg: rgba(238, 75, 43, 0.1);
+  --color-destructive-foreground: #ffffff;
+  --color-warning: var(--amber);
+  --color-warning-bg: rgba(246, 166, 35, 0.12);
+  --color-warning-foreground: #b45309;
+  --color-success: var(--green);
+  --color-success-bg: rgba(31, 169, 113, 0.12);
+  --color-success-foreground: #14532d;
+  --color-info: var(--blue);
+  --color-info-bg: var(--tint-bg);
+  --color-info-foreground: var(--tint-fg);
+
+  --font-family-base: var(--font-b);
+  --font-family-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+
+  --line-height-tight: 1.25;
+  --line-height-base: 1.5;
+  --line-height-loose: 1.75;
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-full: 9999px;
+
+  --shadow-sm: var(--sh-s);
+  --shadow-md: var(--sh-m);
+  --shadow-lg: var(--sh-t);
+
+  --container-max-width: 1280px;
 }
 
 @media (prefers-color-scheme: dark) {

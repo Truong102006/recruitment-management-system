@@ -11,16 +11,21 @@ export interface AuthContextValue {
   logout: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextValue | null>(null);
+export const AuthContext = createContext<AuthContextValue | null>(null);
 
 export interface AuthProviderProps {
   children: React.ReactNode;
   initialSession?: SessionDto | null;
+  skipAutoFetch?: boolean;
 }
 
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children, initialSession = null }) => {
+export const AuthProvider: React.FC<AuthProviderProps> = ({
+  children,
+  initialSession = null,
+  skipAutoFetch = false,
+}) => {
   const [session, setSession] = useState<SessionDto | null>(initialSession);
-  const [isLoading, setIsLoading] = useState<boolean>(!initialSession);
+  const [isLoading, setIsLoading] = useState<boolean>(!initialSession && !skipAutoFetch);
 
   // Sync CSRF token with apiClient
   useEffect(() => {
@@ -64,10 +69,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children, initialSes
   );
 
   useEffect(() => {
-    if (!initialSession) {
+    if (!initialSession && !skipAutoFetch) {
       void refreshSession();
     }
-  }, [initialSession, refreshSession]);
+  }, [initialSession, skipAutoFetch, refreshSession]);
 
   const value = useMemo<AuthContextValue>(
     () => ({
@@ -90,4 +95,22 @@ export function useAuthContext(): AuthContextValue {
     throw new Error('useAuthContext must be used within an AuthProvider');
   }
   return context;
+}
+
+export interface UseAuthResult extends AuthContextValue {
+  actor: SessionDto | null;
+  status: 'loading' | 'authenticated' | 'unauthenticated';
+}
+
+export function useAuth(): UseAuthResult {
+  const context = useAuthContext();
+  return {
+    ...context,
+    actor: context.session,
+    status: context.isLoading
+      ? 'loading'
+      : context.isAuthenticated
+        ? 'authenticated'
+        : 'unauthenticated',
+  };
 }
