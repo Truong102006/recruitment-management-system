@@ -34,6 +34,8 @@
 
 ## Tổng quan hiện tại
 
+**25/10/2026 15:20 (Asia/Saigon) — SHIP-BE1-FIX-01: DONE (phạm vi Git)** — Truong102006 / Codex đã tạo nhánh `pr/be1-acceptance-fixes-20261025`, commit và push toàn bộ thay đổi phù hợp, mở [PR #10](https://github.com/Truong102006/recruitment-management-system/pull/10) vào main. PR đang OPEN, CI đang chạy; chưa gộp main. Toàn BE1 vẫn IN_PROGRESS.
+
 **25/10/2026 14:26 — BE1-FIX-01: DONE (phạm vi sửa F02–F06), toàn BE1 IN_PROGRESS** — Codex trên `fix/be1-acceptance-20261025`:368unit/126integration/25contract (đã nằm trong126)/124web đạt; coverage BE cấu hình91,61% dòng/77,56% nhánh; lint/type/build/migration/evidence đạt. Probe gốc6/8 đạt, chỉ còn F01 thiếu5 provider BE3/register503. Có data migration chuẩn hóa legacy và3 test schema cô lập; chỉ deploy DB test. [Báo cáo mới](../plans/261022-1711-be1-complete-implementation/reports/261025-be1-fixes-verification.md). Chưa commit/chưa gộp main; không đổi trạng thái năm UC/tám pha sang DONE.
 
 **25/10/2026 13:58 — SYNC-LOCAL-01: DONE** — Codex thực hiện yêu cầu ghi đè source local bằng GitHub mới nhất, giữ ba file audit/tiến độ. Fetch xác nhận main/origin/main cùng `94d84c231da68428a55e5a25ce13229785c85043`; reset tracked source và xóa untracked code, phục hồi ba file với SHA256 khớp backup. Chỉ ba file được giữ còn khác origin/main; không commit/push. Các kết quả audit bên dưới là snapshot trước đồng bộ, chưa chạy lại test trên source đã khôi phục.
@@ -131,7 +133,7 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 | BE2-PORT-10   | Port hồ sơ cho BE1/BE3 / BE2 + Codex                                              | DONE        | Application/Result/Conflict port cùng transaction, history/outbox/idempotency lên main tại `0e1c489`; BE3 runtime còn thiếu.                                                                                      |
 | BE2-API-11    | API/DTO và binding Nest / BE2 + Codex                                             | IN_PROGRESS | Route profile/tin lưu/ứng tuyển và BE1 guard lên main tại `c9c078e`; DI/tsc/contract đạt. CV API và HTTP nghiệm thu còn thiếu.                                                                                    |
 | BE2-QA-12     | Migration và kiểm thử tích hợp / BE2 + Codex                                      | IN_PROGRESS | Migration và DB adapter test lên main tại `602d1d6`; CI PostgreSQL/quality-gate đạt. Còn HTTP/BE3/CV provider nghiệm thu.                                                                                         |
-| SHIP-BE1-FIX-01 | Xu?t b?n b?n s?a BE1 / Truong102006 + Codex | DONE | Nh?nh `pr/be1-acceptance-fixes-20261025` ?? push; [PR #10](https://github.com/Truong102006/recruitment-management-system/pull/10) OPEN v?o main; CI ?ang ch?y, ch?a g?p main. DONE ch? ph?m vi Git. |
+| SHIP-BE1-FIX-01 | Xuất bản bản sửa BE1 / Truong102006 + Codex | DONE | Nhánh `pr/be1-acceptance-fixes-20261025` đã push; [PR #10](https://github.com/Truong102006/recruitment-management-system/pull/10) OPEN vào main; CI đang chạy, chưa gộp main. DONE chỉ phạm vi Git. |
 | SHIP-BE2      | Push BE2 lên main / BE2 + Codex                                                   | DONE        | Bảy commit riêng đã fast-forward và push main tại `1299cd7`; CI nhánh 39905484135 và CI main 39905843323 backend/quality-gate đạt. DONE chỉ cho Git publishing.                                                   |
 | WORKER-01     | Outbox/email/worker / BE3; idempotency/transaction do BE2 phối hợp                | TODO        | Chưa triển khai                                                                                                                                                                                                   |
 | VIDEO-01      | Jitsi và thu hồi quyền phòng / BE3                                                | TODO        | Chưa tích hợp/kiểm provider thật                                                                                                                                                                                  |
@@ -143,11 +145,30 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 
 ### Phối hợp sau audit BE1 25/10/2026
 
+- Công việc xuất bản: SHIP-BE1-FIX-01 DONE phạm vi nhánh/push/PR #10; main mới `ca4ff6c` đã tích hợp vào nhánh, giữ tiến độ BE1/FE1/FE2.
+- Blocker xuất bản: không có; CI và review còn chờ, chưa gộp main.
+- Bước tiếp theo xuất bản: theo dõi CI và review PR #10 trước khi merge theo quy trình nhóm.
+
 - Công việc hiện tại: đã hoàn tất lát cắt sửa F02–F06/BR18, migration legacy và regression local trên `fix/be1-acceptance-20261025`; 5 UC và8 pha BE1 tiếp tục IN_PROGRESS. Code review AI không còn finding Critical/High/Medium mới trong phạm vi sửa; không thay peer review liên nhóm.
 - Blocker: thiếu5 provider BE3 (Outbox/Audit/InterviewMembership/InterviewSecurity/InterviewAdmin), register AppModule thật503; audit16 còn7High/2Critical. Lint workspace đã đạt; timeout setup đã xử lý và full126integration đạt. HTTPS/browser/E2E/provider/load/restore/DBroles/historical release upgrade/review/hosted gates còn mở.
 - Bước tiếp theo: BE3 cung cấp transactional providers/worker/mail/security; BE1/BE2 phối hợp runtime/barrier/rollback; owner dependency xử lý audit. Review/migrate theo thứ tự dừng writer cũ→migrate→start API mới; chưa áp DB chung, chưa publish Git trong lượt này.
 
 ## Nhật ký báo cáo
+
+### 2026-10-25 15:20 (Asia/Saigon) — BE1 / Codex — Xuất bản bản sửa qua PR
+
+- Mã báo cáo: 20261025-1520-BE1-publish-pr
+- Người thực hiện / AI hỗ trợ: Truong102006 / Codex, hỗ trợ Git cho BE1.
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: SHIP-BE1-FIX-01; UC01/04/05/10/11; BR15/18; QA-01/CONTRACT-01.
+- Trạng thái: DONE — chỉ phạm vi tạo nhánh, commit/push và mở PR; toàn BE1 vẫn IN_PROGRESS.
+- Nhánh / commit / PR / tích hợp main: `pr/be1-acceptance-fixes-20261025`; `db7c2f0` source/test, `799a887` tài liệu, `3084c7c` merge origin/main, `0f8732f` cập nhật bảng; [PR #10](https://github.com/Truong102006/recruitment-management-system/pull/10) OPEN; chưa gộp main. Bản ghi kết quả nằm trong commit chứa báo cáo này.
+- Đã hoàn thành: tạo nhánh mới, commit toàn bộ thay đổi phù hợp, tích hợp main mới `ca4ff6c`, giải quyết conflict progress bằng cách giữ cả nhật ký BE1/FE1/FE2; push và mở PR base main. `.env` vẫn được ignore.
+- File / bằng chứng: progress/README.md; toàn bộ diff source/test/contracts/migration/docs/plan BE1; báo cáo kiểm chứng trước tại `plans/261022-1711-be1-complete-implementation/reports/261025-be1-fixes-verification.md`; PR #10.
+- Kiểm tra đã chạy: fetch/status/log, gh auth, check-ignore .env thành công; signature scan 46 staged files không phát hiện secret; diff check đạt. `npm run typecheck`, `npm run typecheck:contracts:public`, `npm run lint` đạt; typecheck/lint sau merge main cũng đạt. `npm run test:unit:ci -- --runInBand`: 43 suites/368 tests đạt, coverage tập cấu hình 91,61% dòng/77,56% nhánh. Push và gh pr create/view thành công, base/head đúng, OPEN; hosted CI đang chạy lúc kiểm tra, chưa xác nhận pass.
+- Kiểm tra chưa chạy / coverage: chưa chạy lại integration/migration PostgreSQL vì database test riêng đã dọn ở lượt trước; chưa chạy lại web/build/E2E trong lượt Git. Coverage unit đã đo nêu trên; các kết quả 126 integration/25 contract trong báo cáo cũ thuộc lượt trước.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: xuất bản nguyên bản sửa chuẩn hóa/search/OWNER và migration đã mô tả trong đặc tả; không thêm thay đổi nghiệp vụ trong lượt Git, không tác động DB chung/cloud.
+- Phần còn thiếu / blocker: không có blocker tạo nhánh/push/PR; chờ CI/review/merge main. Provider BE3 và release gates còn mở theo báo cáo kiểm chứng; không đánh DONE toàn BE1.
+- Bước tiếp theo: theo dõi CI, review và merge PR #10 vào main theo quy trình nhóm; chưa merge main.
 
 ### 2026-10-25 14:26 (Asia/Saigon) — BE1 / Codex — Hoàn tất sửa F02–F06 và kiểm chứng local
 
