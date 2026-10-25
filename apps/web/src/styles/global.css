@@ -50,6 +50,31 @@ a {
 }
 
 /* Base utility classes */
+.container {
+  width: 100%;
+  max-width: var(--container-max-width, 1280px);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--space-4, 16px);
+  padding-right: var(--space-4, 16px);
+}
+
+.skip-link {
+  position: absolute;
+  top: -9999px;
+  left: -9999px;
+  background: var(--blue, #1677ff);
+  color: #fff;
+  padding: 8px 16px;
+  z-index: 9999;
+  border-radius: 4px;
+}
+
+.skip-link:focus {
+  top: 10px;
+  left: 10px;
+}
+
 .btn {
   border: 1px solid var(--line);
   background: var(--card);

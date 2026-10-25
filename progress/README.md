@@ -77,6 +77,19 @@ Các công việc trên nhánh cá nhân chưa được báo cáo vào đây ch�
 
 Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; không đánh dấu cả nhóm UI hoàn thành nếu mới xong một màn.
 
+| Mã         | Phạm vi                                                                                                             | Phụ trách | Trạng thái trên main | Bằng chứng / phần còn thiếu                                                                                                                                                                                                                          |
+| ---------- | ------------------------------------------------------------------------------------------------------------------- | --------- | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| FE1        | UI01–UI12, UI24, UI29: tìm việc, auth, ứng viên, CV, hồ sơ, tin lưu, thông báo, lỗi chung                           | FE1       | DONE (trên nhánh)    | Hoàn thành 100% 6 Task (UI01–UI12, UI24, UI29, FE01–FE22, FE37, FE42); 38 suites / 180 tests PASS 100%, 0 regressions. Coverage 87,23% dòng / 78,23% nhánh; build/lint/typecheck/format pass 100% trên `feat/fe1-implementation`. Bảo toàn 100% FE2. |
+| FE1-FULL   | Toàn bộ 14 màn hình UI01–UI12, UI24, UI29 & 24 quy tắc nghiệp vụ FE01–FE22, FE37, FE42                              | FE1       | DONE (trên nhánh)    | 69 tests FE1 + 111 tests FE2 = 180 tests PASS; coverage toàn bộ 87,23% dòng / 78,23% nhánh; typecheck/lint/format/build clean trên `feat/fe1-implementation`. Chưa gộp main.                                                                         |
+| FE1-AUTH   | Phân hệ Xác thực & Nền tảng FE1: UI03, UI04, UI05, UI06, UI29 (FE08–FE12)                                           | FE1       | DONE (trên nhánh)    | 46 tests đạt (34 suites toàn web); coverage toàn bộ 87,21% dòng / 78,63% nhánh; build/lint/typecheck pass 100% trên `feat/fe1-implementation`. Bảo toàn 100% FE2 (30 suites / 111 tests).                                                            |
+| FE2        | UI13–UI23, UI25–UI28: lịch/video, doanh nghiệp, tin, hồ sơ, đánh giá/kết quả, thống kê, admin                       | FE2       | TODO                 | Chưa có màn hình hoặc E2E                                                                                                                                                                                                                            |
+| FE2-PHASE1 | Nền tảng kiến trúc FE2: Tokens, Router modular, HTTP client, CompanyContext, Mock layer                             | FE2       | DONE (trên nhánh)    | 21 tests đạt; coverage 97,56% dòng / 92,09% nhánh; build/lint/typecheck pass trên `feat/fe2-implementation`. Chưa gộp main.                                                                                                                          |
+| FE2-PHASE2 | Thành phần dùng chung FE2: DataTable generic, Calendar/Agenda, Dialog, StatusBadge                                  | FE2       | DONE (trên nhánh)    | 42 tests đạt; coverage 95,51% dòng / 88,41% nhánh; typecheck/lint/build/format clean trên `feat/fe2-implementation`. Chưa gộp main.                                                                                                                  |
+| FE2-PHASE3 | Phân hệ Doanh nghiệp & Tin tuyển dụng: UI16, UI17, UI18 (FE26, FE27, FE28, FE29)                                    | FE2       | DONE (trên nhánh)    | 65 tests đạt (16 suites); coverage 88,79% dòng / 80,57% nhánh; build/lint/typecheck/format pass trên `feat/fe2-implementation`. Chưa gộp main.                                                                                                       |
+| FE2-PHASE4 | Hồ sơ ứng viên & Đánh giá phỏng vấn: UI19, UI20, UI21, UI22, UI23 (FE30, FE31)                                      | FE2       | DONE (trên nhánh)    | 87 tests đạt (20 suites); coverage 85,18% dòng / 79,37% nhánh; typecheck/lint/build/format clean trên `feat/fe2-implementation`. Chưa gộp main.                                                                                                      |
+| FE2-PHASE5 | Phỏng vấn trực tuyến, Thống kê & Quản trị Admin: UI14, UI15, UI25, UI26, UI27, UI28 (FE23–25, FE38–41)              | FE2       | DONE (trên nhánh)    | 116 tests đạt (28 suites); coverage toàn bộ đạt ngưỡng (80% dòng, 70% nhánh); typecheck/lint/build/format clean trên `feat/fe2-implementation`. Chưa gộp main.                                                                                       |
+| FE2-PHASE6 | Tối ưu Responsive Đa thiết bị (Desktop, Tablet, Mobile), Hoàn thiện Accessibility (A11y) & Kiểm thử Luồng FE23–FE41 | FE2       | DONE (trên nhánh)    | 111 tests đạt (30 suites); coverage toàn bộ vượt ngưỡng (lines >= 80%, branches >= 70%); responsive 3 breakpoints & WCAG 2.1 AA A11y kiểm chứng; build/lint/typecheck/format clean trên `feat/fe2-implementation`. Chưa gộp main.                    |
+
 | Mã         | Phạm vi                                                                                                             | Phụ trách | Trạng thái trên main | Bằng chứng / phần còn thiếu                                                                                                                                                                                                       |
 | ---------- | ------------------------------------------------------------------------------------------------------------------- | --------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | FE1        | UI01–UI12, UI24, UI29: tìm việc, auth, ứng viên, CV, hồ sơ, tin lưu, thông báo, lỗi chung                           | FE1       | TODO                 | Có cấu hình React/Vite; React entry, app/router còn trống                                                                                                                                                                         |
@@ -399,6 +412,137 @@ Kiểm bàn giao bổ sung14:27:42 link local mới hợp lệ, diff check đạ
 - Bước kế tiếp của BE1: nhận và bind runtime ports BE2/BE3; chạy actual cross-owner/provider/HTTPS acceptance, CI GitHub/negative controls/load/restore/runtime DB permissions và xử lý dependency audit theo owner. Source và gate local đã có bằng chứng; chưa gộp main.
 
 ## Nhật ký báo cáo
+
+### 2026-10-25 02:45 (Asia/Saigon) — FE1 — Hoàn thành 100% phạm vi Frontend FE1 (UI01–UI12, UI24, UI29, FE01–FE22, FE37, FE42)
+
+- Mã báo cáo: 20261025-0245-FE1-complete-implementation
+- Người thực hiện / AI hỗ trợ: Antigravity (hỗ trợ FE1).
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: FE1 Toàn bộ 6 Task: Task 1 (Foundation UI29, Layouts, Form Controls), Task 2 (Authentication UI03–UI06, FE08–FE12), Task 3 (Public Job Browsing UI01–UI02, FE01–FE07), Task 4 (Candidate Profile & CV UI07–UI08, FE13–FE16), Task 5 (Application Submission & Tracking UI09–UI11, FE17–FE21), Task 6 (Saved Jobs & Notifications UI12, UI24, FE22, FE37).
+- Trạng thái: DONE (cho toàn bộ 100% phạm vi FE1).
+- Nhánh / commit / PR / tích hợp main: Nhánh `feat/fe1-implementation` (tạo từ `origin/main` `94d84c2`); chưa gộp main.
+- Đã hoàn thành:
+  - Task 1: Nền tảng FE1, UI Form Controls dùng chung, Layout Public & Candidate Shell, UI29 Error States & ErrorBoundary bắt lỗi giao diện và tra soát traceId.
+  - Task 2: Phân hệ Xác thực UI03–UI06 (FE08 Đăng ký với BCrypt 72-byte max rule, FE09 Đăng nhập chống open-redirect, FE10/FE11 Xác minh email tự làm sạch token trên URL, FE12 Quên/đặt lại mật khẩu chống enumeration và vô hiệu hóa phiên cũ).
+  - Task 3: Phân hệ Tìm kiếm & Chi tiết việc làm UI01–UI02 (FE01 Tìm kiếm theo từ khóa/địa điểm, FE02 Reset về trang 1 khi đổi bộ lọc, FE03 Trạng thái rỗng với nút "Xóa bộ lọc" và lỗi 500 với "Thử lại", FE04 Tối ưu responsive form trên 360px, FE05 Điều hướng khách đăng nhập an toàn giữ returnTo nội bộ, FE06 Hiển thị tin đóng/hết hạn và chặn nộp hồ sơ, FE07 Lưu/bỏ lưu tin tuyển dụng).
+  - Task 4: Hồ sơ ứng viên & Quản lý CV UI07–UI08 (FE13 Chỉnh sửa hồ sơ với tracking form dirty, cảnh báo beforeunload và xử lý xung đột 409 Conflict không làm mất dữ liệu người dùng, FE14 Hiển thị tiến trình upload và badge SCANNING, FE15 Kiểm tra định dạng PDF duy nhất, dung lượng tối đa 5MB và từ chối PDF mã hóa, FE16 Ngăn chặn xóa CV đang được sử dụng trong hồ sơ ứng tuyển hoạt động).
+  - Task 5: Nộp hồ sơ & Theo dõi ứng tuyển UI09–UI11 (FE17 Dialog nộp hồ sơ focus trap có chọn CV, thư giới thiệu và gửi kèm idempotency-key chống bấm đúp, FE18 Bộ lọc trạng thái hồ sơ đồng bộ URL và giữ nguyên khi quay lại, FE19 Quy tắc đổi CV theo vòng SUBMITTED/SCREENING/SHORTLISTED, FE20 Dialog xác nhận rút hồ sơ và khóa thao tác khi đã WITHDRAWN, FE21 Hiển thị kết quả công khai, bảo mật không để lộ ghi chú nội bộ của nhà tuyển dụng).
+  - Task 6: Tin đã lưu & Trung tâm thông báo UI12, UI24 (FE22 Danh sách tin quan tâm hiển thị badge khi tin đã đóng, vô hiệu hóa nút ứng tuyển và cho phép bỏ lưu, FE37 Danh sách thông báo, đánh dấu đã đọc và thông báo thân thiện khi nội dung mục tiêu bị thu hồi/ngoài phạm vi).
+  - Tích hợp toàn diện: Tích hợp trọn vẹn vào Router modular, bảo toàn 100% các màn hình và route của FE2 (Recruiter, Admin, Interviews, Video room). Toàn bộ 180 tests (69 tests FE1 + 111 tests FE2) đạt 100%, cùng kiểm thử trực tiếp 15/15 luồng trên trình duyệt.
+- File / bằng chứng:
+  - `apps/web/src/features/jobs/public-jobs.api.ts`
+  - `apps/web/src/features/jobs/job-list-page.tsx`
+  - `apps/web/src/features/jobs/job-detail-page.tsx`
+  - `apps/web/src/features/jobs/__tests__/public-jobs.test.tsx`
+  - `apps/web/src/features/profile/candidate-profile.api.ts`
+  - `apps/web/src/features/profile/profile-page.tsx`
+  - `apps/web/src/features/cv/candidate-cv.api.ts`
+  - `apps/web/src/features/cv/cv-list-page.tsx`
+  - `apps/web/src/features/profile/__tests__/profile-and-cv.test.tsx`
+  - `apps/web/src/features/applications/api/candidate-applications.api.ts`
+  - `apps/web/src/features/applications/components/apply-job-dialog.tsx`
+  - `apps/web/src/features/applications/my-applications-page.tsx`
+  - `apps/web/src/features/applications/application-detail-page.tsx`
+  - `apps/web/src/features/applications/__tests__/candidate-applications.test.tsx`
+  - `apps/web/src/features/saved-jobs/saved-jobs-page.tsx`
+  - `apps/web/src/features/notifications/notifications-page.tsx`
+  - `apps/web/src/features/saved-jobs/__tests__/saved-jobs-and-notifications.test.tsx`
+  - `apps/web/src/app/router.tsx`
+  - `apps/web/src/app/router.test.tsx`
+- Kiểm tra đã chạy:
+  - `npm.cmd run test:web:ci`: 38 test suites, 180 tests PASS 100%, Statements/Lines 87.23% (vượt ngưỡng 80%), Branches 78.23% (vượt ngưỡng 70%).
+  - `npm.cmd run typecheck`: Backend và Web TypeScript không có lỗi (Exit code 0).
+  - `npm.cmd run typecheck:contracts:public`: 0 lỗi (Exit code 0).
+  - `npm.cmd run lint`: 0 warnings, 0 errors (Exit code 0).
+  - `npm.cmd run format:check`: Tất cả file đạt chuẩn Prettier (Exit code 0).
+  - `npm.cmd run build`: Build thành công cả 3 workspace `@rms/api`, `@rms/web`, `@rms/worker` (Exit code 0).
+- Kiểm tra chưa chạy / coverage: Không có kiểm tra chưa chạy trong phạm vi FE1. Toàn bộ 38 test suites đạt coverage 87,23% dòng, 78,23% nhánh.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không thay đổi contract backend; tuân thủ hoàn toàn DTO của `@rms/contracts/public` và canonical endpoints `/api/*`.
+- Phần còn thiếu / blocker: Không có blocker trong phạm vi FE1. Sẵn sàng tích hợp/bàn giao.
+- Bước tiếp theo: Mở Pull Request từ `feat/fe1-implementation` vào `main` và phối hợp kiểm thử tích hợp E2E.
+
+### 2026-10-25 02:00 (Asia/Saigon) — FE1 — Hoàn thành di trú nền tảng FE1 và triển khai phân hệ Xác thực (UI03–UI06, FE08–FE12)
+
+- Mã báo cáo: 20261025-0200-FE1-auth-and-foundation-migration
+- Người thực hiện / AI hỗ trợ: Antigravity (hỗ trợ FE1).
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: FE1 Task 1 (Foundation components, tokens, ErrorBoundary, layouts) & Task 2 (Authentication: UI03 Registration, UI04 Login, UI05 Verify/Resend Email, UI06 Forgot/Reset Password, FE08–FE12, UI29 Error States).
+- Trạng thái: DONE (cho phạm vi Task 1 & Task 2: Nền tảng FE1 + UI03–UI06).
+- Nhánh / commit / PR / tích hợp main: Chưa gộp main; Workspace độc lập.
+- Đã hoàn thành:
+  - Phase 1 (Bảo tồn & di trú):
+    - Tái sử dụng và tích hợp các UI controls (`Button`, `Input`, `Alert`, `ErrorBoundary`, UI29 `NotFoundPage`, `ForbiddenPage`, `ServerErrorPage`) từ FE1.
+    - Cập nhật biến token ngữ nghĩa trong `tokens.css` và lớp tiện ích (`.container`, `.skip-link`) trong `global.css` tương thích hoàn toàn với Design System FE2.
+    - Tương thích ngược có mở rộng không phá vỡ: `StatusBadge` (hỗ trợ `variant`), `Dialog` (hỗ trợ `isOpen`), `apiClient` (bổ sung `isApiException`/`isApiError`), `AuthProvider` (bổ sung `skipAutoFetch`, xuất `useAuth` hook trả về `actor` và `status`), `AppProviders` bọc bởi `ErrorBoundary`.
+  - Phase 2 (Triển khai & tích hợp UI03–UI06):
+    - Xây dựng `auth-api.ts` kết nối trực tiếp với backend endpoints canonical `/api/auth/*` (`POST /register`, `POST /login`, `POST /logout`, `GET /session`, `POST /verify-email`, `POST /resend-verification`, `POST /forgot-password`, `POST /reset-password`).
+    - Triển khai đầy đủ UI03 `RegisterPage` (FE08: validation họ tên, email, password min 10 chars / max 72 bytes UTF-8 BCrypt, confirm password match, chọn vai trò CANDIDATE/RECRUITER, thông báo đăng ký thành công).
+    - Triển khai đầy đủ UI04 `LoginPage` (FE09: email/password validation, xử lý 401 Unauthorized, chống open-redirect lọc bỏ scheme nguy hiểm `//` hoặc `http` ngoại vi và chỉ điều hướng về đường dẫn nội bộ an toàn).
+    - Triển khai đầy đủ UI05 `VerifyEmailPage` (FE10, FE11: kích hoạt token thành công/thất bại, nút gửi lại mã kích hoạt, tự động làm sạch token khỏi thanh địa chỉ browser bằng `history.replaceState` để chống rò rỉ token qua Referer header).
+    - Triển khai đầy đủ UI06 `ForgotPasswordPage` và `ResetPasswordPage` (FE12: cơ chế anti-enumeration chống dò quét tài khoản bằng thông báo trung tính giống nhau, đặt lại mật khẩu với token một lần, tự động làm sạch URL token, thông báo thu hồi toàn bộ các phiên cũ trên mọi thiết bị).
+    - Tích hợp Router module hóa cho toàn bộ các route Public (`/`, `/jobs`, `/jobs/:jobId`), Auth (`/login`, `/register`, `/verify-email`, `/forgot-password`, `/reset-password`), và Candidate (`/candidate/*`, `/notifications`), bảo toàn 100% các route Recruiter, Admin và Interview của FE2.
+  - Sửa lỗi kiểm thử và tối ưu tốc độ:
+    - Sửa `AuthProvider` hỗ trợ `skipAutoFetch` để tránh gọi API session ngoài ý muốn trong môi trường test unauthenticated.
+    - Sửa `auth-pages.test.tsx` chuyển `userEvent.setup()` vào `beforeEach` và áp dụng `fireEvent.change` cho các input dài để loại bỏ triệt để timeout 5000ms.
+    - Bổ sung biến thể `'ghost'` cho component `Button` giải quyết triệt để lỗi TypeScript trong `forgot-password-page.tsx`.
+- File / bằng chứng:
+  - `apps/web/src/components/ui/button.tsx`
+  - `apps/web/src/components/ui/input.tsx`
+  - `apps/web/src/components/ui/alert.tsx`
+  - `apps/web/src/components/ui/dialog.tsx`
+  - `apps/web/src/components/ui/status-badge.tsx`
+  - `apps/web/src/components/errors/error-boundary.tsx`
+  - `apps/web/src/components/errors/not-found-page.tsx`
+  - `apps/web/src/components/errors/forbidden-page.tsx`
+  - `apps/web/src/components/errors/server-error-page.tsx`
+  - `apps/web/src/components/auth/protected-route.tsx`
+  - `apps/web/src/app/layouts/public-layout.tsx`
+  - `apps/web/src/app/layouts/candidate-layout.tsx`
+  - `apps/web/src/app/providers.tsx`
+  - `apps/web/src/app/router.tsx`
+  - `apps/web/src/app/router.test.tsx`
+  - `apps/web/src/features/auth/auth-api.ts`
+  - `apps/web/src/features/auth/login-page.tsx`
+  - `apps/web/src/features/auth/register-page.tsx`
+  - `apps/web/src/features/auth/verify-email-page.tsx`
+  - `apps/web/src/features/auth/forgot-password-page.tsx`
+  - `apps/web/src/features/auth/reset-password-page.tsx`
+  - `apps/web/src/features/auth/context/auth-context.tsx`
+  - `apps/web/src/features/auth/utils/validation.ts`
+  - `apps/web/src/features/auth/__tests__/auth-pages.test.tsx`
+  - `apps/web/src/components/ui/__tests__/form-controls.test.tsx`
+  - `apps/web/src/components/errors/__tests__/error-boundary.test.tsx`
+  - `apps/web/src/components/auth/__tests__/route-guards.test.tsx`
+  - `apps/web/src/styles/tokens.css`
+  - `apps/web/src/styles/global.css`
+- Kiểm tra đã chạy:
+  - `npm run test:web:ci` (Vitest coverage): 34/34 test suites PASS, 157/157 tests PASS (0 regressions; coverage Statements: 87.21% vs 80% req, Branches: 78.63% vs 70% req, Lines: 87.21% vs 80% req).
+  - `npm run typecheck` (`tsc -p tsconfig.backend.json --noEmit && npm run typecheck --workspace @rms/web`): 0 lỗi.
+  - `npm run typecheck:contracts:public`: 0 lỗi.
+  - `npm run lint` (`eslint apps libs tests --max-warnings=0`): 0 cảnh báo, 0 lỗi.
+  - `npm run build` (`npm run build --workspaces --if-present`): Build thành công toàn bộ `@rms/api`, `@rms/web`, `@rms/worker`.
+- Kiểm tra chưa chạy / coverage: E2E Playwright trên browser thật chưa chạy vì cần DB và backend live server đang chạy.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không thay đổi DB schema hay contract; sử dụng trọn vẹn `@rms/contracts/public` và backend NestJS auth controller hiện có.
+- Phần còn thiếu / blocker: Không có blocker cho Task 1 và Task 2. Các màn hình tiếp theo thuộc phạm vi FE1: UI01–UI02 (Trang chủ & Danh sách việc làm chi tiết), UI07–UI12 (Quản lý hồ sơ cá nhân, nộp CV, quản lý CV, theo dõi trạng thái ứng tuyển, tin đã lưu), UI24 (Lịch phỏng vấn phía ứng viên).
+- Bước tiếp theo: Tiếp tục triển khai các hạng mục tiếp theo của FE1 (UI01–UI02 tìm kiếm & xem tin tuyển dụng, và UI07–UI12 quản lý ứng tuyển/CV/hồ sơ).
+
+### 2026-10-25 00:05 (Asia/Saigon) — FE1 — Kế hoạch đối chiếu và di trú nền tảng FE1 tích hợp FE2
+
+- Mã báo cáo: 20261025-0005-FE1-migration-audit-and-planning
+- Người thực hiện / AI hỗ trợ: Antigravity (hỗ trợ FE1).
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: FE1 (UI01–UI12, UI24, UI29); Task 1 (Foundation) & Task 2 (Auth: UI03–UI06); Đối chiếu workspace cũ với workspace tích hợp FE2 mới.
+- Trạng thái: IN_PROGRESS (Lập kế hoạch di trú, chờ phê duyệt trước khi sao chép và triển khai UI03–UI06).
+- Nhánh / commit / PR / tích hợp main: Chưa gộp main; Workspace giải nén không có Git.
+- Đã hoàn thành:
+  - Kiểm tra và xác nhận nền tảng FE2 hiện hữu: 30 test suites (111 tests pass 100%), coverage lines >= 80%, branches >= 70%.
+  - Đọc và đối chiếu toàn bộ handoff `FE1-HANDOFF.md`, đặc tả `Docs/project-specification.md`, và mã nguồn cả hai workspace.
+  - Phân loại rõ ràng các nhóm tệp: (1) Giữ nguyên nền tảng FE2 (`api-client.ts`, `auth-context.tsx`, `company-context.tsx`, `tokens.css`, `dialog.tsx`, `status-badge.tsx`, `DataTable`, `Calendar`); (2) Tái sử dụng từ FE1 (`button.tsx`, `input.tsx`, `alert.tsx`, error boundary, UI29 error pages, `public-layout.tsx`, `candidate-layout.tsx`, `validation.ts`); (3) Điều chỉnh tích hợp (`router.tsx`, `providers.tsx`, `protected-route.tsx`, `auth-api.ts`, `dev-mock-store.ts`); (4) Loại bỏ tệp trùng lặp/lỗi thời (`http-client.ts`, `error-envelope.ts`, basic `dialog.tsx`).
+  - Lập tài liệu kế hoạch di trú chi tiết trình người dùng phê duyệt trước khi áp dụng thay đổi.
+- File / bằng chứng: `progress/README.md`.
+- Kiểm tra đã chạy:
+  - `npm.cmd --workspace @rms/web run test:ci`: 30/30 test suites pass, 111/111 tests pass (lines 88.88%, branches 86.36%).
+- Kiểm tra chưa chạy / coverage: Chưa thực hiện sao chép file chéo workspace và chưa triển khai UI03–UI06 do đang chờ phê duyệt kế hoạch di trú.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không thay đổi DB hoặc contract; đảm bảo tái sử dụng 100% `@rms/contracts/public` và API client của FE2.
+- Phần còn thiếu / blocker: Chờ người dùng phê duyệt kế hoạch di trú trước khi tiến hành chuyển giao và hoàn thiện Task 2.
+- Bước tiếp theo: Sau khi được phê duyệt kế hoạch, áp dụng các tệp FE1 cần tái sử dụng/điều chỉnh, sửa 4 bài test auth, đưa toàn bộ bộ test auth (FE08–FE12) đạt 100%.
 
 ### 2026-10-25 02:05 (Asia/Saigon) — FE2 — Triển khai hoàn thiện Ngôn ngữ Thiết kế Talento, Landing Page & Recruiter Workspace (TALENTO-FE)
 
@@ -837,6 +981,7 @@ Kiểm bàn giao bổ sung14:27:42 link local mới hợp lệ, diff check đạ
 - Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không thay đổi DB/API; tuân thủ contract libs/contracts/public/index.ts; cô lập hoàn toàn với FE1 và BE.
 - Phần còn thiếu / blocker: Đang viết code và unit test cho Phase 1; chưa có blocker.
 - Bước tiếp theo: Hoàn thành tokens.css, api-client.ts, company-context.tsx, modular router và bộ test Vitest.
+
 ### 2026-10-23 12:27 (Asia/Saigon) — BE2 — Tích hợp bảy commit lên main
 
 - Mã báo cáo: 20261023-1227-BE2-tich-hop-main

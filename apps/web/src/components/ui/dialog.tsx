@@ -1,7 +1,8 @@
 import React, { useEffect, useRef } from 'react';
 
 export interface DialogProps {
-  open: boolean;
+  open?: boolean;
+  isOpen?: boolean;
   onClose: () => void;
   title: string;
   description?: string;
@@ -11,17 +12,19 @@ export interface DialogProps {
 
 export const Dialog: React.FC<DialogProps> = ({
   open,
+  isOpen,
   onClose,
   title,
   description,
   children,
   maxWidth = '520px',
 }) => {
+  const isDialogOpen = open ?? isOpen ?? false;
   const dialogRef = useRef<HTMLDivElement>(null);
   const previouslyFocusedElement = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    if (open) {
+    if (isDialogOpen) {
       previouslyFocusedElement.current = document.activeElement as HTMLElement | null;
 
       const handleKeyDown = (e: KeyboardEvent) => {
@@ -64,9 +67,9 @@ export const Dialog: React.FC<DialogProps> = ({
         previouslyFocusedElement.current?.focus();
       };
     }
-  }, [open, onClose]);
+  }, [isDialogOpen, onClose]);
 
-  if (!open) return null;
+  if (!isDialogOpen) return null;
 
   return (
     <div

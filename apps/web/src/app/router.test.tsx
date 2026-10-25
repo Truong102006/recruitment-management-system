@@ -5,7 +5,7 @@ import { RouterProvider, createMemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from '../features/auth/context/auth-context';
 import { CompanyProvider } from '../features/companies/context/company-context';
-import { router } from './router';
+import { routes } from './router';
 import type { SessionDto, CompanyDto } from '@rms/contracts/public';
 
 const mockCompany: CompanyDto = {
@@ -26,18 +26,18 @@ const mockSession: SessionDto = {
   userId: 'usr-1',
   email: 'test@example.com',
   fullName: 'Test User',
-  roles: ['RECRUITER', 'ADMIN'],
+  roles: ['CANDIDATE', 'RECRUITER', 'ADMIN'],
   status: 'ACTIVE',
   csrfToken: 'csrf-123',
 };
 
-function renderRoute(path: string) {
+function renderRoute(path: string, customSession: SessionDto | null = mockSession) {
   const queryClient = new QueryClient();
-  const testRouter = createMemoryRouter(router.routes, { initialEntries: [path] });
+  const testRouter = createMemoryRouter(routes, { initialEntries: [path] });
 
   return render(
     <QueryClientProvider client={queryClient}>
-      <AuthProvider initialSession={mockSession}>
+      <AuthProvider initialSession={customSession} skipAutoFetch={customSession === null}>
         <CompanyProvider initialMemberships={[{ company: mockCompany, role: 'OWNER' }]}>
           <RouterProvider router={testRouter} />
         </CompanyProvider>
@@ -54,7 +54,54 @@ describe('Modular Router', () => {
 
   it('renders 404 page on unknown route', () => {
     renderRoute('/unknown-path-does-not-exist');
-    expect(screen.getByText('404 - Không tìm thấy trang')).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'Không tìm thấy trang' }),
+    ).toBeInTheDocument();
+  });
+
+  it('renders public jobs routes properly', () => {
+    renderRoute('/jobs');
+    expect(screen.getByTestId('job-list-page')).toBeInTheDocument();
+
+    renderRoute('/jobs/job-123');
+    expect(screen.getByTestId('job-detail-page')).toBeInTheDocument();
+  });
+
+  it('renders public authentication routes for unauthenticated users', () => {
+    renderRoute('/login', null);
+    expect(screen.getByTestId('login-page')).toBeInTheDocument();
+
+    renderRoute('/register', null);
+    expect(screen.getByTestId('register-page')).toBeInTheDocument();
+
+    renderRoute('/verify-email', null);
+    expect(screen.getByTestId('verify-email-page')).toBeInTheDocument();
+
+    renderRoute('/forgot-password', null);
+    expect(screen.getByTestId('forgot-password-page')).toBeInTheDocument();
+
+    renderRoute('/reset-password?token=abc', null);
+    expect(screen.getByTestId('reset-password-page')).toBeInTheDocument();
+  });
+
+  it('renders candidate protected routes properly', () => {
+    renderRoute('/candidate/applications');
+    expect(screen.getByTestId('my-applications-page')).toBeInTheDocument();
+
+    renderRoute('/candidate/applications/app-1');
+    expect(screen.getByTestId('application-detail-page')).toBeInTheDocument();
+
+    renderRoute('/candidate/profile');
+    expect(screen.getByTestId('profile-page')).toBeInTheDocument();
+
+    renderRoute('/candidate/cvs');
+    expect(screen.getByTestId('cv-list-page')).toBeInTheDocument();
+
+    renderRoute('/candidate/saved-jobs');
+    expect(screen.getByTestId('saved-jobs-page')).toBeInTheDocument();
+
+    renderRoute('/notifications');
+    expect(screen.getByTestId('notifications-page')).toBeInTheDocument();
   });
 
   it('renders recruiter routes properly', () => {

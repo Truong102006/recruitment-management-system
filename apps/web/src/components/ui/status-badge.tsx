@@ -67,14 +67,24 @@ const BADGE_CONFIGS: Record<string, BadgeConfig> = {
 };
 
 export interface StatusBadgeProps {
-  status: BadgeVariant | string;
+  status?: BadgeVariant | string;
+  variant?: BadgeVariant | string;
   customLabel?: string;
+  children?: React.ReactNode;
   size?: 'sm' | 'md';
 }
 
-export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, customLabel, size = 'sm' }) => {
-  const config = BADGE_CONFIGS[status] ?? {
-    label: customLabel ?? status,
+export const StatusBadge: React.FC<StatusBadgeProps> = ({
+  status: statusProp,
+  variant,
+  customLabel,
+  children,
+  size = 'sm',
+}) => {
+  const resolvedStatus = statusProp ?? variant ?? 'APPROVED';
+  const childText = typeof children === 'string' ? children : undefined;
+  const config = BADGE_CONFIGS[resolvedStatus] ?? {
+    label: customLabel ?? childText ?? resolvedStatus,
     color: '#3d3d42',
     bg: '#f3f3f4',
   };
@@ -84,7 +94,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, customLabel, s
   return (
     <span
       data-testid="status-badge"
-      data-status={status}
+      data-status={resolvedStatus}
       style={{
         display: 'inline-flex',
         alignItems: 'center',
@@ -108,7 +118,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, customLabel, s
           flexShrink: 0,
         }}
       />
-      {customLabel ?? config.label}
+      {customLabel ?? childText ?? config.label}
     </span>
   );
 };
