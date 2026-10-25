@@ -70,3 +70,13 @@ Phạm vi gồm 9 bảng BE1, bootstrap/security API, port cho BE2/BE3, Identity
 ## Bàn giao triển khai 23/10/2026
 
 Đã đồng bộ cả 8 pha và gỡ checkmark rộng chưa đủ bằng chứng ở pha 1–3. Đọc [setup](../../Docs/be1-setup.md), [runbook](../../Docs/be1-security-runbook.md), [handoff](../../Docs/be1-handoff.md), [tiến độ](../../progress/README.md). Không có Claude Task tools; dùng checklist pha và sổ chung. Code BE1 không thay nghiệm thu BE2/BE3/FE/provider.
+
+
+## Tiếp tục sửa lỗi 25/10/2026
+
+Codex thực hiện trên `fix/be1-acceptance-20261025` từ main `94d84c2`; chưa commit/chưa gộp main. Đã rà soát lại cả 8 pha, giữ **IN_PROGRESS** theo đầy đủ tiêu chí, sửa mô tả hoàn thành mâu thuẫn trong pha 1 và metadata effort của pha 2–3. Đợt này xử lý F02–F06 về OWNER, company whitespace/null, Job NFC/code point và thứ tự publication; bổ sung validation fullName UC04 theo cùng BR18. Không thay nghiệp vụ báo cáo gốc hoặc triển khai thay provider BE3.
+
+Baseline AppModule thật xác nhận F01: CandidateProfile/ApplicationConflict BE2 đã bind, nhưng thiếu 5 provider BE3 (Outbox/Audit/InterviewMembership/InterviewSecurity/InterviewAdmin), register trả 503. Provider/email/video, HTTPS/browser, load/restore, DB roles/historical upgrade, hosted negative controls và review liên nhóm vẫn cần bằng chứng trước nghiệm thu. Xem [sổ tiến độ](../../progress/README.md) cho lệnh/kết quả sau sửa và trạng thái tích hợp; không dùng số test cũ bên trên làm kết quả lượt này.
+
+
+Migration dữ liệu cũ: thêm `20261025073000_be1_normalize_text` sau ba migration hiện có và bắt buộc migrate deploy trước API mới. Chỉ dữ liệu BE1 ordinary text thay đổi; giữ cấu trúc schema, trạng thái/thời gian nghiệp vụ, password và BE2 snapshots. Một DO nguyên tử, trim đúng ECMAScript whitespace rồi NFC; NULL giữ nguyên, chỉ hàng đổi tăng version/updated_at; overflow/constraint rollback toàn DO, không truncate. Publish draft legacy cũng normalize trước completeness. Chỉ deploy test local disposable đã chạy; regression/legacy publish và gate cuối cần kết quả mới trong sổ tiến độ, không áp migration DB chung từ lượt này.

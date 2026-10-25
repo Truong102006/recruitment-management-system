@@ -57,3 +57,13 @@ Workflow YAML chưa chạy không chứng minh CI. Gate/infrastructure overlap B
 ## Đồng bộ kiểm chứng 23/10/2026 — Codex hỗ trợ BE1
 
 Có workflow backend, evidence inventory, migration smoke và runbooks; còn hosted CI/negative controls/FE/E2E/load/restore/provider/runtime DB permissions/peer review/clean setup. Dependency audit còn High/Critical. Pha giữ IN_PROGRESS theo tiêu chí đầy đủ; không coi fake ports là runtime acceptance. Báo cáo lịch sử giữ trong sổ chung. Bằng chứng cuối xem [tiến độ](../../progress/README.md), [bàn giao](../../Docs/be1-handoff.md) và artifact local `reports/be1/final-verification.md`. Chưa commit/chưa gộp main.
+
+
+## Đồng bộ sửa lỗi 25/10/2026 — Codex hỗ trợ BE1
+
+Đợt sửa lỗi không thay CI/dependency/schema và không tự commit/push/deploy. Kết quả local, lệnh thực chạy, coverage và giới hạn nằm trong sổ tiến độ; chưa có hosted CI/negative controls mới. FE/E2E, clean setup độc lập, DB roles/historical upgrade, TC29 load, TC30 restore, provider và peer review vẫn thiếu; không đánh DONE toàn BE1.
+
+Trạng thái pha: **IN_PROGRESS**. Đợt sửa trên `fix/be1-acceptance-20261025`, chưa commit/chưa gộp main. Kết quả kiểm chứng cuối xem [sổ tiến độ](../../progress/README.md); các ghi nhận 23/10 phía trên là lịch sử, không thay kết quả mới.
+
+
+Cập nhật dữ liệu legacy cùng đợt: [`20261025073000_be1_normalize_text`](../../prisma/migrations/20261025073000_be1_normalize_text/migration.sql) chạy sau ba migration hiện có, trước API mới. Một DO nguyên tử trim đúng ECMAScript whitespace rồi NFC cho full_name/company/Job ordinary text; NULL giữ nguyên, chỉ hàng đổi tăng version/updated_at; giữ trạng thái/deadline/publication/close timestamp/password/BE2 snapshots. Overflow/constraint rollback toàn DO, không truncate; xử lý dữ liệu lỗi có kiểm soát. Publish draft legacy cũng normalize trước completeness. Chỉ migrate deploy local disposable đã chạy, không áp DB chung; regression legacy/migration và kết quả sau sửa cuối xem sổ tiến độ, pha vẫn IN_PROGRESS.

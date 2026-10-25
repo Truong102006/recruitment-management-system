@@ -57,3 +57,13 @@ Chỉ khóa company rồi thêm khóa owner user sẽ đảo lock order: discove
 ## Đồng bộ kiểm chứng 23/10/2026 — Codex hỗ trợ BE1
 
 Company/membership/recovery có source, verified predicate và account locks trước company; còn application conflict/interview runtime và barrier liên nhóm. Pha giữ IN_PROGRESS theo tiêu chí đầy đủ; không coi fake ports là runtime acceptance. Báo cáo lịch sử giữ trong sổ chung. Bằng chứng cuối xem [tiến độ](../../progress/README.md), [bàn giao](../../Docs/be1-handoff.md) và artifact local `reports/be1/final-verification.md`. Chưa commit/chưa gộp main.
+
+
+## Đồng bộ sửa lỗi 25/10/2026 — Codex hỗ trợ BE1
+
+Sửa F03 tại company create/update/resubmit: trim/NFC trước validation/persistence; name 2–255, address 5–500 Unicode code point; field bắt buộc khi có mặt từ chối trắng/null, PATCH bỏ qua field vẫn giữ giá trị cũ; website/description vẫn hỗ trợ null. Regression trước sửa tái hiện 21 ca thất bại trong 23 ca mới. Interview membership provider, audit/Outbox nguyên tử và barrier xuyên BE2/BE3 vẫn chưa nghiệm thu.
+
+Trạng thái pha: **IN_PROGRESS**. Đợt sửa trên `fix/be1-acceptance-20261025`, chưa commit/chưa gộp main. Kết quả kiểm chứng cuối xem [sổ tiến độ](../../progress/README.md); các ghi nhận 23/10 phía trên là lịch sử, không thay kết quả mới.
+
+
+Cập nhật dữ liệu legacy cùng đợt: [`20261025073000_be1_normalize_text`](../../prisma/migrations/20261025073000_be1_normalize_text/migration.sql) chạy sau ba migration hiện có, trước API mới. Một DO nguyên tử trim đúng ECMAScript whitespace rồi NFC cho full_name/company/Job ordinary text; NULL giữ nguyên, chỉ hàng đổi tăng version/updated_at; giữ trạng thái/deadline/publication/close timestamp/password/BE2 snapshots. Overflow/constraint rollback toàn DO, không truncate; xử lý dữ liệu lỗi có kiểm soát. Publish draft legacy cũng normalize trước completeness. Chỉ migrate deploy local disposable đã chạy, không áp DB chung; regression legacy/migration và kết quả sau sửa cuối xem sổ tiến độ, pha vẫn IN_PROGRESS.
