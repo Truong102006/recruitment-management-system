@@ -34,6 +34,8 @@
 
 ## Tổng quan hiện tại
 
+**25/10/2026 21:30 (Asia/Saigon) — SHIP-BE3-INTEGRATION: IN_PROGRESS (Mở PR vào main)** — Truong102006 / Antigravity đã hoàn thành tích hợp toàn bộ các module backend BE3 từ nhánh `origin/feat/be3-implementation` (commit gốc cô lập `af92c99`) sang nhánh tích hợp chuẩn `pr/be3-integration-20261025` dựa trên `main`. Đã đồng bộ Prisma schema, migration BE3, Outbox/Notification/Interview/Audit/Worker, bổ sung port adapters an toàn và 6 bộ unit test mới. `npm run typecheck`, `npm run lint` (0 warnings), `npm run build`, và `npm run test:unit:ci` (50 suites, 406 tests PASS 100%, coverage đạt ngưỡng) đều đã kiểm chứng xanh 100%. Đang mở PR vào `main`.
+
 **25/10/2026 15:20 (Asia/Saigon) — SHIP-BE1-FIX-01: DONE (phạm vi Git)** — Truong102006 / Codex đã tạo nhánh `pr/be1-acceptance-fixes-20261025`, commit và push toàn bộ thay đổi phù hợp, mở [PR #10](https://github.com/Truong102006/recruitment-management-system/pull/10) vào main. PR đang OPEN, CI đang chạy; chưa gộp main. Toàn BE1 vẫn IN_PROGRESS.
 
 **25/10/2026 14:26 — BE1-FIX-01: DONE (phạm vi sửa F02–F06), toàn BE1 IN_PROGRESS** — Codex trên `fix/be1-acceptance-20261025`:368unit/126integration/25contract (đã nằm trong126)/124web đạt; coverage BE cấu hình91,61% dòng/77,56% nhánh; lint/type/build/migration/evidence đạt. Probe gốc6/8 đạt, chỉ còn F01 thiếu5 provider BE3/register503. Có data migration chuẩn hóa legacy và3 test schema cô lập; chỉ deploy DB test. [Báo cáo mới](../plans/261022-1711-be1-complete-implementation/reports/261025-be1-fixes-verification.md). Chưa commit/chưa gộp main; không đổi trạng thái năm UC/tám pha sang DONE.
@@ -60,20 +62,20 @@ Các công việc trên nhánh cá nhân chưa được báo cáo vào đây ch�
 | ---- | ------------------------------ | --------- | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | UC01 | Đăng tin tuyển dụng            | BE1       | IN_PROGRESS                         | Main PR #1 có lifecycle/locks/DTO; fix local25/10 sửa F02/F04/F05: mọi mutation kiểm OWNER, normalize NFC/code point, publish legacy. Integration Jobs đạt lượt123tests trước bổ sung legacy. Có data migration mới local, chưa gộp main; còn Outbox/lifecycle liên nhóm/provider. |
 | UC02 | Nộp CV ứng tuyển               | BE2       | IN_PROGRESS                         | Workflow/route và BE1 binding đã lên main; migration đạt CI PostgreSQL. Ghi hồ sơ cần Outbox BE3 thật và HTTP nghiệm thu.                                                          |
-| UC03 | Phỏng vấn trực tuyến           | BE3       | TODO                                | Chưa có API/provider test                                                                                                                                                          |
+| UC03 | Phỏng vấn trực tuyến           | BE3       | IN_PROGRESS                         | Nhánh `pr/be3-integration-20261025`: Đã tích hợp database schema (Interview, Participant, Reservation), ports adapter, rules (schedule, join window access), video port (Jitsi adapter), 100% unit tests pass. Chưa gộp main. |
 | UC04 | Đăng ký và xác thực            | BE1       | IN_PROGRESS                         | Main PR #1 có token/session/CSRF/rollback; fix local25/10 fullName trim/NFC/code point, password giữ nguyên, regression đạt. F01 vẫn mở: AppModule thật thiếu Outbox, register503; BE2 profile đã bind; mail/HTTPS chưa nghiệm thu. |
 | UC05 | Tìm kiếm và xem tin            | BE1       | IN_PROGRESS                         | Fix local25/10 F06: mặc định publishedAt DESC/id DESC, explicit createdAt/order tương thích; Search5tests PostgreSQL đạt. Thêm migration chuẩn hóa dữ liệu cũ trước API; chưa gộp main; load/provider/FE acceptance còn thiếu. |
 | UC06 | Quản lý CV và thay CV đã nộp   | BE2       | IN_PROGRESS                         | Thay CV/review đã lên main; kho CV có service/repository. Còn S3/scanner, worker, API CV và nghiệm thu.                                                                            |
 | UC07 | Xét duyệt và rút hồ sơ         | BE2       | IN_PROGRESS                         | Review/read/withdraw route đã lên main; rút hồ sơ cần InterviewLifecycle BE3 cùng transaction và HTTP nghiệm thu.                                                                  |
-| UC08 | Quản lý lịch phỏng vấn         | BE3       | TODO                                | Chưa có API/test concurrency                                                                                                                                                       |
-| UC09 | Công bố kết quả                | BE3       | TODO                                | Có điểm nối BE2 trong contract; chưa có workflow/test                                                                                                                              |
+| UC08 | Quản lý lịch phỏng vấn         | BE3       | IN_PROGRESS                         | Nhánh `pr/be3-integration-20261025`: Đã tích hợp PrismaInterviewRepository (createProposed, findById, findDetail, findForApplication, findForUser, confirm, cancel, getLockScope), schedule rules, expire-proposals worker job, reconciliation; unit tests đạt 100%. Chưa gộp main. |
+| UC09 | Công bố kết quả                | BE3       | IN_PROGRESS                         | Nhánh `pr/be3-integration-20261025`: Đã tích hợp Outbox event dispatching, event consumer xử lý application.result_published tạo notification cho ứng viên; unit tests đạt 100%. Chưa gộp main. |
 | UC10 | Quản trị và kiểm duyệt         | BE1       | IN_PROGRESS                         | Main PR #1 có admin PATCH/read/recovery/last ADMIN/rollback. Fix local25/10 chặn create/update/close khi OWNER mất khả dụng, test3 trạng thái/quyền phục hồi đạt; chưa gộp main. BE3 revoke intent/provider/audit/scope vẫn thiếu. |
 | UC11 | Doanh nghiệp và thành viên     | BE1       | IN_PROGRESS                         | Fix local25/10 F03: create/update/resubmit từ chối required trắng/null; DTO/service normalize NFC/code point;99unit và HTTP rollback đạt. Chưa gộp main; conflict/schedule/audit runtime BE2/BE3 còn thiếu. |
 | UC12 | Hồ sơ cá nhân                  | BE2       | IN_PROGRESS                         | GET/PATCH route và BE1 guard đã lên main; DB BE2 đạt CI; PATCH cần Outbox BE3 và HTTP nghiệm thu.                                                                                  |
-| UC13 | Đánh giá và hoàn tất phỏng vấn | BE3       | TODO                                | Chưa có API/test                                                                                                                                                                   |
+| UC13 | Đánh giá và hoàn tất phỏng vấn | BE3       | IN_PROGRESS                         | Nhánh `pr/be3-integration-20261025`: Đã tích hợp schema Evaluation, EvaluationModule, interview evidence calculation for missing evaluations. Chưa gộp main. |
 | UC14 | Lưu tin quan tâm               | BE2       | IN_PROGRESS                         | PUT/DELETE/GET route đã lên main, idempotent/placeholder và DB adapter đạt CI; write cần Outbox BE3, còn HTTP nghiệm thu.                                                          |
-| UC15 | Thông báo                      | BE3       | TODO                                | Chưa có worker/API/test                                                                                                                                                            |
-| UC16 | Thống kê tuyển dụng            | BE3       | TODO                                | Chưa có read model/API/test                                                                                                                                                        |
+| UC15 | Thông báo                      | BE3       | IN_PROGRESS                         | Nhánh `pr/be3-integration-20261025`: Đã tích hợp Notification/Email schema, repositories, worker email delivery job with retry backoff, notification query service, event consumer registry; unit tests đạt 100%. Chưa gộp main. |
+| UC16 | Thống kê tuyển dụng            | BE3       | IN_PROGRESS                         | Nhánh `pr/be3-integration-20261025`: Đã tích hợp ReportingModule, AuditModule (audit log write/query). Chưa gộp main. |
 
 ### Frontend
 
@@ -198,6 +200,53 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 - Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không đổi schema DB hoặc contract; sửa client call để tuân thủ 100% backend whitelist validation pipe.
 - Phần còn thiếu / blocker: Không có blocker. Cả hai server FE và BE đang chạy ngầm ổn định.
 - Bước tiếp theo: Hướng dẫn người dùng trải nghiệm các tính năng trên trình duyệt.
+
+### 2026-10-25 21:30 (Asia/Saigon) — Backend / Antigravity — Tích hợp module BE3 và chuẩn bị mở PR vào main
+
+- Mã báo cáo: 20261025-2130-BE3-integration-pr
+- Người thực hiện / AI hỗ trợ: Antigravity (AI Assistant) phối hợp cùng Truong102006.
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: BE3-INTEGRATION; UC03, UC08, UC09, UC13, UC15, UC16; Outbox dispatcher, Notification, Email delivery, Jitsi video adapter, Interview scheduling & join access rules, Evaluation schema, Worker reconciliation & jobs, Ports adapters.
+- Trạng thái: IN_PROGRESS (Đã hoàn thiện code, test, lint, build sạch 100% trên nhánh tích hợp `pr/be3-integration-20261025` và chuẩn bị mở PR vào `main`).
+- Nhánh / commit / PR / tích hợp main: `pr/be3-integration-20261025`; Commit chứa báo cáo này; Chưa gộp main.
+- Đã hoàn thành:
+  1. Phân tích nguyên nhân PR nhánh `feat/be3-implementation` thất bại: Nhánh gốc `af92c99` là orphan commit không có lịch sử chung với `main` (refusing to merge unrelated histories) và thiếu ~17 files import khiến CI typecheck fail.
+  2. Tạo nhánh tích hợp chuẩn `pr/be3-integration-20261025` phân nhánh trực tiếp từ `main`.
+  3. Chuyển toàn bộ các thành phần BE3 từ `af92c99` sang: `prisma/migrations/20261023150000_be3_foundation/`, `libs/contracts/backend/be3-events.ts`, `libs/platform/mail/`, `libs/platform/video/`, `apps/worker/src/`, `apps/api/src/modules/audit/`, `apps/api/src/modules/notification/`, `apps/api/src/modules/interview/`.
+  4. Đồng bộ `prisma/schema.prisma` với đầy đủ models BE3: `Interview`, `InterviewParticipant`, `InterviewReservation`, `Evaluation`, `OutboxEvent`, `Notification`, `EmailDelivery`, `AuditLog`. Chạy `npm run db:generate` và `npm run db:validate` thành công.
+  5. Cập nhật contracts backend và public (`libs/contracts/backend/index.ts`, `libs/contracts/public/index.ts`) với đầy đủ event types, outbox append port, và DTOs phỏng vấn/đánh giá/thông báo/quản trị.
+  6. Triển khai `interview-ports.adapter.ts` gắn kết các ports `InterviewLifecyclePort`, `InterviewSecurityPort`, `InterviewAdminPort`, `InterviewMembershipPort` vào `InterviewModule`.
+  7. Bổ sung các phương thức còn thiếu trong `PrismaInterviewRepository` (`getLockScope`, `cancelOpenForApplication`, `revokeForUser`, `revokeForCompany`, `assertNoUnresolvedProposedOrConfirmed`).
+  8. Viết mới 6 bộ unit test chuyên biệt: `schedule.rules.spec.ts`, `join-access.rules.spec.ts`, `interview.policy.spec.ts`, `delivery-retry.rules.spec.ts`, `notification.policy.spec.ts`, `reservation-reconciliation.spec.ts`, `jitsi-video.adapter.spec.ts`.
+  9. Xóa bỏ toàn bộ `any` casts theo chuẩn `@typescript-eslint/no-explicit-any`.
+- File / bằng chứng:
+  - `prisma/schema.prisma`
+  - `prisma/migrations/20261023150000_be3_foundation/migration.sql`
+  - `apps/api/src/app.module.ts`
+  - `apps/api/src/modules/interview/`
+  - `apps/api/src/modules/notification/`
+  - `apps/api/src/modules/audit/`
+  - `apps/api/src/modules/evaluation/`
+  - `apps/api/src/modules/reporting/`
+  - `apps/worker/src/`
+  - `libs/contracts/backend/`
+  - `libs/contracts/public/`
+  - `libs/platform/mail/`
+  - `libs/platform/video/`
+- Kiểm tra đã chạy:
+  - `npm run db:generate` & `npm run db:validate`: PASS (Prisma Schema valid).
+  - `npm run typecheck`: PASS 100% (cả backend và `@rms/web`).
+  - `npm run lint`: PASS 100% (0 errors, 0 warnings trên toàn bộ apps/libs/tests).
+  - `npm run build`: PASS 100% (cả `@rms/api`, `@rms/web` và `@rms/worker`).
+  - `npm run test:unit:ci -- --runInBand`: PASS 100% (50/50 test suites PASS, 406/406 tests PASS, coverage đạt ngưỡng).
+  - `node --test scripts/database/test-environment.test.cjs`: PASS 3/3 tests.
+  - `npm run test:evidence`: PASS 8/8 tests.
+- Kiểm tra chưa chạy / coverage: Chưa chạy integration tests và migration deploy trên live Neon Postgres DB (sẽ chạy trong CI GitHub Actions của PR). Coverage unit test đạt yêu cầu CI threshold (branches >= 70%, lines >= 80%).
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác:
+  - Bổ sung migration `20261023150000_be3_foundation` tạo các bảng `interview`, `interview_participant`, `interview_reservation`, `evaluation`, `outbox_event`, `notification`, `email_delivery`, `audit_log`.
+  - Mở rộng các endpoint API cho Notification, Event Operations, và Audit Query.
+  - Các module BE1 và BE2 không bị phá vỡ (toàn bộ 368 tests cũ tiếp tục pass 100%).
+- Phần còn thiếu / blocker: Cần push nhánh lên remote GitHub và tạo Pull Request vào nhánh `main`.
+- Bước tiếp theo: Commit, push nhánh `pr/be3-integration-20261025` lên GitHub và tạo Pull Request vào `main`.
 
 ### 2026-10-25 16:30 (Asia/Saigon) — Frontend / Antigravity — Hoàn thành tái thiết kế toàn bộ UI/UX theo chuẩn Talento
 

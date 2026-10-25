@@ -425,3 +425,245 @@ export interface SecurityCancelInterviewRequest {
   version: number;
   reason: string;
 }
+
+// ==========================================
+// BE3 Public Contracts: Interview (UC03, UC08)
+// ==========================================
+export const INTERVIEW_STATUSES = [
+  'PROPOSED',
+  'CONFIRMED',
+  'DECLINED',
+  'EXPIRED',
+  'CANCELLED',
+  'COMPLETED',
+  'NO_SHOW',
+] as const;
+export type InterviewStatus = (typeof INTERVIEW_STATUSES)[number];
+
+export const PARTICIPANT_ROLES = ['CANDIDATE', 'INTERVIEWER'] as const;
+export type ParticipantRole = (typeof PARTICIPANT_ROLES)[number];
+
+export const INTERVIEW_RESPONSES = ['PENDING', 'ACCEPTED', 'DECLINED'] as const;
+export type InterviewResponse = (typeof INTERVIEW_RESPONSES)[number];
+
+export const ATTENDANCE_STATUSES = ['UNKNOWN', 'ATTENDED', 'ABSENT'] as const;
+export type AttendanceStatus = (typeof ATTENDANCE_STATUSES)[number];
+
+export const ROOM_ACCESS_STATES = ['ACTIVE', 'REVOKE_PENDING', 'REVOKED'] as const;
+export type RoomAccessState = (typeof ROOM_ACCESS_STATES)[number];
+
+export interface ProposeInterviewRequest {
+  startAt: string;
+  endAt: string;
+  interviewerIds: string[];
+}
+
+export interface RespondInterviewRequest {
+  response: 'ACCEPTED' | 'DECLINED';
+  interviewVersion: number;
+}
+
+export interface RescheduleInterviewRequest {
+  startAt: string;
+  endAt: string;
+  interviewerIds: string[];
+  reason: string;
+  version: number;
+}
+
+export interface CancelInterviewRequest {
+  reason: string;
+  version: number;
+}
+
+export interface JoinInterviewResponse {
+  token: string;
+  roomName: string;
+  domain: string;
+  expiresAt: string;
+  roomKey: string;
+}
+
+export interface InterviewParticipantDto {
+  userId: string;
+  participantRole: ParticipantRole;
+  response: InterviewResponse;
+  respondedAt: string | null;
+  attendance: AttendanceStatus;
+  attendanceReason: string | null;
+  version: number;
+  fullName?: string;
+  email?: string;
+}
+
+export interface InterviewSummaryDto {
+  id: string;
+  applicationId: string;
+  startAt: string;
+  endAt: string;
+  status: InterviewStatus;
+  roomAccessState: RoomAccessState;
+  replacesInterviewId: string | null;
+  expiresAt: string;
+  version: number;
+  createdAt: string;
+  participants: InterviewParticipantDto[];
+}
+
+export interface InterviewDetailDto extends InterviewSummaryDto {
+  cancelReason: string | null;
+  outcomeReason: string | null;
+  completedAt: string | null;
+  cancelledAt: string | null;
+}
+
+// ==========================================
+// BE3 Public Contracts: Evaluation (UC13)
+// ==========================================
+export const RECOMMENDATIONS = ['HIRE', 'HOLD', 'REJECT'] as const;
+export type Recommendation = (typeof RECOMMENDATIONS)[number];
+
+export interface RecordAttendanceRequest {
+  attendance: AttendanceStatus;
+  reason?: string;
+  participantVersion: number;
+  interviewVersion: number;
+}
+
+export interface SubmitEvaluationRequest {
+  technicalScore: number;
+  communicationScore: number;
+  fitScore: number;
+  recommendation: Recommendation;
+  internalNote: string;
+  version?: number;
+}
+
+export interface CompleteInterviewRequest {
+  version: number;
+}
+
+export interface NoShowInterviewRequest {
+  reason: string;
+  version: number;
+}
+
+export interface MarkInterviewedRequest {
+  version: number;
+}
+
+export interface EvaluationDto {
+  id: string;
+  interviewId: string;
+  interviewerId: string;
+  technicalScore: number;
+  communicationScore: number;
+  fitScore: number;
+  recommendation: Recommendation;
+  internalNote: string;
+  submittedAt: string;
+  updatedAt: string;
+  version: number;
+}
+
+export interface ApplicationEvaluationsDto {
+  applicationId: string;
+  evaluations: EvaluationDto[];
+  isCompleted: boolean;
+}
+
+// ==========================================
+// BE3 Public Contracts: Notification (UC15)
+// ==========================================
+export const NOTIFICATION_TARGET_TYPES = ['APPLICATION', 'INTERVIEW', 'COMPANY', 'JOB'] as const;
+export type NotificationTargetType = (typeof NOTIFICATION_TARGET_TYPES)[number];
+
+export interface NotificationDto {
+  id: string;
+  title: string;
+  content: string;
+  targetType: NotificationTargetType;
+  targetId: string;
+  readAt: string | null;
+  createdAt: string;
+}
+
+export interface NotificationsPageResponse {
+  data: NotificationDto[];
+  meta: {
+    page: number;
+    pageSize: number;
+    total: number;
+    unreadCount: number;
+  };
+}
+
+// ==========================================
+// BE3 Public Contracts: Reporting & Statistics (UC16)
+// ==========================================
+export interface RecruitmentStatisticsQuery {
+  companyId?: string;
+  from: string;
+  to: string;
+  jobId?: string;
+}
+
+export interface StageMetricDto {
+  count: number;
+  rate: number | null;
+}
+
+export interface RecruitmentStatisticsDto {
+  companyId: string;
+  jobId: string | null;
+  from: string;
+  to: string;
+  asOf: string;
+  totalJobsPublished: number;
+  cohortApplications: number;
+  stages: {
+    submitted: StageMetricDto;
+    screening: StageMetricDto;
+    shortlisted: StageMetricDto;
+    interviewScheduled: StageMetricDto;
+    interviewed: StageMetricDto;
+    hired: StageMetricDto;
+    rejected: StageMetricDto;
+    withdrawn: StageMetricDto;
+  };
+}
+
+// ==========================================
+// BE3 Public Contracts: Admin Operations (UC10, UC15)
+// ==========================================
+export interface OutboxEventAdminDto {
+  id: string;
+  aggregateType: string;
+  aggregateId: string;
+  eventType: string;
+  status: 'PENDING' | 'PROCESSING' | 'DONE' | 'FAILED';
+  attemptCount: number;
+  nextRetryAt: string;
+  lockedUntil: string | null;
+  lastErrorCode: string | null;
+  createdAt: string;
+  processedAt: string | null;
+  schemaVersion: number;
+  aggregateVersion: number;
+}
+
+export interface RetryEventRequest {
+  reason: string;
+}
+
+export interface AuditLogDto {
+  id: string;
+  actorId: string | null;
+  action: string;
+  entityType: string;
+  entityId: string;
+  reason: string | null;
+  traceId: string;
+  createdAt: string;
+}
+

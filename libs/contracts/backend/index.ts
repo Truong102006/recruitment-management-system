@@ -11,6 +11,7 @@ export type {
 } from '../../platform/database/unit-of-work';
 export type { Be2Event, Be2EventPayloads } from './events';
 export type { Be1Event, Be1EventPayloads } from './be1-events';
+export type { Be3Event, Be3EventPayloads, AnyDomainEvent } from './be3-events';
 
 export interface Actor {
   readonly userId: string;
@@ -249,7 +250,7 @@ export interface InterviewLifecyclePort {
 }
 export interface OutboxPort {
   append(
-    event: import('./events').Be2Event | import('./be1-events').Be1Event,
+    event: import('./events').Be2Event | import('./be1-events').Be1Event | import('./be3-events').Be3Event,
     tx: Tx,
   ): Promise<void>;
 }
