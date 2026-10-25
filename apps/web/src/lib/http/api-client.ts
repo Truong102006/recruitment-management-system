@@ -14,7 +14,17 @@ export class ApiException extends Error implements ApiError {
     this.fieldErrors = error.fieldErrors;
     this.traceId = error.traceId ?? '';
   }
+
+  public static isApiError(err: unknown): err is ApiException {
+    return err instanceof ApiException;
+  }
 }
+
+export function isApiException(err: unknown): err is ApiException {
+  return err instanceof ApiException;
+}
+
+export const isApiError = isApiException;
 
 export interface RequestOptions extends RequestInit {
   idempotencyKey?: string;

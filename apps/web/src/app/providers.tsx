@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from '../features/auth/context/auth-context';
 import { CompanyProvider } from '../features/companies/context/company-context';
+import { ErrorBoundary } from '../components/errors/error-boundary';
 
 export interface AppProvidersProps {
   children: React.ReactNode;
@@ -28,10 +29,12 @@ export const AppProviders: React.FC<AppProvidersProps> = ({
   );
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <CompanyProvider>{children}</CompanyProvider>
-      </AuthProvider>
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <CompanyProvider>{children}</CompanyProvider>
+        </AuthProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 };
