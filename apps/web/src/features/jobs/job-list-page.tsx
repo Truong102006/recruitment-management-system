@@ -98,24 +98,26 @@ export function JobListPage() {
   return (
     <div
       data-testid="job-list-page"
-      style={{ maxWidth: '1200px', margin: '0 auto', padding: 'var(--space-6) var(--space-4)' }}
+      style={{ maxWidth: '1240px', margin: '0 auto', padding: 'var(--space-6) var(--space-4)' }}
     >
       {/* Header */}
       <div style={{ marginBottom: 'var(--space-6)' }}>
         <h1
           style={{
-            fontSize: 'var(--font-size-3xl)',
-            fontWeight: 'var(--font-weight-bold)',
-            color: 'var(--color-foreground)',
+            fontSize: '32px',
+            fontWeight: 600,
+            fontFamily: 'var(--font-d)',
+            letterSpacing: '-0.025em',
+            color: 'var(--ink)',
           }}
         >
           Cơ hội việc làm công nghệ
         </h1>
         <p
           style={{
-            color: 'var(--color-muted)',
-            fontSize: 'var(--font-size-base)',
-            marginTop: 'var(--space-1)',
+            color: 'var(--muted)',
+            fontSize: '15px',
+            marginTop: '6px',
           }}
         >
           Tìm kiếm công việc lý tưởng phù hợp năng lực và định hướng tương lai của bạn
@@ -126,15 +128,16 @@ export function JobListPage() {
       <form
         onSubmit={handleSearchSubmit}
         aria-label="Bộ lọc tìm kiếm việc làm"
+        className="card"
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
           gap: 'var(--space-4)',
-          backgroundColor: 'var(--color-surface)',
-          padding: 'var(--space-5)',
-          borderRadius: 'var(--radius-lg)',
-          border: '1px solid var(--color-border)',
-          boxShadow: 'var(--shadow-sm)',
+          backgroundColor: 'var(--card)',
+          padding: '24px',
+          borderRadius: '20px',
+          border: '1px solid var(--hair)',
+          boxShadow: 'var(--sh-s)',
           marginBottom: 'var(--space-8)',
         }}
       >
@@ -302,18 +305,19 @@ export function JobListPage() {
           </div>
 
           {jobs.map((job) => (
-            <div
+            <article
               key={job.id}
+              className="card"
               style={{
-                backgroundColor: 'var(--color-surface)',
-                borderRadius: 'var(--radius-lg)',
-                border: '1px solid var(--color-border)',
-                padding: 'var(--space-6)',
-                boxShadow: 'var(--shadow-sm)',
+                backgroundColor: 'var(--card)',
+                borderRadius: '18px',
+                border: '1px solid var(--hair)',
+                padding: '22px 24px',
+                boxShadow: 'var(--sh-s)',
                 display: 'flex',
                 flexDirection: 'column',
-                gap: 'var(--space-3)',
-                transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
+                gap: '12px',
+                transition: 'transform 0.3s var(--spring), box-shadow 0.25s, border-color 0.15s',
               }}
             >
               <div
@@ -422,7 +426,7 @@ export function JobListPage() {
                   </Button>
                 </Link>
               </div>
-            </div>
+            </article>
           ))}
 
           {/* Pagination */}

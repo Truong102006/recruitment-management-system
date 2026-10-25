@@ -215,15 +215,16 @@ export function ProfilePage() {
 
       <form
         onSubmit={handleSubmit}
+        className="card"
         style={{
           display: 'flex',
           flexDirection: 'column',
           gap: 'var(--space-5)',
-          backgroundColor: 'var(--color-surface)',
-          padding: 'var(--space-8)',
-          borderRadius: 'var(--radius-lg)',
-          border: '1px solid var(--color-border)',
-          boxShadow: 'var(--shadow-sm)',
+          backgroundColor: 'var(--card)',
+          padding: '32px',
+          borderRadius: '24px',
+          border: '1px solid var(--hair)',
+          boxShadow: 'var(--sh-s)',
         }}
       >
         <Input

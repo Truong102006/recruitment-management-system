@@ -148,13 +148,22 @@ export const AdminJobsPage: React.FC = () => {
     <div
       className="admin-jobs-page"
       data-testid="ui27-admin-jobs"
-      style={{ maxWidth: '1240px', margin: '0 auto', padding: '1.5rem' }}
+      style={{ maxWidth: '1280px', margin: '0 auto', padding: '1.5rem' }}
     >
       <div style={{ marginBottom: '1.5rem' }}>
-        <h1 style={{ fontSize: '1.75rem', fontWeight: 700, margin: 0 }}>
+        <h1
+          style={{
+            fontSize: '28px',
+            fontWeight: 600,
+            fontFamily: 'var(--font-d)',
+            letterSpacing: '-0.02em',
+            color: 'var(--ink)',
+            margin: 0,
+          }}
+        >
           Kiểm duyệt Tin Tuyển dụng (UI27)
         </h1>
-        <p style={{ color: 'var(--color-text-muted)', margin: '0.25rem 0 0' }}>
+        <p style={{ color: 'var(--muted)', fontSize: '14px', margin: '4px 0 0' }}>
           Đóng các tin tuyển dụng vi phạm chính sách hoặc phát hiện nội dung lừa đảo toàn hệ thống.
         </p>
       </div>
@@ -164,12 +173,14 @@ export const AdminJobsPage: React.FC = () => {
         <div
           data-testid="success-alert"
           style={{
-            padding: '0.85rem 1.25rem',
-            background: 'var(--color-success-subtle)',
-            border: '1px solid var(--color-success)',
-            borderRadius: '8px',
+            padding: '12px 18px',
+            background: 'var(--p2b)',
+            border: '1px solid var(--green)',
+            borderRadius: '12px',
             marginBottom: '1rem',
-            color: 'var(--color-success)',
+            color: 'var(--green)',
+            fontSize: '14px',
+            fontWeight: 500,
           }}
         >
           {successMessage}
@@ -180,12 +191,13 @@ export const AdminJobsPage: React.FC = () => {
         <div
           data-testid="error-alert"
           style={{
-            padding: '0.85rem 1.25rem',
-            background: 'var(--color-danger-subtle)',
-            border: '1px solid var(--color-danger)',
-            borderRadius: '8px',
+            padding: '12px 18px',
+            background: 'var(--p3b)',
+            border: '1px solid var(--red)',
+            borderRadius: '12px',
             marginBottom: '1rem',
-            color: 'var(--color-danger)',
+            color: 'var(--red)',
+            fontSize: '14px',
           }}
         >
           {error}
@@ -194,16 +206,18 @@ export const AdminJobsPage: React.FC = () => {
 
       {/* Filter Toolbar */}
       <div
+        className="card"
         style={{
           display: 'flex',
           gap: '1rem',
           alignItems: 'center',
           flexWrap: 'wrap',
-          marginBottom: '1.25rem',
-          background: 'var(--color-bg-surface)',
-          padding: '1rem',
-          borderRadius: '8px',
-          border: '1px solid var(--color-border)',
+          marginBottom: '1.5rem',
+          backgroundColor: 'var(--card)',
+          padding: '1.25rem',
+          borderRadius: '16px',
+          border: '1px solid var(--hair)',
+          boxShadow: 'var(--sh-s)',
         }}
       >
         <div>

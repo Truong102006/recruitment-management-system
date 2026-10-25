@@ -88,43 +88,54 @@ export function RegisterPage() {
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          minHeight: '70vh',
-          padding: 'var(--space-4) 0',
+          minHeight: '75vh',
+          padding: 'var(--space-8) var(--space-4)',
+          background: 'var(--canvas)',
+          backgroundImage: 'radial-gradient(var(--dot) 1px, transparent 1.2px)',
+          backgroundSize: '8px 8px',
+          borderRadius: '32px',
+          margin: 'var(--space-4) 0',
         }}
       >
         <div
+          className="card auth-card"
           style={{
             width: '100%',
             maxWidth: '480px',
-            backgroundColor: 'var(--color-surface)',
-            padding: 'var(--space-8)',
-            borderRadius: 'var(--radius-lg)',
-            boxShadow: 'var(--shadow-md)',
-            border: '1px solid var(--color-border)',
+            backgroundColor: 'var(--card)',
+            padding: '36px 32px 30px',
+            borderRadius: '28px',
+            boxShadow: 'var(--sh-m)',
+            border: '1px solid var(--hair)',
             textAlign: 'center',
+            animation: 'rise 0.4s var(--spring)',
           }}
         >
           <div
             style={{
-              width: '48px',
-              height: '48px',
-              borderRadius: '50%',
-              backgroundColor: 'var(--color-success-bg)',
-              color: 'var(--color-success)',
+              width: '52px',
+              height: '52px',
+              borderRadius: '16px',
+              backgroundColor: 'var(--p2b)',
+              color: 'var(--p2f)',
               display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'center',
               fontSize: '24px',
+              fontWeight: 700,
               marginBottom: 'var(--space-4)',
+              boxShadow: 'var(--sh-s)',
             }}
           >
             ✓
           </div>
           <h1
             style={{
-              fontSize: 'var(--font-size-2xl)',
-              fontWeight: 'var(--font-weight-bold)',
-              color: 'var(--color-foreground)',
+              fontSize: '24px',
+              fontWeight: 600,
+              fontFamily: 'var(--font-d)',
+              letterSpacing: '-0.02em',
+              color: 'var(--ink)',
               marginBottom: 'var(--space-2)',
             }}
           >
@@ -132,10 +143,10 @@ export function RegisterPage() {
           </h1>
           <p
             style={{
-              color: 'var(--color-muted)',
-              fontSize: 'var(--font-size-base)',
+              color: 'var(--muted)',
+              fontSize: '14px',
               marginBottom: 'var(--space-6)',
-              lineHeight: 'var(--line-height-base)',
+              lineHeight: 1.5,
             }}
           >
             Chúng tôi đã gửi một liên kết xác minh đến địa chỉ email <strong>{email}</strong>. Vui
@@ -166,36 +177,61 @@ export function RegisterPage() {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        minHeight: '70vh',
-        padding: 'var(--space-4) 0',
+        minHeight: '75vh',
+        padding: 'var(--space-8) var(--space-4)',
+        background: 'var(--canvas)',
+        backgroundImage: 'radial-gradient(var(--dot) 1px, transparent 1.2px)',
+        backgroundSize: '8px 8px',
+        borderRadius: '32px',
+        margin: 'var(--space-4) 0',
       }}
     >
       <div
+        className="card auth-card"
         style={{
           width: '100%',
           maxWidth: '480px',
-          backgroundColor: 'var(--color-surface)',
-          padding: 'var(--space-8)',
-          borderRadius: 'var(--radius-lg)',
-          boxShadow: 'var(--shadow-md)',
-          border: '1px solid var(--color-border)',
+          backgroundColor: 'var(--card)',
+          padding: '36px 32px 30px',
+          borderRadius: '28px',
+          boxShadow: 'var(--sh-m)',
+          border: '1px solid var(--hair)',
+          animation: 'rise 0.4s var(--spring)',
         }}
       >
         <div style={{ textAlign: 'center', marginBottom: 'var(--space-6)' }}>
+          <div
+            className="tile static logo-tile"
+            style={{
+              margin: '0 auto 16px',
+              width: '56px',
+              height: '56px',
+              borderRadius: '16px',
+            }}
+          >
+            <span className="dots">
+              <i />
+              <i />
+              <i />
+              <i />
+            </span>
+          </div>
           <h1
             style={{
-              fontSize: 'var(--font-size-2xl)',
-              fontWeight: 'var(--font-weight-bold)',
-              color: 'var(--color-foreground)',
+              fontSize: '26px',
+              fontWeight: 600,
+              fontFamily: 'var(--font-d)',
+              letterSpacing: '-0.02em',
+              color: 'var(--ink)',
             }}
           >
             Tạo tài khoản mới
           </h1>
           <p
             style={{
-              color: 'var(--color-muted)',
-              fontSize: 'var(--font-size-sm)',
-              marginTop: 'var(--space-1)',
+              color: 'var(--muted)',
+              fontSize: '14px',
+              marginTop: '6px',
             }}
           >
             Gia nhập cộng đồng tuyển dụng RecruitFlow ngay hôm nay

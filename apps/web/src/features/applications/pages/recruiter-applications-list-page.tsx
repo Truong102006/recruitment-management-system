@@ -6,6 +6,7 @@ import { recruiterJobsApi } from '../../jobs/recruiter/api/recruiter-jobs.api';
 import { DataTable, type ColumnDef } from '../../../components/data-table/data-table';
 import { StatusBadge } from '../../../components/ui/status-badge';
 import { ApiException } from '../../../lib/http/api-client';
+import { burst } from '../../../lib/talento-effects';
 import type { ApplicationStatus, JobSummaryDto } from '@rms/contracts/public';
 import type { DevApplicationItem } from '../../../lib/mocks/dev-mock-store';
 
@@ -29,6 +30,7 @@ export const RecruiterApplicationsListPage: React.FC = () => {
   const [jobs, setJobs] = useState<JobSummaryDto[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'table' | 'kanban'>('table');
 
   // Filters
   const [selectedJobId, setSelectedJobId] = useState<string>('ALL');
@@ -214,18 +216,83 @@ export const RecruiterApplicationsListPage: React.FC = () => {
     );
   }
 
+  const KANBAN_STAGES = [
+    { id: 'SUBMITTED', name: 'Ứng tuyển', color: 'var(--cyan)' },
+    { id: 'SCREENING', name: 'Sàng lọc', color: 'var(--blue)' },
+    { id: 'SHORTLISTED', name: 'Danh sách ngắn', color: '#8b5cf6' },
+    { id: 'INTERVIEWS', name: 'Phỏng vấn', color: 'var(--amber)', statuses: ['INTERVIEW_SCHEDULED', 'INTERVIEWED'] },
+    { id: 'HIRED', name: 'Trúng tuyển', color: 'var(--green)' },
+    { id: 'REJECTED', name: 'Từ chối', color: 'var(--red)', statuses: ['REJECTED', 'WITHDRAWN'] },
+  ];
+
+  const getInitials = (name: string) => {
+    const parts = name.trim().split(/\s+/).filter(Boolean);
+    if (parts.length >= 2) {
+      const p1 = parts[parts.length - 2] ?? '';
+      const p2 = parts[parts.length - 1] ?? '';
+      return `${p1.charAt(0)}${p2.charAt(0)}`.toUpperCase();
+    }
+    const single = parts[0] ?? '';
+    return single.slice(0, 2).toUpperCase();
+  };
+
+  const getPalIndex = (name: string) => {
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) >>> 0;
+    return hash % 5;
+  };
+
   return (
     <div
       className="recruiter-applications-page"
       data-testid="ui19-applications-list"
-      style={{ maxWidth: '1240px', margin: '0 auto', padding: '1.5rem' }}
+      style={{ maxWidth: '1280px', margin: '0 auto', padding: '1.5rem' }}
     >
-      <div style={{ marginBottom: '1.5rem' }}>
-        <h1 style={{ fontSize: '1.75rem', fontWeight: 700, margin: 0 }}>Hồ sơ Ứng viên (UI19)</h1>
-        <p style={{ color: 'var(--color-text-muted)', margin: '0.25rem 0 0' }}>
-          Quản lý toàn bộ hồ sơ ứng tuyển, lọc theo vị trí tuyển dụng và trạng thái xét duyệt
-          (FE30).
-        </p>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+          marginBottom: '1.5rem',
+          flexWrap: 'wrap',
+          gap: '12px',
+        }}
+      >
+        <div>
+          <h1
+            style={{
+              fontSize: '28px',
+              fontWeight: 600,
+              fontFamily: 'var(--font-d)',
+              letterSpacing: '-0.02em',
+              color: 'var(--ink)',
+              margin: 0,
+            }}
+          >
+            Hồ sơ Ứng viên (UI19)
+          </h1>
+          <p style={{ color: 'var(--muted)', fontSize: '14px', margin: '4px 0 0' }}>
+            Quản lý toàn bộ hồ sơ ứng tuyển, lọc theo vị trí tuyển dụng và trạng thái xét duyệt (FE30).
+          </p>
+        </div>
+
+        {/* View Mode Switcher */}
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <button
+            type="button"
+            className={`btn sm ${viewMode === 'table' ? 'primary' : ''}`}
+            onClick={() => setViewMode('table')}
+          >
+            Bảng dữ liệu
+          </button>
+          <button
+            type="button"
+            className={`btn sm ${viewMode === 'kanban' ? 'primary' : ''}`}
+            onClick={() => setViewMode('kanban')}
+          >
+            Quy trình Kanban
+          </button>
+        </div>
       </div>
 
       {/* Error alert */}
@@ -233,12 +300,13 @@ export const RecruiterApplicationsListPage: React.FC = () => {
         <div
           data-testid="applications-error-alert"
           style={{
-            padding: '0.85rem 1.25rem',
-            background: 'var(--color-danger-subtle)',
-            border: '1px solid var(--color-danger)',
-            borderRadius: '8px',
+            padding: '12px 18px',
+            background: 'var(--p3b)',
+            border: '1px solid var(--red)',
+            borderRadius: '12px',
             marginBottom: '1rem',
-            color: 'var(--color-danger)',
+            color: 'var(--red)',
+            fontSize: '14px',
           }}
         >
           {error}
@@ -247,15 +315,17 @@ export const RecruiterApplicationsListPage: React.FC = () => {
 
       {/* Filter and Search Bar */}
       <div
+        className="card"
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
           gap: '1rem',
-          marginBottom: '1.25rem',
-          background: 'var(--color-bg-surface)',
-          padding: '1rem',
-          borderRadius: '8px',
-          border: '1px solid var(--color-border)',
+          marginBottom: '1.5rem',
+          backgroundColor: 'var(--card)',
+          padding: '1.25rem',
+          borderRadius: '18px',
+          border: '1px solid var(--hair)',
+          boxShadow: 'var(--sh-s)',
         }}
       >
         <div>
@@ -263,9 +333,10 @@ export const RecruiterApplicationsListPage: React.FC = () => {
             htmlFor="filter-job"
             style={{
               display: 'block',
-              fontSize: '0.85rem',
-              fontWeight: 600,
-              marginBottom: '0.3rem',
+              fontSize: '13px',
+              fontWeight: 500,
+              color: 'var(--ink2)',
+              marginBottom: '6px',
             }}
           >
             Vị trí tuyển dụng
@@ -277,10 +348,12 @@ export const RecruiterApplicationsListPage: React.FC = () => {
             onChange={(e) => setSelectedJobId(e.target.value)}
             style={{
               width: '100%',
-              padding: '0.5rem 0.75rem',
-              borderRadius: '6px',
-              border: '1px solid var(--color-border)',
-              fontSize: '0.9rem',
+              padding: '9px 12px',
+              borderRadius: '10px',
+              border: '1px solid var(--line)',
+              backgroundColor: 'var(--card)',
+              fontSize: '13.5px',
+              color: 'var(--ink)',
             }}
           >
             <option value="ALL">Tất cả vị trí tin tuyển dụng</option>
@@ -297,9 +370,10 @@ export const RecruiterApplicationsListPage: React.FC = () => {
             htmlFor="filter-status"
             style={{
               display: 'block',
-              fontSize: '0.85rem',
-              fontWeight: 600,
-              marginBottom: '0.3rem',
+              fontSize: '13px',
+              fontWeight: 500,
+              color: 'var(--ink2)',
+              marginBottom: '6px',
             }}
           >
             Trạng thái xét duyệt
@@ -311,10 +385,12 @@ export const RecruiterApplicationsListPage: React.FC = () => {
             onChange={(e) => setSelectedStatus(e.target.value as 'ALL' | ApplicationStatus)}
             style={{
               width: '100%',
-              padding: '0.5rem 0.75rem',
-              borderRadius: '6px',
-              border: '1px solid var(--color-border)',
-              fontSize: '0.9rem',
+              padding: '9px 12px',
+              borderRadius: '10px',
+              border: '1px solid var(--line)',
+              backgroundColor: 'var(--card)',
+              fontSize: '13.5px',
+              color: 'var(--ink)',
             }}
           >
             {STATUS_OPTIONS.map((opt) => (
@@ -330,9 +406,10 @@ export const RecruiterApplicationsListPage: React.FC = () => {
             htmlFor="search-input"
             style={{
               display: 'block',
-              fontSize: '0.85rem',
-              fontWeight: 600,
-              marginBottom: '0.3rem',
+              fontSize: '13px',
+              fontWeight: 500,
+              color: 'var(--ink2)',
+              marginBottom: '6px',
             }}
           >
             Tìm kiếm ứng viên
@@ -346,23 +423,95 @@ export const RecruiterApplicationsListPage: React.FC = () => {
             placeholder="Tên, email, headline..."
             style={{
               width: '100%',
-              padding: '0.5rem 0.75rem',
-              borderRadius: '6px',
-              border: '1px solid var(--color-border)',
-              fontSize: '0.9rem',
+              padding: '9px 12px',
+              borderRadius: '10px',
+              border: '1px solid var(--line)',
+              backgroundColor: 'var(--card)',
+              fontSize: '13.5px',
+              color: 'var(--ink)',
             }}
           />
         </div>
       </div>
 
-      {/* Applications DataTable */}
-      <DataTable
-        data={applications}
-        columns={columns}
-        keyExtractor={(item) => item.applicationId}
-        loading={loading}
-        emptyMessage="Không tìm thấy hồ sơ ứng viên nào phù hợp với bộ lọc."
-      />
+      {viewMode === 'kanban' ? (
+        /* Talento Kanban Pipeline Board */
+        <div className="board" style={{ marginTop: '1rem' }}>
+          {KANBAN_STAGES.map((stage) => {
+            const stageApps = applications.filter((app) =>
+              stage.statuses ? stage.statuses.includes(app.status) : app.status === stage.id,
+            );
+            return (
+              <div key={stage.id} className="col" data-stage={stage.id.toLowerCase()}>
+                <div className="col-h" style={{ '--c': stage.color } as React.CSSProperties}>
+                  <i className="sq" />
+                  {stage.name}
+                  <span className="n">{stageApps.length}</span>
+                </div>
+                {stageApps.length === 0 ? (
+                  <div className="empty" style={{ padding: '24px 8px', fontSize: '12px' }}>
+                    Chưa có hồ sơ
+                  </div>
+                ) : (
+                  stageApps.map((app) => (
+                    <article
+                      key={app.applicationId}
+                      className="kc"
+                      tabIndex={0}
+                      onClick={(e) => {
+                        if (app.status === 'HIRED') {
+                          burst(e.clientX, e.clientY, 32);
+                        }
+                        navigate(`/recruiter/applications/${app.applicationId}`);
+                      }}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <div className="kc-top">
+                        <span className={`av p${getPalIndex(app.candidateSnapshot.name)}`} style={{ '--s': '32px' } as React.CSSProperties}>
+                          {getInitials(app.candidateSnapshot.name)}
+                        </span>
+                        <div>
+                          <b>{app.candidateSnapshot.name}</b>
+                          <span className="j">{app.jobTitle || 'Vị trí công việc'}</span>
+                        </div>
+                      </div>
+                      <div className="kc-meta">
+                        <span className="chip" style={{ fontFamily: 'monospace' }}>
+                          CV: {app.currentCvVersionId}
+                        </span>
+                        <StatusBadge status={app.status} size="sm" />
+                      </div>
+                      {app.pendingCvChange && (
+                        <div
+                          style={{
+                            fontSize: '11px',
+                            color: 'var(--amber)',
+                            fontWeight: 600,
+                            padding: '3px 6px',
+                            background: 'var(--p1b)',
+                            borderRadius: '6px',
+                          }}
+                        >
+                          ⚡ Có đề nghị đổi CV
+                        </div>
+                      )}
+                    </article>
+                  ))
+                )}
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        /* Applications DataTable */
+        <DataTable
+          data={applications}
+          columns={columns}
+          keyExtractor={(item) => item.applicationId}
+          loading={loading}
+          emptyMessage="Không tìm thấy hồ sơ ứng viên nào phù hợp với bộ lọc."
+        />
+      )}
     </div>
   );
 };

@@ -15,6 +15,7 @@ export const RecruiterJobsListPage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'table' | 'cards'>('table');
 
   // Filter state
   const [statusFilter, setStatusFilter] = useState<'ALL' | JobPostStatus>('ALL');
@@ -311,22 +312,36 @@ export const RecruiterJobsListPage: React.FC = () => {
             Toàn bộ tin tuyển dụng (nháp, công bố, đã đóng) của công ty.
           </p>
         </div>
-        <Link
-          to="/recruiter/jobs/new"
-          data-testid="create-job-btn"
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            padding: '0.6rem 1.25rem',
-            borderRadius: '6px',
-            background: 'var(--color-primary)',
-            color: '#fff',
-            fontWeight: 600,
-            textDecoration: 'none',
-          }}
-        >
-          + Đăng tin mới
-        </Link>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: '4px', background: 'var(--soft)', padding: '3px', borderRadius: '10px' }}>
+            <button
+              type="button"
+              className={`btn sm ${viewMode === 'table' ? 'primary' : ''}`}
+              onClick={() => setViewMode('table')}
+            >
+              Bảng dữ liệu
+            </button>
+            <button
+              type="button"
+              className={`btn sm ${viewMode === 'cards' ? 'primary' : ''}`}
+              onClick={() => setViewMode('cards')}
+            >
+              Thẻ việc làm
+            </button>
+          </div>
+          <Link
+            to="/recruiter/jobs/new"
+            data-testid="create-job-btn"
+            className="btn primary sm"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              textDecoration: 'none',
+            }}
+          >
+            + Đăng tin mới
+          </Link>
+        </div>
       </div>
 
       {/* Success notification */}
@@ -334,12 +349,14 @@ export const RecruiterJobsListPage: React.FC = () => {
         <div
           data-testid="success-alert"
           style={{
-            padding: '0.85rem 1.25rem',
-            background: 'var(--color-success-subtle)',
-            border: '1px solid var(--color-success)',
-            borderRadius: '8px',
+            padding: '12px 18px',
+            background: 'var(--p2b)',
+            border: '1px solid var(--green)',
+            borderRadius: '12px',
             marginBottom: '1rem',
-            color: 'var(--color-success)',
+            color: 'var(--green)',
+            fontSize: '14px',
+            fontWeight: 500,
           }}
         >
           {successMessage}
@@ -351,12 +368,13 @@ export const RecruiterJobsListPage: React.FC = () => {
         <div
           data-testid="jobs-error-alert"
           style={{
-            padding: '0.85rem 1.25rem',
-            background: 'var(--color-danger-subtle)',
-            border: '1px solid var(--color-danger)',
-            borderRadius: '8px',
+            padding: '12px 18px',
+            background: 'var(--p3b)',
+            border: '1px solid var(--red)',
+            borderRadius: '12px',
             marginBottom: '1rem',
-            color: 'var(--color-danger)',
+            color: 'var(--red)',
+            fontSize: '14px',
           }}
         >
           {error}
@@ -365,33 +383,30 @@ export const RecruiterJobsListPage: React.FC = () => {
 
       {/* Status Filter Tabs & Search */}
       <div
+        className="card"
         style={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           gap: '1rem',
-          marginBottom: '1.25rem',
+          marginBottom: '1.5rem',
           flexWrap: 'wrap',
+          backgroundColor: 'var(--card)',
+          padding: '12px 16px',
+          borderRadius: '16px',
+          border: '1px solid var(--hair)',
+          boxShadow: 'var(--sh-s)',
         }}
       >
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
+        <div className="tabs" style={{ margin: 0 }}>
           {(['ALL', 'DRAFT', 'PUBLISHED', 'CLOSED'] as const).map((status) => (
             <button
               key={status}
               type="button"
+              className={statusFilter === status ? 'on' : ''}
               data-testid={`filter-tab-${status.toLowerCase()}`}
               onClick={() => setStatusFilter(status)}
-              style={{
-                padding: '0.45rem 0.9rem',
-                borderRadius: '6px',
-                border: '1px solid var(--color-border)',
-                background:
-                  statusFilter === status ? 'var(--color-primary)' : 'var(--color-bg-surface)',
-                color: statusFilter === status ? '#fff' : 'var(--color-text)',
-                fontWeight: statusFilter === status ? 600 : 400,
-                cursor: 'pointer',
-                fontSize: '0.85rem',
-              }}
+              style={{ padding: '6px 12px', fontSize: '13px', fontWeight: statusFilter === status ? 600 : 400 }}
             >
               {status === 'ALL'
                 ? 'Tất cả'
@@ -404,7 +419,7 @@ export const RecruiterJobsListPage: React.FC = () => {
           ))}
         </div>
 
-        <div style={{ minWidth: '280px' }}>
+        <div style={{ minWidth: '240px', flex: '0 1 300px' }}>
           <input
             type="text"
             data-testid="jobs-search-input"
@@ -413,23 +428,80 @@ export const RecruiterJobsListPage: React.FC = () => {
             placeholder="Tìm theo tiêu đề tin..."
             style={{
               width: '100%',
-              padding: '0.45rem 0.8rem',
-              borderRadius: '6px',
-              border: '1px solid var(--color-border)',
-              fontSize: '0.9rem',
+              padding: '8px 12px',
+              borderRadius: '10px',
+              border: '1px solid var(--line)',
+              backgroundColor: 'var(--card)',
+              fontSize: '13.5px',
+              color: 'var(--ink)',
             }}
           />
         </div>
       </div>
 
-      {/* DataTable */}
-      <DataTable
-        data={jobs}
-        columns={columns}
-        keyExtractor={(item) => item.id}
-        loading={loading}
-        emptyMessage="Không có tin tuyển dụng nào phù hợp."
-      />
+      {viewMode === 'cards' ? (
+        /* Talento Job Cards Grid */
+        jobs.length === 0 ? (
+          <div className="card empty" style={{ padding: '40px 16px', textAlign: 'center' }}>
+            Không có tin tuyển dụng nào phù hợp.
+          </div>
+        ) : (
+          <div className="jgrid" style={{ marginBottom: '1.5rem' }}>
+            {jobs.map((job) => (
+              <article key={job.id} className="card jc">
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: '8px', alignItems: 'flex-start' }}>
+                  <h4 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ink)' }}>{job.title}</h4>
+                  <StatusBadge status={job.status} size="sm" />
+                </div>
+                <div className="meta" style={{ fontSize: '12.5px', color: 'var(--muted)' }}>
+                  {job.location} • {job.workplaceMode} • {job.jobType}
+                </div>
+                {job.salary && (
+                  <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--blue)' }}>
+                    {formatSalary(job.salary)}
+                  </div>
+                )}
+                <div className="acts" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: 'auto' }}>
+                  <button
+                    type="button"
+                    className="btn sm"
+                    onClick={() => navigate(`/recruiter/jobs/${job.id}`)}
+                  >
+                    Xem chi tiết
+                  </button>
+                  {job.status === 'PUBLISHED' && (
+                    <button
+                      type="button"
+                      className="btn sm danger"
+                      onClick={() => setCloseTarget(job)}
+                    >
+                      Đóng tin
+                    </button>
+                  )}
+                  {job.status === 'DRAFT' && (
+                    <button
+                      type="button"
+                      className="btn sm primary"
+                      onClick={() => setPublishTarget(job)}
+                    >
+                      Công bố tin
+                    </button>
+                  )}
+                </div>
+              </article>
+            ))}
+          </div>
+        )
+      ) : (
+        /* DataTable */
+        <DataTable
+          data={jobs}
+          columns={columns}
+          keyExtractor={(item) => item.id}
+          loading={loading}
+          emptyMessage="Không có tin tuyển dụng nào phù hợp."
+        />
+      )}
 
       {/* Dialog Đóng tin (BR04, FE27) */}
       <Dialog

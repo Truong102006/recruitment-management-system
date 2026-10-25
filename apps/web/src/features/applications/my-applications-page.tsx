@@ -195,19 +195,21 @@ export function MyApplicationsPage() {
           </div>
 
           {filteredApps.map((app) => (
-            <div
+            <article
               key={app.applicationId}
+              className="card"
               style={{
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 flexWrap: 'wrap',
                 gap: 'var(--space-4)',
-                backgroundColor: 'var(--color-surface)',
-                borderRadius: 'var(--radius-lg)',
-                border: '1px solid var(--color-border)',
-                padding: 'var(--space-6)',
-                boxShadow: 'var(--shadow-sm)',
+                backgroundColor: 'var(--card)',
+                borderRadius: '18px',
+                border: '1px solid var(--hair)',
+                padding: '20px 24px',
+                boxShadow: 'var(--sh-s)',
+                transition: 'transform 0.3s var(--spring), box-shadow 0.25s',
               }}
             >
               <div>
@@ -258,7 +260,7 @@ export function MyApplicationsPage() {
                   </Button>
                 </Link>
               </div>
-            </div>
+            </article>
           ))}
         </div>
       )}

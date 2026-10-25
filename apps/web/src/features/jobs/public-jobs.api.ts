@@ -11,16 +11,21 @@ import type {
 export async function searchPublicJobs(
   query: JobSearchQuery = {},
 ): Promise<PageResponse<JobSummaryDto>> {
+  const salaryMin = query.salaryMin !== undefined ? query.salaryMin : query.minSalary;
+  const salaryMax = query.salaryMax !== undefined ? query.salaryMax : query.maxSalary;
+  const sortBy = query.sortBy || 'createdAt';
+
   const params: Record<string, string | number | boolean | undefined> = {
     q: query.q || undefined,
     location: query.location || undefined,
     jobType: query.jobType || undefined,
     workplaceMode: query.workplaceMode || undefined,
-    minSalary: query.minSalary !== undefined ? query.minSalary : undefined,
-    maxSalary: query.maxSalary !== undefined ? query.maxSalary : undefined,
+    salaryMin: salaryMin !== undefined ? salaryMin : undefined,
+    salaryMax: salaryMax !== undefined ? salaryMax : undefined,
     page: query.page || 1,
     pageSize: query.pageSize || 10,
-    sort: query.sort || 'createdAt',
+    sortBy: sortBy,
+    sortOrder: query.sortOrder || 'desc',
   };
 
   return apiClient.get<PageResponse<JobSummaryDto>>('/api/jobs', { params });

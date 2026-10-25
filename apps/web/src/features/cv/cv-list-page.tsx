@@ -282,17 +282,19 @@ export function CvListPage() {
           {cvs.map((cv) => (
             <div
               key={cv.id}
+              className="card"
               style={{
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 flexWrap: 'wrap',
                 gap: 'var(--space-4)',
-                backgroundColor: 'var(--color-surface)',
-                borderRadius: 'var(--radius-lg)',
-                border: '1px solid var(--color-border)',
-                padding: 'var(--space-5)',
-                boxShadow: 'var(--shadow-sm)',
+                backgroundColor: 'var(--card)',
+                borderRadius: '18px',
+                border: '1px solid var(--hair)',
+                padding: '20px 24px',
+                boxShadow: 'var(--sh-s)',
+                transition: 'transform 0.3s var(--spring), box-shadow 0.25s',
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)' }}>

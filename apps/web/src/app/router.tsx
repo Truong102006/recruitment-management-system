@@ -36,24 +36,7 @@ import {
   interviewStandaloneRoutes,
 } from '../features/interviews/interview.routes';
 import { adminRoutes } from '../features/admin/admin.routes';
-
-const PublicHomePage: React.FC = () => (
-  <div style={{ padding: '40px', textAlign: 'center' }}>
-    <h1>Talento Recruitment Management System</h1>
-    <p>Chào mừng đến với hệ thống quản lý tuyển dụng.</p>
-    <div style={{ marginTop: '20px', display: 'flex', gap: '12px', justifyContent: 'center' }}>
-      <a href="/jobs" className="btn primary">
-        Tìm việc làm
-      </a>
-      <a href="/recruiter/jobs" className="btn">
-        Khu vực Nhà tuyển dụng
-      </a>
-      <a href="/admin/companies" className="btn">
-        Khu vực Quản trị
-      </a>
-    </div>
-  </div>
-);
+import { PublicHomePage } from '../features/home/public-home-page';
 
 export const routes: RouteObject[] = [
   // FE1: Public Shell & Auth Routes

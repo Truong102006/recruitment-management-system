@@ -74,36 +74,61 @@ export function LoginPage() {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        minHeight: '70vh',
-        padding: 'var(--space-4) 0',
+        minHeight: '75vh',
+        padding: 'var(--space-8) var(--space-4)',
+        background: 'var(--canvas)',
+        backgroundImage: 'radial-gradient(var(--dot) 1px, transparent 1.2px)',
+        backgroundSize: '8px 8px',
+        borderRadius: '32px',
+        margin: 'var(--space-4) 0',
       }}
     >
       <div
+        className="card auth-card"
         style={{
           width: '100%',
           maxWidth: '440px',
-          backgroundColor: 'var(--color-surface)',
-          padding: 'var(--space-8)',
-          borderRadius: 'var(--radius-lg)',
-          boxShadow: 'var(--shadow-md)',
-          border: '1px solid var(--color-border)',
+          backgroundColor: 'var(--card)',
+          padding: '36px 32px 30px',
+          borderRadius: '28px',
+          boxShadow: 'var(--sh-m)',
+          border: '1px solid var(--hair)',
+          animation: 'rise 0.4s var(--spring)',
         }}
       >
         <div style={{ textAlign: 'center', marginBottom: 'var(--space-6)' }}>
+          <div
+            className="tile static logo-tile"
+            style={{
+              margin: '0 auto 16px',
+              width: '56px',
+              height: '56px',
+              borderRadius: '16px',
+            }}
+          >
+            <span className="dots">
+              <i />
+              <i />
+              <i />
+              <i />
+            </span>
+          </div>
           <h1
             style={{
-              fontSize: 'var(--font-size-2xl)',
-              fontWeight: 'var(--font-weight-bold)',
-              color: 'var(--color-foreground)',
+              fontSize: '26px',
+              fontWeight: 600,
+              fontFamily: 'var(--font-d)',
+              letterSpacing: '-0.02em',
+              color: 'var(--ink)',
             }}
           >
             Đăng nhập hệ thống
           </h1>
           <p
             style={{
-              color: 'var(--color-muted)',
-              fontSize: 'var(--font-size-sm)',
-              marginTop: 'var(--space-1)',
+              color: 'var(--muted)',
+              fontSize: '14px',
+              marginTop: '6px',
             }}
           >
             Chào mừng bạn quay trở lại với RecruitFlow
