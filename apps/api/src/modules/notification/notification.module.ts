@@ -9,8 +9,10 @@ import { NotificationPolicy } from './policies/notification.policy';
 import { NotificationsController } from './controllers/notifications.controller';
 import { EventOperationsController } from './controllers/event-operations.controller';
 import { PrismaAuditRepository } from '../audit/repositories/prisma-audit.repository';
+import { IdentityModule } from '../identity/identity.module';
 
 @Module({
+  imports: [IdentityModule],
   controllers: [NotificationsController, EventOperationsController],
   providers: [
     PrismaOutboxRepository,

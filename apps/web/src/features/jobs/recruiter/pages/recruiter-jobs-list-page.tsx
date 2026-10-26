@@ -398,25 +398,54 @@ export const RecruiterJobsListPage: React.FC = () => {
           boxShadow: 'var(--sh-s)',
         }}
       >
-        <div className="tabs" style={{ margin: 0 }}>
-          {(['ALL', 'DRAFT', 'PUBLISHED', 'CLOSED'] as const).map((status) => (
-            <button
-              key={status}
-              type="button"
-              className={statusFilter === status ? 'on' : ''}
-              data-testid={`filter-tab-${status.toLowerCase()}`}
-              onClick={() => setStatusFilter(status)}
-              style={{ padding: '6px 12px', fontSize: '13px', fontWeight: statusFilter === status ? 600 : 400 }}
-            >
-              {status === 'ALL'
-                ? 'Tất cả'
-                : status === 'DRAFT'
-                  ? 'Bản nháp'
-                  : status === 'PUBLISHED'
-                    ? 'Đang công bố'
-                    : 'Đã đóng'}
-            </button>
-          ))}
+        <div
+          className="tabs"
+          role="tablist"
+          aria-label="Lọc theo trạng thái tin tuyển dụng"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px',
+            background: 'transparent',
+            border: 'none',
+            padding: 0,
+            margin: 0,
+          }}
+        >
+          {(['ALL', 'DRAFT', 'PUBLISHED', 'CLOSED'] as const).map((status) => {
+            const isActive = statusFilter === status;
+            return (
+              <button
+                key={status}
+                type="button"
+                role="tab"
+                aria-selected={isActive}
+                className={isActive ? 'on' : ''}
+                data-testid={`filter-tab-${status.toLowerCase()}`}
+                onClick={() => setStatusFilter(status)}
+                style={{
+                  background: isActive ? 'var(--over-bg)' : 'transparent',
+                  color: isActive ? 'var(--blue)' : 'var(--muted)',
+                  border: 'none',
+                  borderRadius: '8px',
+                  padding: '7px 14px',
+                  fontSize: '13.5px',
+                  fontWeight: isActive ? 600 : 500,
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease',
+                  outline: 'none',
+                }}
+              >
+                {status === 'ALL'
+                  ? 'Tất cả'
+                  : status === 'DRAFT'
+                    ? 'Bản nháp'
+                    : status === 'PUBLISHED'
+                      ? 'Đang công bố'
+                      : 'Đã đóng'}
+              </button>
+            );
+          })}
         </div>
 
         <div style={{ minWidth: '240px', flex: '0 1 300px' }}>

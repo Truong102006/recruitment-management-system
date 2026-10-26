@@ -26,7 +26,7 @@ const mockSession: SessionDto = {
   userId: 'usr-1',
   email: 'test@example.com',
   fullName: 'Test User',
-  roles: ['CANDIDATE', 'RECRUITER', 'ADMIN'],
+  roles: ['CANDIDATE', 'RECRUITER', 'INTERVIEWER', 'ADMIN'],
   status: 'ACTIVE',
   csrfToken: 'csrf-123',
 };

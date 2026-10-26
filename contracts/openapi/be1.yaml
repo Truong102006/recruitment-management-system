@@ -138,6 +138,32 @@ paths:
         '409':
           $ref: '#/components/responses/ConflictError'
   /companies:
+    get:
+      summary: List the current actor's active verified company memberships
+      tags:
+        - Company
+      responses:
+        '200':
+          description: Only memberships of the authenticated actor; ADMIN has no implicit membership
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      required: [company, role]
+                      properties:
+                        company:
+                          $ref: '#/components/schemas/CompanyDto'
+                        role:
+                          type: string
+                          enum: [OWNER, RECRUITER, INTERVIEWER]
+        '401':
+          description: No valid session
     post:
       summary: Register a new company (creates PENDING company and OWNER membership)
       tags:
@@ -1642,7 +1668,10 @@ components:
                 required:
                   - id
                   - companyId
+                  - companyName
                   - title
+                  - location
+                  - workplaceMode
                   - status
                   - version
                   - closeReason
@@ -1653,6 +1682,14 @@ components:
                   companyId:
                     type: string
                     format: uuid
+                  companyName:
+                    type: string
+                  location:
+                    type: string
+                    nullable: true
+                  workplaceMode:
+                    type: string
+                    nullable: true
                   title:
                     type: string
                     nullable: true

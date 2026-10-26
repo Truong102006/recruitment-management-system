@@ -35,6 +35,17 @@ export class UpdateJobService {
         typeof dto.description === 'string' ? normalizeText(dto.description) : dto.description,
       location: typeof dto.location === 'string' ? normalizeText(dto.location) : dto.location,
     };
+    if (dto.salary) {
+      if (dto.salaryMin === undefined && dto.salary.min !== undefined) {
+        dto.salaryMin = dto.salary.min;
+      }
+      if (dto.salaryMax === undefined && dto.salary.max !== undefined) {
+        dto.salaryMax = dto.salary.max;
+      }
+      if (dto.currency === undefined && dto.salary.currency !== undefined) {
+        dto.currency = dto.salary.currency;
+      }
+    }
     return this.uow.run(async (tx: Tx) => {
       if (!(await this.membershipRepo.lockRecoveryAccount(actor.userId, tx))) {
         throw new ForbiddenError('Account must be active and verified', 'ACCOUNT_NOT_ACTIVE');

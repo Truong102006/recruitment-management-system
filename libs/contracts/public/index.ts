@@ -246,6 +246,11 @@ export interface CompanyMemberDto {
   joinedAt: string;
 }
 
+export interface MyCompanyMembershipDto {
+  company: CompanyDto;
+  role: MembershipRole;
+}
+
 export interface AddMemberRequest {
   email: string;
   role: 'RECRUITER' | 'INTERVIEWER';
@@ -303,6 +308,9 @@ export interface CreateJobRequest {
   jobType?: JobType;
   workplaceMode?: WorkplaceMode;
   salary?: SalaryRange | null;
+  salaryMin?: number | null;
+  salaryMax?: number | null;
+  currency?: Currency | string | null;
   deadline?: string;
   skillIds?: string[];
 }
@@ -315,6 +323,9 @@ export interface UpdateJobRequest {
   jobType?: JobType;
   workplaceMode?: WorkplaceMode;
   salary?: SalaryRange | null;
+  salaryMin?: number | null;
+  salaryMax?: number | null;
+  currency?: Currency | string | null;
   deadline?: string;
   skillIds?: string[];
   version: number;
@@ -352,6 +363,18 @@ export interface JobDetailDto extends JobSummaryDto {
   version: number;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface AdminJobListItemDto {
+  id: string;
+  companyId: string;
+  companyName: string;
+  title: string | null;
+  location: string | null;
+  workplaceMode: WorkplaceMode | null;
+  status: JobPostStatus;
+  version: number;
+  closeReason?: string | null;
 }
 
 export interface JobSearchQuery {
@@ -666,4 +689,3 @@ export interface AuditLogDto {
   traceId: string;
   createdAt: string;
 }
-

@@ -25,10 +25,24 @@ import { PORTS } from '../../libs/contracts/backend';
 })
 class TestDependencyModule {}
 
-export async function createTestApi(): Promise<INestApplication> {
-  const moduleFixture: TestingModule = await Test.createTestingModule({
+export async function createTestApi(
+  options: { withoutBe3Providers?: boolean } = {},
+): Promise<INestApplication> {
+  const builder = Test.createTestingModule({
     imports: [TestDependencyModule, AppModule],
-  }).compile();
+  });
+  if (options.withoutBe3Providers) {
+    // Explicitly reproduce provider outage even after production modules are wired.
+    for (const token of [
+      PORTS.outbox,
+      PORTS.audit,
+      PORTS.interviewSecurity,
+      PORTS.interviewAdmin,
+    ]) {
+      builder.overrideProvider(token).useValue(null);
+    }
+  }
+  const moduleFixture: TestingModule = await builder.compile();
 
   const app = moduleFixture.createNestApplication();
   try {

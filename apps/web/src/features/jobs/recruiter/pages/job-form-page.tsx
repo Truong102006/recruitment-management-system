@@ -63,6 +63,14 @@ export const JobFormPage: React.FC = () => {
     return `${localStr}:00+07:00`;
   };
 
+  const isMountedRef = React.useRef(true);
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
   const loadData = useCallback(async () => {
     setLoading(true);
     setFormError(null);
@@ -71,11 +79,13 @@ export const JobFormPage: React.FC = () => {
     try {
       // 1. Load active skills
       const skills = await recruiterJobsApi.getSkills();
+      if (!isMountedRef.current) return;
       setSkillsList(skills);
 
       // 2. Load job if editing
       if (id && currentCompanyId) {
         const job = await recruiterJobsApi.getJobDetail(id, currentCompanyId);
+        if (!isMountedRef.current) return;
         setVersion(job.version);
         setTitle(job.title || '');
         setHeadcount(job.headcount || 1);
@@ -99,14 +109,17 @@ export const JobFormPage: React.FC = () => {
         }
       }
     } catch (err: unknown) {
+      if (!isMountedRef.current) return;
       if (err instanceof ApiException) {
         setFormError(err.message || 'Không thể tải thông tin tin tuyển dụng');
       } else {
         setFormError('Lỗi xảy ra khi tải dữ liệu');
       }
     } finally {
-      setLoading(false);
-      setIsDirty(false);
+      if (isMountedRef.current) {
+        setLoading(false);
+        setIsDirty(false);
+      }
     }
   }, [id, currentCompanyId]);
 
@@ -213,6 +226,48 @@ export const JobFormPage: React.FC = () => {
     return errors;
   };
 
+  // Helper: Scroll to first error field
+  const scrollToFirstError = (errors: Record<string, string>) => {
+    const fieldOrder = [
+      'title',
+      'headcount',
+      'location',
+      'deadline',
+      'salary',
+      'salaryMin',
+      'salaryMax',
+      'description',
+    ];
+    const firstField = fieldOrder.find((field) => errors[field]);
+    if (!firstField) return;
+
+    const elementIdMap: Record<string, string> = {
+      title: 'job-title',
+      headcount: 'job-headcount',
+      location: 'job-location',
+      deadline: 'job-deadline',
+      salary: 'salary-min',
+      salaryMin: 'salary-min',
+      salaryMax: 'salary-max',
+      description: 'job-description',
+    };
+
+    const targetId = elementIdMap[firstField];
+    if (targetId) {
+      setTimeout(() => {
+        const el = document.getElementById(targetId);
+        if (el) {
+          if (typeof el.scrollIntoView === 'function') {
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+          if (typeof el.focus === 'function') {
+            el.focus();
+          }
+        }
+      }, 50);
+    }
+  };
+
   // Submit Handler: Save Draft
   const handleSaveDraft = async () => {
     if (!currentCompanyId) return;
@@ -220,6 +275,8 @@ export const JobFormPage: React.FC = () => {
     const errors = validateDraft();
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
+      setFormError('Vui lòng kiểm tra lại các trường thông tin chưa hợp lệ bên dưới.');
+      scrollToFirstError(errors);
       return;
     }
 
@@ -240,6 +297,9 @@ export const JobFormPage: React.FC = () => {
           jobType,
           workplaceMode,
           salary: parsedSalary,
+          salaryMin: parsedSalary?.min ?? null,
+          salaryMax: parsedSalary?.max ?? null,
+          currency: parsedSalary?.currency ?? 'VND',
           deadline: deadlineIso,
           skillIds: selectedSkillIds,
           version,
@@ -256,6 +316,9 @@ export const JobFormPage: React.FC = () => {
           jobType,
           workplaceMode,
           salary: parsedSalary,
+          salaryMin: parsedSalary?.min ?? null,
+          salaryMax: parsedSalary?.max ?? null,
+          currency: parsedSalary?.currency ?? 'VND',
           deadline: deadlineIso,
           skillIds: selectedSkillIds,
         });
@@ -276,6 +339,7 @@ export const JobFormPage: React.FC = () => {
             mapped[key] = msgs[0] ?? 'Lỗi không hợp lệ';
           }
           setFieldErrors(mapped);
+          scrollToFirstError(mapped);
         }
       } else {
         setFormError('Lỗi xảy ra khi lưu nháp');
@@ -294,6 +358,9 @@ export const JobFormPage: React.FC = () => {
       setFormError(
         'Doanh nghiệp chưa được phê duyệt (APPROVED), không thể công bố tin (BR02, FE26)',
       );
+      if (typeof window !== 'undefined' && typeof window.scrollTo === 'function') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
       return;
     }
 
@@ -301,6 +368,14 @@ export const JobFormPage: React.FC = () => {
     const errors = validatePublish();
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
+      let errorMsg =
+        'Vui lòng kiểm tra và hoàn thiện các trường thông tin bắt buộc trước khi công bố (tiêu đề 10-150 ký tự, mô tả tối thiểu 100 ký tự, địa điểm và hạn nộp tương lai).';
+      if (errors.description) {
+        errorMsg +=
+          ' (Gợi ý: Mô tả công việc hiện chưa đủ 100 ký tự. Nếu chưa hoàn tất, bạn có thể bấm "Lưu bản nháp" để hoàn thiện sau).';
+      }
+      setFormError(errorMsg);
+      scrollToFirstError(errors);
       return;
     }
 
@@ -326,6 +401,9 @@ export const JobFormPage: React.FC = () => {
           jobType,
           workplaceMode,
           salary: parsedSalary,
+          salaryMin: parsedSalary?.min ?? null,
+          salaryMax: parsedSalary?.max ?? null,
+          currency: parsedSalary?.currency ?? 'VND',
           deadline: deadlineIso,
           skillIds: selectedSkillIds,
         });
@@ -341,6 +419,9 @@ export const JobFormPage: React.FC = () => {
           jobType,
           workplaceMode,
           salary: parsedSalary,
+          salaryMin: parsedSalary?.min ?? null,
+          salaryMax: parsedSalary?.max ?? null,
+          currency: parsedSalary?.currency ?? 'VND',
           deadline: deadlineIso,
           skillIds: selectedSkillIds,
           version: currentVer,
@@ -370,6 +451,7 @@ export const JobFormPage: React.FC = () => {
             mapped[key] = msgs[0] ?? 'Lỗi không hợp lệ';
           }
           setFieldErrors(mapped);
+          scrollToFirstError(mapped);
         }
       } else {
         setFormError('Lỗi xảy ra khi công bố tin tuyển dụng');
@@ -522,12 +604,33 @@ export const JobFormPage: React.FC = () => {
       >
         {/* Title */}
         <div style={{ marginBottom: '1.25rem' }}>
-          <label
-            htmlFor="job-title"
-            style={{ display: 'block', fontWeight: 600, marginBottom: '0.4rem' }}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '0.4rem',
+            }}
           >
-            Tiêu đề tin tuyển dụng <span style={{ color: 'var(--color-danger)' }}>*</span>
-          </label>
+            <label
+              htmlFor="job-title"
+              style={{ fontWeight: 600 }}
+            >
+              Tiêu đề tin tuyển dụng <span style={{ color: 'var(--color-danger)' }}>*</span>
+            </label>
+            <span
+              data-testid="title-char-counter"
+              style={{
+                fontSize: '0.8rem',
+                color:
+                  title.trim().length >= 10 && title.trim().length <= 150
+                    ? 'var(--muted)'
+                    : 'var(--color-danger, #ef4444)',
+              }}
+            >
+              {title.trim().length} / 150 ký tự (tối thiểu 10)
+            </span>
+          </div>
           <input
             id="job-title"
             data-testid="job-title-input"
@@ -536,6 +639,13 @@ export const JobFormPage: React.FC = () => {
             onChange={(e) => {
               setTitle(e.target.value);
               setIsDirty(true);
+              if (fieldErrors.title) {
+                setFieldErrors((prev) => {
+                  const next = { ...prev };
+                  delete next.title;
+                  return next;
+                });
+              }
             }}
             placeholder="VD: Senior Frontend Engineer (React/TypeScript)"
             style={{
@@ -582,6 +692,13 @@ export const JobFormPage: React.FC = () => {
               onChange={(e) => {
                 setHeadcount(parseInt(e.target.value, 10) || 0);
                 setIsDirty(true);
+                if (fieldErrors.headcount) {
+                  setFieldErrors((prev) => {
+                    const next = { ...prev };
+                    delete next.headcount;
+                    return next;
+                  });
+                }
               }}
               style={{
                 width: '100%',
@@ -685,6 +802,13 @@ export const JobFormPage: React.FC = () => {
               onChange={(e) => {
                 setLocation(e.target.value);
                 setIsDirty(true);
+                if (fieldErrors.location) {
+                  setFieldErrors((prev) => {
+                    const next = { ...prev };
+                    delete next.location;
+                    return next;
+                  });
+                }
               }}
               placeholder="VD: Quận 1, TP. Hồ Chí Minh"
               style={{
@@ -720,6 +844,13 @@ export const JobFormPage: React.FC = () => {
               onChange={(e) => {
                 setDeadline(e.target.value);
                 setIsDirty(true);
+                if (fieldErrors.deadline) {
+                  setFieldErrors((prev) => {
+                    const next = { ...prev };
+                    delete next.deadline;
+                    return next;
+                  });
+                }
               }}
               style={{
                 width: '100%',
@@ -886,13 +1017,38 @@ export const JobFormPage: React.FC = () => {
 
         {/* Description */}
         <div style={{ marginBottom: '1.25rem' }}>
-          <label
-            htmlFor="job-description"
-            style={{ display: 'block', fontWeight: 600, marginBottom: '0.4rem' }}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '0.4rem',
+            }}
           >
-            Mô tả công việc (100 - 10.000 ký tự khi công bố){' '}
-            <span style={{ color: 'var(--color-danger)' }}>*</span>
-          </label>
+            <label
+              htmlFor="job-description"
+              style={{ fontWeight: 600 }}
+            >
+              Mô tả công việc (100 - 10.000 ký tự khi công bố){' '}
+              <span style={{ color: 'var(--color-danger)' }}>*</span>
+            </label>
+            <span
+              data-testid="desc-char-counter"
+              style={{
+                fontSize: '0.82rem',
+                fontWeight: 600,
+                color:
+                  description.trim().length >= 100
+                    ? 'var(--color-success, #22c55e)'
+                    : 'var(--color-danger, #ef4444)',
+              }}
+            >
+              {description.trim().length} / 100 ký tự tối thiểu{' '}
+              {description.trim().length < 100
+                ? `(cần thêm ${100 - description.trim().length} ký tự để công bố)`
+                : '✓ Đủ điều kiện công bố'}
+            </span>
+          </div>
           <textarea
             id="job-description"
             data-testid="job-description-input"
@@ -901,6 +1057,13 @@ export const JobFormPage: React.FC = () => {
             onChange={(e) => {
               setDescription(e.target.value);
               setIsDirty(true);
+              if (fieldErrors.description) {
+                setFieldErrors((prev) => {
+                  const next = { ...prev };
+                  delete next.description;
+                  return next;
+                });
+              }
             }}
             placeholder="Mô tả trách nhiệm công việc, yêu cầu kỹ năng và các quyền lợi đãi ngộ..."
             style={{
@@ -912,14 +1075,29 @@ export const JobFormPage: React.FC = () => {
               resize: 'vertical',
             }}
           />
-          {fieldErrors.description && (
-            <span
-              data-testid="error-description"
-              style={{ color: 'var(--color-danger)', fontSize: '0.85rem' }}
-            >
-              {fieldErrors.description}
-            </span>
-          )}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginTop: '0.25rem',
+            }}
+          >
+            {fieldErrors.description ? (
+              <span
+                data-testid="error-description"
+                style={{ color: 'var(--color-danger)', fontSize: '0.85rem' }}
+              >
+                {fieldErrors.description}
+              </span>
+            ) : (
+              <span style={{ fontSize: '0.8rem', color: 'var(--muted)' }}>
+                Nếu chưa đủ 100 ký tự, bạn có thể bấm <strong>"Lưu bản nháp"</strong> để hoàn thiện
+                sau.
+              </span>
+            )}
+            <span style={{ fontSize: '0.8rem', color: 'var(--muted)' }}>Tối đa 10.000 ký tự</span>
+          </div>
         </div>
 
         {/* Skills Multi-select */}
@@ -966,6 +1144,28 @@ export const JobFormPage: React.FC = () => {
             })}
           </div>
         </div>
+
+        {/* Bottom Form Error Alert */}
+        {formError && (
+          <div
+            data-testid="bottom-form-error-alert"
+            style={{
+              padding: '0.85rem 1.15rem',
+              background: 'rgba(239, 68, 68, 0.1)',
+              border: '1px solid var(--color-danger, #ef4444)',
+              borderRadius: '8px',
+              marginBottom: '1rem',
+              color: 'var(--color-danger, #ef4444)',
+              fontSize: '0.92rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.6rem',
+            }}
+          >
+            <span style={{ fontSize: '1.2rem' }}>⚠️</span>
+            <div style={{ flex: 1, lineHeight: 1.4 }}>{formError}</div>
+          </div>
+        )}
 
         {/* Buttons */}
         <div

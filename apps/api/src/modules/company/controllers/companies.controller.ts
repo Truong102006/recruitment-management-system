@@ -27,6 +27,11 @@ export class CompaniesController {
     private readonly companyService: CompanyService,
   ) {}
 
+  @Get()
+  public async listMyCompanies(@CurrentActor() actor: Actor) {
+    return this.companyService.listMyCompanies(actor);
+  }
+
   @Post()
   @HttpCode(HttpStatus.CREATED)
   public async createCompany(

@@ -14,7 +14,11 @@ import {
 } from '../../../../../../libs/platform/database/unit-of-work';
 import { OutboxPort, PORTS } from '../../../../../../libs/contracts/backend';
 import type { Actor } from '../../../../../../libs/contracts/backend';
-import type { CompanyDto } from '../../../../../../libs/contracts/public';
+import type {
+  CompanyDto,
+  MyCompanyMembershipDto,
+  MembershipRole,
+} from '../../../../../../libs/contracts/public';
 
 @Injectable()
 export class CompanyService {
@@ -24,6 +28,14 @@ export class CompanyService {
     @Inject(UNIT_OF_WORK) private readonly uow: ManagedUnitOfWork<Prisma.TransactionClient>,
     @Optional() @Inject(PORTS.outbox) private readonly outboxPort?: OutboxPort,
   ) {}
+
+  public async listMyCompanies(actor: Actor): Promise<MyCompanyMembershipDto[]> {
+    const memberships = await this.membershipRepo.listActiveByUserId(actor.userId);
+    return memberships.map((membership) => ({
+      company: CompanyMapper.toCompanyDto(membership.company),
+      role: membership.role as MembershipRole,
+    }));
+  }
 
   public async getCompanyDetail(actor: Actor, companyId: string): Promise<CompanyDto> {
     const company = await this.companyRepo.findById(companyId);

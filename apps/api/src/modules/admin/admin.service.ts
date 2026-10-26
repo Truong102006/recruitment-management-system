@@ -100,7 +100,7 @@ export class AdminService {
         return { items, total, page, limit };
       }
       const where = status ? { status } : {};
-      const [items, total] = await Promise.all([
+      const [jobs, total] = await Promise.all([
         client.jobPost.findMany({
           where,
           skip,
@@ -109,7 +109,10 @@ export class AdminService {
           select: {
             id: true,
             companyId: true,
+            company: { select: { name: true } },
             title: true,
+            location: true,
+            workplaceMode: true,
             status: true,
             version: true,
             closeReason: true,
@@ -117,6 +120,7 @@ export class AdminService {
         }),
         client.jobPost.count({ where }),
       ]);
+      const items = jobs.map(({ company, ...job }) => ({ ...job, companyName: company.name }));
       return { items, total, page, limit };
     });
   }

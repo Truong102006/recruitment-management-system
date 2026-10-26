@@ -34,6 +34,38 @@
 
 ## Tổng quan hiện tại
 
+**26/10/2026 09:04 (Asia/Saigon) — SHIP-INTEGRATION-20261026: IN_REVIEW** — Codex đã kiểm tra working tree BE/FE/QA/tài liệu trên nhánh `pr/integrate-local-qa-20261026`: 413 unit, 135 integration, 25 contract và 241 FE test đạt; typecheck, lint, build FE/BE và Prisma validate đạt. Đang tạo PR vào `main`; chưa gộp main. Các UC tổng thể giữ trạng thái theo bảng bên dưới.
+
+**26/10/2026 07:55 (Asia/Saigon) — TALENTO-TABS-STYLE-FIX-01: DONE (Làm lại khung bọc các tab trạng thái tin tuyển dụng: Xóa bỏ khung bọc màu xám vuông)** — Antigravity đã hoàn thành theo yêu cầu người dùng: (1) Xóa bỏ triệt để khung bọc màu xám vuông vức của cụm tab lọc trạng thái tin tuyển dụng ("Tất cả", "Bản nháp", "Đang công bố", "Đã đóng") tại `apps/web/src/features/jobs/recruiter/pages/recruiter-jobs-list-page.tsx`; (2) Thiết kế lại thanh tab hiện đại, trong suốt (`background: transparent`), không viền xám (`border: none`); (3) Nút tab active sử dụng nền highlight mềm mại (`var(--over-bg)`), chữ xanh dương (`var(--blue)`), bo góc 8px; các tab còn lại chữ màu xám thanh lịch (`var(--muted)`) kèm hover hiệu ứng nhẹ (`var(--soft2)`); (4) Thêm định nghĩa chuẩn `.tabs` và `.tabs button` vào `global.css` đồng bộ cho toàn bộ hệ thống; (5) 5/5 tests `recruiter-jobs-list-page.test.tsx` PASS 100%, `npm run typecheck` đạt 100%, `npm run lint` đạt 0 error/0 warning, `npm run build --workspace @rms/web` đạt 100%.
+
+**26/10/2026 05:05 (Asia/Saigon) — TALENTO-HEADER-NAV-DROPDOWN-01: DONE (Nâng cấp header navigation: Xóa Tính năng/Giải pháp, thêm dropdown Công cụ và Cẩm nang nghề nghiệp chuẩn Hình 1-2-3)** — Antigravity đã hoàn thành theo yêu cầu người dùng: (1) Xóa bỏ 2 tab cũ "Tính năng" và "Giải pháp" trên header navigation; (2) Thêm tab dropdown "Công cụ" xổ xuống 3 mục chuẩn xác: "Bộ câu hỏi phỏng vấn" (có badge Mới), "Trắc nghiệm MBTI", "Talento Skills" (như Hình 1); (3) Thêm tab dropdown "Cẩm nang nghề nghiệp" xổ xuống mega-menu gồm 6 chuyên mục nghề nghiệp (Định hướng nghề nghiệp, Bí kíp tìm việc, Chế độ lương thưởng, Kiến thức chuyên ngành, Hành trang nghề nghiệp, Thị trường & xu hướng tuyển dụng) và khối "Bài viết nổi bật" với preview 2 bài viết ("Nhân viên bán hàng là gì? Bảng mô tả công việc nhân viên bán hàng", "Khám phá mức lương Kế toán mới nhất") kèm link "Xem thêm bài viết nổi bật →" (như Hình 2); (4) Xây dựng trang web Cẩm nang nghề nghiệp chuẩn Hình 3 (`/blog/:categorySlug` và mặc định `/blog/huong-nghiep`) với hero banner xanh lá dịu mắt, linh vật robot đọc sách, bộ nút filter pills danh mục, breadcrumbs, danh mục bài viết nổi bật và popup đọc bài chi tiết; (5) Xây dựng 3 trang công cụ tương tác: `/tools/interview-questions` (ngân hàng câu hỏi & đáp án mẫu), `/tools/mbti-test` (trắc nghiệm tính cách nghề nghiệp MBTI), `/tools/skills` (bản đồ kỹ năng & lộ trình phát triển nghề nghiệp); (6) Viết test cases mới kiểm chứng toàn diện, 12/12 tests layout & tính năng mới PASS 100%, toàn bộ 48 test suites / 239 tests toàn frontend PASS 100%, `npm run lint` đạt 0 error/0 warning, `npm run typecheck` đạt 100%, `npm run build --workspace @rms/web` đạt 100%.
+
+**26/10/2026 03:15 (Asia/Saigon) — TALENTO-I18N-01: DONE (Triển khai hệ thống đa ngôn ngữ song ngữ VI / EN cho nút chuyển đổi ngôn ngữ)** — Antigravity đã hoàn thành theo yêu cầu người dùng: (1) Xây dựng giải pháp i18n React type-safe thuần túy gọn nhẹ (`LanguageContext`, `LanguageProvider`, `useLanguage`, `useTranslation`), tự động lưu trạng thái vào `localStorage` (`talento_language`) và cập nhật thuộc tính `document.documentElement.lang`; (2) Kết nối nút bấm chuyển đổi ngôn ngữ `VI | EN` trên header của cả 4 Layouts (PublicLayout, CandidateLayout, RecruiterLayout, AdminLayout), hỗ trợ chuyển đổi tức thì không cần reload trang; (3) Việt hóa và Anh hóa toàn bộ các thành phần chính: Header navigation, Footer, Search bar, Job list page (tiêu đề, placeholder, nhãn bộ lọc, options công việc, trạng thái tìm kiếm, mức lương, hạn nộp, nút ứng tuyển, phân trang), Location filter popover, Public Home page; (4) Đã tạo bộ unit test chuyên biệt `apps/web/src/lib/i18n/__tests__/language-context.test.tsx` (6/6 tests PASS 100%), bảo toàn toàn bộ 13/13 tests layout, 25/25 tests jobs & location; `npm run typecheck` đạt 100%, `npm run build --workspace @rms/web` đạt 100%.
+
+**26/10/2026 02:48 (Asia/Saigon) — TALENTO-LOCATION-FILTER-DEBUG-01: DONE (Sửa lỗi lọc địa điểm Hồ Chí Minh không ra công việc Ho Chi Minh City)** — Antigravity đã tìm ra nguyên nhân gốc rễ và xử lý triệt để: (1) Nguyên nhân: Tiến trình NestJS API port 3000 đang chạy bản biên dịch cũ trong `dist/api` (vốn chỉ so sánh chuỗi thô `contains: query.location`), trong khi công việc trong CSDL lưu địa điểm là `"Ho Chi Minh City"`, khiến việc lọc `"Hồ Chí Minh"` sinh ra SQL `ILIKE '%Hồ Chí Minh%'` và trả về 0 kết quả; (2) Đã bổ sung các biến thể alias phong phú (bao gồm `'tp. hồ chí minh'`, `'tp hồ chí minh'`, `'tp. ho chi minh'`, `'tp ho chi minh'`, `'ho chi minh city'`, `'saigon'`, `'tp.hcm'`, v.v.) vào cả frontend `vietnam-locations.ts` và backend `location-filter.util.ts`; (3) Biên dịch lại toàn bộ backend `npm run build --workspace @rms/api` để cập nhật `dist/api`, khởi động lại API daemon port 3000; (4) Kiểm chứng thực tế qua HTTP fetch trực tiếp trên port 3000 và qua Vite proxy port 5173: khi lọc `location=Hồ+Chí+Minh` hoặc `location=Ho+Chi+Minh` hay `location=TP.HCM` hệ thống đều trả về chính xác công việc `"Senior Backend Engineer (NestJS / PostgreSQL)"` tại `"Ho Chi Minh City"`; (5) 7/7 backend unit tests `location-filter.spec.ts` PASS 100%, 11/11 frontend tests PASS 100%, `npm run typecheck`, `npm run lint` (0 error, 0 warning), `npm run build --workspace @rms/web` đạt 100%.
+
+**26/10/2026 02:35 (Asia/Saigon) — TALENTO-JOB-CREATE-FIX-01: DONE (Sửa lỗi tạo/công bố tin tuyển dụng & cải tiến UX validation)** — Antigravity đã xử lý triệt để nguyên nhân gốc rễ lỗi không tạo được tin tuyển dụng: (1) Khắc phục phản hồi trải nghiệm người dùng khi validation thất bại (ở Hình 1 người dùng nhập mô tả "123" < 100 ký tự tối thiểu, hệ thống âm thầm chặn lại không báo lỗi trực quan khiến người dùng tưởng lỗi nút bấm): bổ sung banner lỗi trực quan ngay trên cụm nút bấm (`bottom-form-error-alert`) và đầu trang, tự động scroll mượt mà đến trường lỗi đầu tiên và focus vào input đó; (2) Bổ sung bộ đếm ký tự trực quan thời gian thực ở ô Tiêu đề (`.../150 ký tự`) và ô Mô tả công việc (`.../100 ký tự tối thiểu`) kèm hướng dẫn rõ số ký tự còn thiếu hoặc thông báo "✓ Đủ điều kiện công bố" và gợi ý "Lưu bản nháp" nếu chưa kịp viết dài; (3) Sửa lỗi bất tương thích DTO (Payload mismatch): Frontend gửi `salary: parsedSalary` khiến backend NestJS (`ValidationPipe` có `forbidNonWhitelisted: true`) trả về lỗi 400 Bad Request; đã bổ sung hỗ trợ cả dạng phẳng (`salaryMin`, `salaryMax`, `currency`) và nested object (`salary`) ở cả frontend payload, backend `CreateJobDto`, `UpdateJobDto`, `CreateJobService` và `UpdateJobService`; (4) Đã viết thêm test cases mới kiểm chứng luồng submit và validation UX: 7/7 tests tại `job-form-page.test.tsx` PASS 100%, 13/13 tests tại `services.spec.ts` PASS 100%, 8/8 tests tại `router.test.tsx` PASS 100%, `npm run typecheck`, `npm run lint` (0 error, 0 warning) và `npm run build --workspace @rms/web` đạt 100%.
+
+**26/10/2026 02:12 (Asia/Saigon) — TALENTO-LOGO-NAV-01: DONE (Bấm logo hoặc chữ Talento chuyển về trang chủ)** — Antigravity đã hoàn thành theo yêu cầu người dùng: Cập nhật toàn bộ các thanh header/sidebar điều hướng trong các layout (RecruiterLayout, CandidateLayout, AdminLayout, PublicLayout) để khi bấm vào Logo (icon 4 chấm) hoặc chữ "Talento", hệ thống chuyển hướng ngay lập tức về trang chủ (`/`, Landing Page tại Hình 2). Đã cập nhật CSS `.logo` (cursor: pointer, text-decoration: none), tạo test suite `logo-home-navigation.test.tsx` (4/4 tests PASS 100%), bảo toàn 13/13 tests layout, typecheck, lint (0 warnings), và build web đạt 100%.
+
+**26/10/2026 02:05 (Asia/Saigon) — TALENTO-LOCATION-FILTER-01: DONE (Bộ lọc địa điểm TopCV multi-select & Custom Dropdown bo góc tròn)** — Antigravity đã hoàn thành theo yêu cầu người dùng: (1) Thay thế ô input địa điểm bằng component `LocationFilterPopover` theo giao diện TopCV: có ô tìm nhanh tỉnh/thành phố, bắt buộc tick checkbox mới tính là chọn (không cho gõ tự do), cho phép chọn nhiều tỉnh/thành phố (multi-select), hiển thị tiếng Việt có dấu chuẩn 63 tỉnh thành; (2) Cơ chế matching thông minh cả ở Frontend lẫn Backend (`expandLocationVariants` trong `job-query.repository.ts`), tự động chuẩn hóa tiếng Việt có dấu, không dấu và alias tiếng Anh (ví dụ: người dùng chọn "Hồ Chí Minh" thì lọc ra cả việc làm ghi "Ho Chi Minh City", "TP.HCM", "Saigon"); (3) Thay thế select mặc định chưa có CSS ở Hình 3 bằng component `CustomSelect` có menu popover xổ xuống bo góc tròn (border-radius: 14px), shadow, item hover mượt mà đồng bộ với Hình 4; (4) Đã tạo 2 bộ test kiểm chứng mới với 18 test cases (11 frontend + 7 backend) đạt 100%, bảo toàn 100% 8 test cũ của `public-jobs.test.tsx`, `npm run typecheck`, `npm run lint` (0 warnings), và `npm run build --workspace @rms/web` đạt 100%.
+
+**26/10/2026 01:48 (Asia/Saigon) — TALENTO-NAV-01: DONE (Phân quyền hiển thị tab Nhà tuyển dụng trên header)** — Antigravity đã hoàn thành phân quyền tab "Nhà tuyển dụng" tại `apps/web/src/app/layouts/public-layout.tsx` và xuất `CompanyContext`/`useOptionalCompany` tại `apps/web/src/features/companies/context/company-context.tsx`. Tab "Nhà tuyển dụng" chỉ hiển thị khi tài khoản đăng nhập có vai trò RECRUITER hoặc OWNER (toàn cục hoặc membership doanh nghiệp); ẩn đối với tài khoản chỉ có vai trò CANDIDATE và khách chưa đăng nhập. Đã tạo `apps/web/src/app/layouts/public-layout.test.tsx` với 5 test case kiểm chứng đạt 100%; typecheck, lint (0 warnings), build web production đạt; các use case tổng thể giữ IN_PROGRESS.
+
+**26/10/2026 01:15 (Asia/Saigon) — CLOUD-PROFILE-REPAIR-01: DONE (schema/profile cloud)** — Đã deploy 4 migration còn thiếu lên cloud (tổng 6), gồm BE2/BE3/normalize và backfill profile; hiện có 8 profile/8 CANDIDATE, thiếu 0. Fingerprint chứng minh credentials/role và trạng thái nghiệp vụ cũ giữ nguyên; 33/33 kiểm API và smoke browser đọc/lưu/đọc lại/khôi phục đạt. Test backfill local, chuỗi migration rỗng/lặp, typecheck/lint/syntax/diff/liên kết đạt. FE 5173/API 3000 đang dùng `.env` cloud; [báo cáo](../plans/reports/261026-0100-cloud-profile-repair.md). Migration/test/tài liệu mới chưa commit/chưa gộp main; UC tổng thể vẫn IN_PROGRESS.
+
+**26/10/2026 00:51 (Asia/Saigon) — CLOUD-ROLE-ACCOUNTS-01: DONE (tài khoản/quyền cloud)** — Theo yêu cầu người dùng, Codex đã tạo 7 account/roles và 2 công ty demo cùng membership trên Neon cloud cấu hình trong `.env`; giữ cùng mật khẩu demo local. API tạm trên 3001 xác minh 6 account ACTIVE login/session/membership/logout đạt, account LOCKED trả 401 đúng; đã dừng API tạm sau kiểm tra. Cloud thiếu bảng `candidate_profile`, chưa tạo profile hoặc áp migration. [Báo cáo](../plans/reports/261026-0051-cloud-role-accounts.md). Không commit/push/deploy source.
+
+**25/10/2026 23:59 (Asia/Saigon) — QA-AUTH-ROLES-01: DONE (kiểm source đã có và tài khoản local)** — Codex đã sửa nối auth/ports/guard/membership trên working tree, tạo 7 tài khoản tại DB riêng `recruitment_demo`, để FE/BE localhost hoạt động cho người dùng thử role. Kết quả cuối: 406 unit BE, 134 integration (gồm contract và 8 ca AppModule thật), 204 FE, 119 ma trận API, 27 browser E2E đạt; typecheck/lint/build đạt. Coverage tập cấu hình: BE 82,45% dòng/71,23% nhánh, FE 84,66%/74,74%. UC01–UC16 vẫn IN_PROGRESS vì thiếu API/provider và nghiệm thu toàn luồng. [Báo cáo](../plans/reports/261025-2329-auth-roles-verification.md), [tài khoản/route](../Docs/local-role-testing.md). **Các sửa của lượt QA này chưa commit/chưa gộp main** (`4fba158` là base).
+
+**25/10/2026 23:04 (Asia/Saigon) — DOC-PROGRESS-AUDIT-01: DONE (phạm vi đối chiếu tài liệu)** — Codex đã đối chiếu source/Git trên `main` tại `4fba158`, cập nhật bảng trạng thái hiện hành và giữ các báo cáo trước merge như lịch sử. Có 5 migration trên main, FE1/FE2/Talento và nền BE3 đã merge; UC01–UC16 vẫn `IN_PROGRESS` do chưa nghiệm thu đầy đủ. Chưa commit/chưa gộp bản cập nhật sổ này vào main.
+
+**Mốc source hiện hành: `main` = `origin/main` tại `4fba158` (kiểm tra local 25/10/2026).** PR #10 (`66f0686`, BE1 sửa nghiệm thu), PR #9 (`ca4ff6c`, FE1), PR #11 (`a4f5f63`, Talento) và PR #12 (`4fba158`, nền BE3) đã vào main. Các câu “OPEN”, “chưa gộp main”, “TODO” bên dưới là **bản ghi tại thời điểm cũ**; bảng hiện hành và nhật ký đính chính trong lượt audit này thay thế chúng khi đánh giá source hiện tại. Đây là xác nhận lịch sử Git, chưa phải nghiệm thu toàn hệ thống hoặc xác nhận migration trên database dùng chung.
+
+**Tình trạng nghiệm thu:** BE1/BE2/BE3 và FE1/FE2 vẫn `IN_PROGRESS` ở cấp chức năng liên thông. FE1/FE2 có màn hình và test trên main; một số thao tác dùng mock/fallback ở chế độ dev. BE3 có migration, ports, repository, worker, notification/audit API; chưa có controller HTTP cho interview, evaluation, reporting. Local API build có thể khởi động, nhưng lệnh `npm run dev:api` còn lỗi Nest dependency injection khi chạy bằng `tsx watch`; chưa xác nhận E2E, Jitsi, SMTP, S3/scanner, tải/backup hoặc coverage trên commit `4fba158` trong lượt audit này.
+
+### Các bản tổng quan lịch sử (trạng thái tại thời điểm ghi, không thay bảng hiện hành)
+
 **25/10/2026 21:30 (Asia/Saigon) — SHIP-BE3-INTEGRATION: IN_PROGRESS (Mở PR vào main)** — Truong102006 / Antigravity đã hoàn thành tích hợp toàn bộ các module backend BE3 từ nhánh `origin/feat/be3-implementation` (commit gốc cô lập `af92c99`) sang nhánh tích hợp chuẩn `pr/be3-integration-20261025` dựa trên `main`. Đã đồng bộ Prisma schema, migration BE3, Outbox/Notification/Interview/Audit/Worker, bổ sung port adapters an toàn và 6 bộ unit test mới. `npm run typecheck`, `npm run lint` (0 warnings), `npm run build`, và `npm run test:unit:ci` (50 suites, 406 tests PASS 100%, coverage đạt ngưỡng) đều đã kiểm chứng xanh 100%. Đang mở PR vào `main`.
 
 **25/10/2026 15:20 (Asia/Saigon) — SHIP-BE1-FIX-01: DONE (phạm vi Git)** — Truong102006 / Codex đã tạo nhánh `pr/be1-acceptance-fixes-20261025`, commit và push toàn bộ thay đổi phù hợp, mở [PR #10](https://github.com/Truong102006/recruitment-management-system/pull/10) vào main. PR đang OPEN, CI đang chạy; chưa gộp main. Toàn BE1 vẫn IN_PROGRESS.
@@ -60,26 +92,44 @@ Các công việc trên nhánh cá nhân chưa được báo cáo vào đây ch�
 
 | Mã   | Chức năng                      | Phụ trách | Trạng thái công việc (xem tích hợp) | Bằng chứng / phần còn thiếu                                                                                                                                                        |
 | ---- | ------------------------------ | --------- | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| UC01 | Đăng tin tuyển dụng            | BE1       | IN_PROGRESS                         | Main PR #1 có lifecycle/locks/DTO; fix local25/10 sửa F02/F04/F05: mọi mutation kiểm OWNER, normalize NFC/code point, publish legacy. Integration Jobs đạt lượt123tests trước bổ sung legacy. Có data migration mới local, chưa gộp main; còn Outbox/lifecycle liên nhóm/provider. |
-| UC02 | Nộp CV ứng tuyển               | BE2       | IN_PROGRESS                         | Workflow/route và BE1 binding đã lên main; migration đạt CI PostgreSQL. Ghi hồ sơ cần Outbox BE3 thật và HTTP nghiệm thu.                                                          |
-| UC03 | Phỏng vấn trực tuyến           | BE3       | IN_PROGRESS                         | Nhánh `pr/be3-integration-20261025`: Đã tích hợp database schema (Interview, Participant, Reservation), ports adapter, rules (schedule, join window access), video port (Jitsi adapter), 100% unit tests pass. Chưa gộp main. |
-| UC04 | Đăng ký và xác thực            | BE1       | IN_PROGRESS                         | Main PR #1 có token/session/CSRF/rollback; fix local25/10 fullName trim/NFC/code point, password giữ nguyên, regression đạt. F01 vẫn mở: AppModule thật thiếu Outbox, register503; BE2 profile đã bind; mail/HTTPS chưa nghiệm thu. |
-| UC05 | Tìm kiếm và xem tin            | BE1       | IN_PROGRESS                         | Fix local25/10 F06: mặc định publishedAt DESC/id DESC, explicit createdAt/order tương thích; Search5tests PostgreSQL đạt. Thêm migration chuẩn hóa dữ liệu cũ trước API; chưa gộp main; load/provider/FE acceptance còn thiếu. |
-| UC06 | Quản lý CV và thay CV đã nộp   | BE2       | IN_PROGRESS                         | Thay CV/review đã lên main; kho CV có service/repository. Còn S3/scanner, worker, API CV và nghiệm thu.                                                                            |
-| UC07 | Xét duyệt và rút hồ sơ         | BE2       | IN_PROGRESS                         | Review/read/withdraw route đã lên main; rút hồ sơ cần InterviewLifecycle BE3 cùng transaction và HTTP nghiệm thu.                                                                  |
-| UC08 | Quản lý lịch phỏng vấn         | BE3       | IN_PROGRESS                         | Nhánh `pr/be3-integration-20261025`: Đã tích hợp PrismaInterviewRepository (createProposed, findById, findDetail, findForApplication, findForUser, confirm, cancel, getLockScope), schedule rules, expire-proposals worker job, reconciliation; unit tests đạt 100%. Chưa gộp main. |
-| UC09 | Công bố kết quả                | BE3       | IN_PROGRESS                         | Nhánh `pr/be3-integration-20261025`: Đã tích hợp Outbox event dispatching, event consumer xử lý application.result_published tạo notification cho ứng viên; unit tests đạt 100%. Chưa gộp main. |
-| UC10 | Quản trị và kiểm duyệt         | BE1       | IN_PROGRESS                         | Main PR #1 có admin PATCH/read/recovery/last ADMIN/rollback. Fix local25/10 chặn create/update/close khi OWNER mất khả dụng, test3 trạng thái/quyền phục hồi đạt; chưa gộp main. BE3 revoke intent/provider/audit/scope vẫn thiếu. |
-| UC11 | Doanh nghiệp và thành viên     | BE1       | IN_PROGRESS                         | Fix local25/10 F03: create/update/resubmit từ chối required trắng/null; DTO/service normalize NFC/code point;99unit và HTTP rollback đạt. Chưa gộp main; conflict/schedule/audit runtime BE2/BE3 còn thiếu. |
-| UC12 | Hồ sơ cá nhân                  | BE2       | IN_PROGRESS                         | GET/PATCH route và BE1 guard đã lên main; DB BE2 đạt CI; PATCH cần Outbox BE3 và HTTP nghiệm thu.                                                                                  |
-| UC13 | Đánh giá và hoàn tất phỏng vấn | BE3       | IN_PROGRESS                         | Nhánh `pr/be3-integration-20261025`: Đã tích hợp schema Evaluation, EvaluationModule, interview evidence calculation for missing evaluations. Chưa gộp main. |
-| UC14 | Lưu tin quan tâm               | BE2       | IN_PROGRESS                         | PUT/DELETE/GET route đã lên main, idempotent/placeholder và DB adapter đạt CI; write cần Outbox BE3, còn HTTP nghiệm thu.                                                          |
-| UC15 | Thông báo                      | BE3       | IN_PROGRESS                         | Nhánh `pr/be3-integration-20261025`: Đã tích hợp Notification/Email schema, repositories, worker email delivery job with retry backoff, notification query service, event consumer registry; unit tests đạt 100%. Chưa gộp main. |
-| UC16 | Thống kê tuyển dụng            | BE3       | IN_PROGRESS                         | Nhánh `pr/be3-integration-20261025`: Đã tích hợp ReportingModule, AuditModule (audit log write/query). Chưa gộp main. |
+| UC01 | Đăng tin tuyển dụng | BE1 | IN_PROGRESS | Lifecycle/DTO và sửa OWNER/normalize đã trên main qua PR #1/#10; Outbox BE3 có source qua PR #12. Chưa nghiệm thu HTTP liên thông, migration DB dùng chung, tải và audit toàn luồng. |
+| UC02 | Nộp CV ứng tuyển | BE2 | IN_PROGRESS | Workflow/route, migration BE2 và Outbox port BE3 có trên main; chưa nghiệm thu HTTP cùng CV storage/scanner và worker thật. |
+| UC03 | Phỏng vấn trực tuyến | BE3 | IN_PROGRESS | Schema, join rules và Jitsi adapter đã vào main PR #12; `InterviewModule` chưa có controller HTTP, chưa kiểm provider Jitsi thật hoặc quyền vào phòng E2E. |
+| UC04 | Đăng ký và xác thực | BE1 | IN_PROGRESS | QA-AUTH-ROLES-01 sửa binding Outbox ở working tree, AppModule thật register/verify/session/CSRF/logout đạt; browser register/login cho 5 role ở 3 viewport đạt. Chưa gộp bản sửa; giao mail worker/HTTPS và production chưa nghiệm thu. |
+| UC05 | Tìm kiếm và xem tin | BE1 | IN_PROGRESS | Sửa sort và migration NFC đã vào main PR #10; FE danh sách/chi tiết đã vào main PR #9/#11. Chưa xác nhận migration trên DB dùng chung, tải và nghiệm thu FE–BE toàn luồng. |
+| UC06 | Quản lý CV và thay CV đã nộp | BE2 | IN_PROGRESS | Workflow thay CV đã trên main; FE CV còn dùng localStorage/mock fallback; thiếu API CV, S3/scanner và nghiệm thu lưu/quét thật. |
+| UC07 | Xét duyệt và rút hồ sơ | BE2 | IN_PROGRESS | Review/read/withdraw route và InterviewLifecycle adapter đã có trên main; chưa kiểm HTTP, transaction và quyền liên thông với BE3. |
+| UC08 | Quản lý lịch phỏng vấn | BE3 | IN_PROGRESS | Repository/rules, expire-proposals worker và reconciliation đã vào main PR #12; chưa có interview controller HTTP, chưa nghiệm thu lên lịch/xác nhận/hủy E2E. |
+| UC09 | Công bố kết quả | BE3 | IN_PROGRESS | Outbox/consumer/notification đã vào main PR #12; chưa có API công bố kết quả đầy đủ và chưa kiểm transaction, giao thư, hiển thị FE E2E. |
+| UC10 | Quản trị và kiểm duyệt | BE1 | IN_PROGRESS | Main có API/ports; QA local nối ports thật, ma trận ADMIN lock/unlock/audit/revoke và browser guard đạt. Chưa gộp sửa; chưa nghiệm thu revoke phòng thật/provider và toàn luồng moderation. |
+| UC11 | Doanh nghiệp và thành viên | BE1 | IN_PROGRESS | API/FE đã trên main; QA local thêm GET `/api/companies` theo actor và lấy membership thật, phân biệt OWNER/RECRUITER/INTERVIEWER/cross-company đã kiểm. Chưa gộp sửa, chưa nghiệm thu toàn bộ conflict/schedule/provider. |
+| UC12 | Hồ sơ cá nhân | BE2 | IN_PROGRESS | Source GET/PATCH có trên main; cloud 26/10 đã có schema/profile, 33 kiểm API + browser đọc/lưu thật đạt với ports working tree. Kiểm version conflict/CSRF/actor và Outbox đạt; migration backfill/test chưa commit, chưa nghiệm thu toàn bộ phạm vi UC liên nhóm. |
+| UC13 | Đánh giá và hoàn tất phỏng vấn | BE3 | IN_PROGRESS | Schema Evaluation và `EvaluationModule` đã vào main, nhưng module chưa có controller/service; FE evaluation dùng fallback dev. Chưa có luồng hoàn tất thật. |
+| UC14 | Lưu tin quan tâm | BE2 | IN_PROGRESS | GET/PUT/DELETE, DB adapter và Outbox port có trên main; chưa nghiệm thu HTTP/FE liên thông. |
+| UC15 | Thông báo | BE3 | IN_PROGRESS | Notification API, repositories, worker email/retry đã vào main PR #12; chưa kiểm SMTP thật, delivery/retry E2E và FE. |
+| UC16 | Thống kê tuyển dụng | BE3 | IN_PROGRESS | `ReportingModule` trên main hiện rỗng (không controller/service); FE thống kê dùng fallback dev. Audit API là phần khác, chưa thay thế UC16. |
 
 ### Frontend
 
 Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; không đánh dấu cả nhóm UI hoàn thành nếu mới xong một màn.
+
+**Trạng thái source hiện hành trên `main` (`4fba158`):** các route FE1/FE2 đã được khai báo trong `apps/web/src/app/router.tsx`, màn hình và unit/component tests có trong source. `DONE` dưới đây chỉ là phần code giao diện/pha đã merge; nghiệm thu FE–BE toàn luồng vẫn `IN_PROGRESS`. FE CV còn dùng localStorage/mock; nhiều API FE2 trả dữ liệu mock ở dev khi BE lỗi/thiếu endpoint, nên browser hiển thị không tự chứng minh chức năng backend hoạt động.
+
+| Mã | Phạm vi | Trạng thái source / tích hợp | Bằng chứng / còn thiếu |
+| --- | --- | --- | --- |
+| FE1 | UI01–UI12, UI24, UI29 | DONE (source UI trên main); nghiệm thu IN_PROGRESS | PR #9 `ca4ff6c`, route public/auth/candidate và component tests; CV thật, mail/session, E2E FE–BE còn mở. |
+| FE1-AUTH | UI03–UI06, UI29 | DONE (source UI trên main); nghiệm thu IN_PROGRESS | Form/guard/auth context trên main; cần kiểm browser thật, session và email. |
+| FE2 | UI13–UI23, UI25–UI28 | DONE (source UI trên main); nghiệm thu IN_PROGRESS | Các pha FE2 hiện diện trong lịch sử Git và router; interview/evaluation/statistics còn thiếu BE HTTP, nhiều trang dùng fallback dev. |
+| FE2-PHASE1–6 | Nền tảng, component, company/jobs, application/evaluation, interview/admin/statistics, responsive/a11y | DONE (source các pha trên main); nghiệm thu IN_PROGRESS | Commit FE2 `b7d0935`…`f4d7ad1` đã là tổ tiên của main; test component/flow có source, chưa xác nhận E2E live trên commit hiện tại. |
+| TALENTO-FE | Thiết kế lại shell/trang và token | DONE (source UI trên main); nghiệm thu IN_PROGRESS | PR #11 `a4f5f63` chứa `e0cd13b`; còn kiểm tra thực tế trình duyệt nhiều viewport và FE–BE. |
+| TALENTO-LOCATION-FILTER-01 | UI01: Bộ lọc địa điểm popup multi-select (hình 2) & Custom Select bo góc tròn (hình 4) | DONE (phạm vi filter) | Hoàn thành LocationFilterPopover popup TopCV, alias matching dấu/không dấu/tiếng Anh (Hồ Chí Minh -> Ho Chi Minh City, TP.HCM), CustomSelect dropdown bo góc tròn (14px). 19/19 frontend tests PASS, 7/7 backend tests PASS, typecheck/lint/build đạt. |
+| TALENTO-LOCATION-FILTER-DEBUG-01 | UI01/UC05: Lỗi lọc địa điểm Hồ Chí Minh không ra công việc Ho Chi Minh City | DONE (phạm vi điều tra & sửa lỗi) | Đã sửa nguyên nhân NestJS API chạy bản build cũ: cập nhật từ điển alias đầy đủ 2 chiều, rebuild dist/api, restart API server port 3000, kiểm chứng thực tế fetch HTTP 3000 và Vite 5173 đều match 100%. Unit test 7/7 pass, typecheck/lint/build đạt. |
+| TALENTO-HEADER-NAV-DROPDOWN-01 | UI Header Navigation: Xóa Tính năng/Giải pháp, thêm dropdown Công cụ và Cẩm nang nghề nghiệp | IN_PROGRESS (phạm vi navigation) | Bỏ 2 tab cũ, thêm 2 dropdown mega menu Công cụ (Bộ câu hỏi, MBTI, Skill) và Cẩm nang nghề nghiệp (6 danh mục + bài viết nổi bật), xây dựng trang Blog (/blog/:categorySlug) và Tools. |
+| TALENTO-I18N-01 | Toàn bộ Shells UI: Đa ngôn ngữ VI/EN cho nút chuyển đổi ngôn ngữ header | DONE (phạm vi i18n) | Xây dựng LanguageContext, Provider, hook useLanguage/useTranslation, cập nhật nút bấm VI|EN đồng bộ 4 layout và dịch Header/Footer/JobList/Home. 6/6 tests i18n PASS, 13/13 tests layouts PASS, 25/25 tests jobs PASS, typecheck/build đạt. |
+| TALENTO-LOGO-NAV-01 | Shell Layouts: Logo và chữ Talento liên kết chuyển về trang chủ (/) | DONE (phạm vi navigation) | RecruiterLayout, CandidateLayout, AdminLayout, PublicLayout đều có Link to="/" cho logo và chữ Talento. 4/4 tests tại logo-home-navigation.test.tsx đạt, 13/13 layout tests đạt, typecheck/lint/build đạt. |
+| TALENTO-JOB-CREATE-FIX-01 | UI18/BR02/BR03/FE28/FE29: Sửa lỗi tạo/công bố tin tuyển dụng mới và cải thiện UX validation | DONE (phạm vi form & payload) | Sửa payload mismatch DTO salary (hỗ trợ cả phẳng salaryMin/Max và nested salary), thêm banner lỗi trực quan trên nút bấm, bộ đếm ký tự mô tả/tiêu đề, auto-scroll mượt mà tới trường lỗi. 7/7 tests job-form PASS, 13/13 tests backend service PASS, typecheck/lint/build đạt. |
+
+#### Bảng lịch sử FE trước khi merge (giữ nguyên báo cáo cũ; không dùng làm trạng thái main hiện hành)
 
 | Mã         | Phạm vi                                                                                                             | Phụ trách | Trạng thái trên main | Bằng chứng / phần còn thiếu                                                                                                                                                                                                                          |
 | ---------- | ------------------------------------------------------------------------------------------------------------------- | --------- | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -110,9 +160,14 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 
 | Mã            | Hạng mục / người phụ trách                                                        | Trạng thái  | Bằng chứng và phạm vi hoàn thành                                                                                                                                                                                  |
 | ------------- | --------------------------------------------------------------------------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| LOCAL-DEV-01  | Khởi chạy & tích hợp Localhost FE (5173) & BE API (3000) / Antigravity             | DONE (local runtime) | Backend NestJS port 3000, Frontend Vite port 5173 reverse proxy /api, Seeded demo DB, 180 web tests pass 100%, Browser verified jobs & auth. |
+| SHIP-INTEGRATION-20261026 | Tích hợp working tree BE/FE/QA/tài liệu / Codex | IN_REVIEW | Nhánh `pr/integrate-local-qa-20261026` từ `main` `4fba158`; 413 unit, 135 integration, 25 contract, 241 FE test đạt; typecheck/lint/build đạt. Chờ PR/CI/merge, chưa gộp main. |
+| CLOUD-PROFILE-REPAIR-01 | Sửa schema/profile ứng viên trên cloud / Codex | DONE (phạm vi lỗi cloud) | Cloud đủ 6 migration, 8 profile/8 CANDIDATE; 33 API checks + smoke browser save/persist/restore đạt. Regression migration/local smoke/typecheck/lint/diff đạt. [Báo cáo](../plans/reports/261026-0100-cloud-profile-repair.md); source mới chưa commit. |
+| CLOUD-ROLE-ACCOUNTS-01 | Lưu tài khoản role demo vào cloud theo yêu cầu người dùng / Codex | DONE (account/role/membership) | 7 account, 2 company demo, 4 membership; 6 login/session/membership/logout đạt và LOCKED 401. Lần tạo account chưa có profile; nay đã sửa qua CLOUD-PROFILE-REPAIR-01. [Bằng chứng ban đầu](../plans/reports/261026-0051-cloud-role-accounts.md). |
+| QA-AUTH-ROLES-01 | Kiểm đăng ký/đăng nhập/phân quyền và tài khoản demo / Codex | DONE (kiểm source có sẵn + fixture local) | 7 tài khoản verified/locked trong DB demo; 406 BE unit, 134 integration, 204 FE, 119 API matrix và 27 E2E đạt. [Báo cáo](../plans/reports/261025-2329-auth-roles-verification.md). Base `4fba158` + sửa local chưa commit/chưa gộp main; không nghiệm thu API/provider chưa có. |
+| DOC-PROGRESS-AUDIT-01 | Đối chiếu sổ tiến độ với source `main` / Codex | DONE (phạm vi tài liệu local) | Đã kiểm Git ancestry, module/route/migration/FE fallback, liên kết và diff trên `main` `4fba158`; sổ đang sửa ở working tree, chưa commit/chưa gộp main. Không coi là nghiệm thu ứng dụng. |
+| LOCAL-DEV-01 | Khởi chạy & tích hợp localhost FE (5173) & BE API (3000) / Antigravity; Codex kiểm lại | DONE (runtime localhost) | Runtime hiện tại 26/10: FE 5173/API build 3000 dùng `.env` cloud, đã kiểm profile UI thật. Bộ local `recruitment_demo` và 27 E2E là bằng chứng lượt QA trước; dùng `.env.local-demo` khi muốn quay lại fixture cô lập. `dev:api` tsx còn vấn đề metadata. [Chạy lại](../Docs/local-role-testing.md). |
 | BE1-AUDIT-01 | Rà soát và kiểm thử hoàn thành BE1 / Codex hỗ trợ BE1 | DONE (kiểm tra) | [Audit 25/10](../plans/261022-1711-be1-complete-implementation/reports/261025-be1-completion-audit.md): unit330/contract25 đạt; integration113 đạt lần2 (lần1 timeout); 8 assertion nghiệm thu fail do thiếu provider và 5 nhóm lỗi. BE1 vẫn IN_PROGRESS |
-| BE1-FIX-01 | Sửa F02–F06 và regression BR15/18 / BE1 + Codex | DONE (phạm vi sửa lỗi) | Nhánh fix/be1-acceptance-20261025 chưa commit/chưa gộp main;368unit/126integration/124web, lint/types/build/evidence đạt; legacy migration3tests và6/8probes đạt. F01/provider và gate toàn BE1 còn mở. [Bằng chứng](../plans/261022-1711-be1-complete-implementation/reports/261025-be1-fixes-verification.md). |
+| BE1-FIX-01 | Sửa F02–F06 và regression BR15/18 / BE1 + Codex | DONE (phạm vi sửa lỗi trên main) | PR #10 merge tại `66f0686`; `db7c2f0` là tổ tiên main. Test 368 unit/126 integration/124 web là bằng chứng trên nhánh sửa tại thời điểm báo cáo, chưa chạy lại trong lượt audit này. F01 và gate toàn BE1 phải đánh giá lại trên source tích hợp. [Báo cáo gốc](../plans/261022-1711-be1-complete-implementation/reports/261025-be1-fixes-verification.md). |
 | SYNC-LOCAL-01 | Đồng bộ source GitHub, giữ ba file audit / Codex | DONE | Fetch/reset origin/main tại 94d84c2; source tracked khác progress đã khớp remote; chỉ ba file được giữ còn trong git status. Env/dependency/artifact ignored được giữ; chưa chạy lại application test |
 | DOC-01        | Đặc tả hệ thống / tác giả chưa được xác nhận trong sổ cũ                          | DONE        | [Đặc tả](../Docs/project-specification.md), commit `ed9fe6d`; không phải kết quả nghiệm thu                                                                                                                       |
 | LOCAL-CLONER-01 | Setup website cloner độc lập / Codex hỗ trợ hạ tầng | DONE (local setup) | Repo bên cạnh đã cài; Next 16.4.3, lint/typecheck/build đạt, audit 0, HTTP 3010 đạt 200. Chưa clone website cụ thể; chưa tích hợp main |
@@ -120,33 +175,42 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 | LOCAL-01      | Clone dự án / BE2 + Codex                                                         | DONE        | Đã clone vào `D:\Github Project\He_Thong_Tuyen_Dung`, nhánh main; kiểm trạng thái và file nguồn ngày 19/10                                                                                                        |
 | DOC-02        | Contract tích hợp BE2 / BE2 + Codex                                               | DONE        | [Contract v1](../Docs/be2-integration-contract.md), commit `f0dd6e7` trên main; mức thiết kế                                                                                                                      |
 | DOC-03        | Ghi chú AI BE1/BE3 / BE2 + Codex                                                  | DONE        | [Ghi chú](../Docs/BE1-BE3_note.md), commit `f0dd6e7` trên main                                                                                                                                                    |
-| DOC-04        | Sổ tiến độ chung / BE2 + Codex; cả nhóm cập nhật                                  | DONE        | File này và hướng dẫn liên quan trong commit chứa báo cáo; kiểm tra tài liệu, không phải test ứng dụng                                                                                                            |
-| DOC-05        | Kế hoạch triển khai toàn bộ BE3 / Codex hỗ trợ BE3, chưa xác nhận người phụ trách | DONE        | [Kế hoạch 8 pha](../plans/261022-1652-be3-complete-implementation/plan.md), [rà soát](../plans/261022-1652-be3-complete-implementation/reports/plan-review.md); Đã tích hợp main; 6 UC chưa triển khai            |
-| DOC-06        | Kế hoạch triển khai toàn bộ BE1 / Codex hỗ trợ BE1, chưa xác nhận người phụ trách | DONE        | [Kế hoạch 8 pha](../plans/261022-1711-be1-complete-implementation/plan.md), [rà soát](../plans/261022-1711-be1-complete-implementation/reports/plan-review.md); Đã tích hợp main; 5 UC chưa triển khai            |
+| DOC-04        | Sổ tiến độ chung / BE2 + Codex; cả nhóm cập nhật | IN_PROGRESS | Sổ có lịch sử nhóm; audit 25/10 đang đính chính trạng thái merge và source hiện hành tại `4fba158`. Cần tiếp tục cập nhật khi từng UC được nghiệm thu. |
+| DOC-05        | Kế hoạch triển khai toàn bộ BE3 / Codex hỗ trợ BE3, chưa xác nhận người phụ trách | DONE (tài liệu) | [Kế hoạch 8 pha](../plans/261022-1652-be3-complete-implementation/plan.md), [rà soát](../plans/261022-1652-be3-complete-implementation/reports/plan-review.md); nền BE3 đã vào main PR #12, 6 UC vẫn IN_PROGRESS. |
+| DOC-06        | Kế hoạch triển khai toàn bộ BE1 / Codex hỗ trợ BE1, chưa xác nhận người phụ trách | DONE (tài liệu) | [Kế hoạch 8 pha](../plans/261022-1711-be1-complete-implementation/plan.md), [rà soát](../plans/261022-1711-be1-complete-implementation/reports/plan-review.md); source BE1 và bản sửa đã vào main PR #1/#10, 5 UC vẫn IN_PROGRESS. |
 | DOC-07        | Tài liệu bàn giao FE2 & Runbook Video / Antigravity hỗ trợ FE2                    | DONE        | [Bàn giao FE2](../Docs/fe2-handoff.md), commit chứa báo cáo này; đối chiếu 15 màn hình UI13–UI28, 19 test case FE23–FE41, hướng dẫn vận hành Jitsi & tích hợp backend                                             |
 | BE-FOUNDATION | Bootstrap NestJS / BE1                                                            | IN_PROGRESS | API bootstrap đã tích hợp main PR #1; clean CI build/API tests đạt. Runtime liên nhóm và HTTPS/FE acceptance chưa nghiệm thu.                                                                                     |
-| DB-01         | Prisma/migration/seed / mỗi BE sở hữu phần mình                                   | IN_PROGRESS | Main có3 migrations; local25/10 thêm data migration20261025073000_be1_normalize_text, deploy4migrations/empty+repeat smoke/legacy3tests đạt. Chưa gộp main hoặc deploy DB chung; BE3 schema/runtime permissions/historical upgrade tổng thể còn thiếu. |
+| DB-01 | Prisma/migration/seed / mỗi BE sở hữu phần mình | IN_PROGRESS | Main có 5 migration, working tree thêm backfill profile (tổng 6); cloud đã deploy đủ 6, 8 profile/8 CANDIDATE, giữ dữ liệu/credentials cũ qua fingerprint và migrate status up to date. Migration mới chưa commit; quyền DB runtime/migration, backup/restore và nâng release tổng thể chưa nghiệm thu. |
 | CLOUD-DB-01   | Shared PostgreSQL cloud / Codex BE1                                               | DONE        | Runtime cloud/test local configuration and team instructions integrated through PR #3 at `80cd120`; guard 3/3 and hosted CI pass. Credentials remain ignored.                                                     |
-| CONTRACT-01   | Port, DTO, OpenAPI, event schema và contract test / cả ba BE                      | IN_PROGRESS | Main có BE1/BE2 contracts; local25/10 đồng bộ BR15/18/search sort và public TS compile consumer/OpenAPI/spec, giữ legacy type fields deprecated. BE3 registry/provider/review liên nhóm chưa đủ. |
+| CONTRACT-01 | Port, DTO, OpenAPI, event schema và contract test / cả ba BE | IN_PROGRESS | BE1/BE2 contracts, sửa BR15/18/search sort và BE3 event/port source đã trên main PR #10/#12. Thiếu HTTP contract cho interview/evaluation/reporting và kiểm liên thông. |
 | BE2-STEP2     | Nền transaction và hợp đồng tích hợp / BE2 + Codex                                | DONE        | Đã gộp `main` tại `62215fc`; [bàn giao](../Docs/be2-step2-handoff.md), 23 unit + 11 contract test đạt. DONE chỉ cho phạm vi nền bước 2, không phải UC                                                             |
 | STORAGE-01    | Storage CV và scanner / BE2                                                       | IN_PROGRESS | Có port và service/repository quarantine/quét/xóa, unit test; còn provider PDF/scanner, object store, worker/reconciliation, API và test PostgreSQL                                                               |
 | BE2-CV-07     | Thay CV đã nộp / BE2 + Codex                                                      | DONE        | Workflow/repository, history/outbox/idempotency và test unit/contract trên main từ `6a39cfc`; UC06 tổng thể còn IN_PROGRESS.                                                                                      |
 | BE2-APP-08    | Xem, xét duyệt và rút hồ sơ / BE2 + Codex                                         | DONE        | Workflow/query và unit test trên main từ `8aee179`; UC07 còn BE3 lifecycle/HTTP nghiệm thu.                                                                                                                       |
 | BE2-SAVED-09  | Lưu tin quan tâm / BE2 + Codex                                                    | DONE        | Service/repository, placeholder và contract trên main từ `36135d6`; DB adapter đạt CI; UC14 còn Outbox/HTTP nghiệm thu.                                                                                           |
-| BE2-PORT-10   | Port hồ sơ cho BE1/BE3 / BE2 + Codex                                              | DONE        | Application/Result/Conflict port cùng transaction, history/outbox/idempotency lên main tại `0e1c489`; BE3 runtime còn thiếu.                                                                                      |
+| BE2-PORT-10 | Port hồ sơ cho BE1/BE3 / BE2 + Codex | DONE (phạm vi port source) | Application/Result/Conflict port trên main từ `0e1c489`; BE3 adapter/worker source đã merge PR #12. Chưa nghiệm thu runtime transaction liên nhóm. |
 | BE2-API-11    | API/DTO và binding Nest / BE2 + Codex                                             | IN_PROGRESS | Route profile/tin lưu/ứng tuyển và BE1 guard lên main tại `c9c078e`; DI/tsc/contract đạt. CV API và HTTP nghiệm thu còn thiếu.                                                                                    |
 | BE2-QA-12     | Migration và kiểm thử tích hợp / BE2 + Codex                                      | IN_PROGRESS | Migration và DB adapter test lên main tại `602d1d6`; CI PostgreSQL/quality-gate đạt. Còn HTTP/BE3/CV provider nghiệm thu.                                                                                         |
-| SHIP-BE1-FIX-01 | Xuất bản bản sửa BE1 / Truong102006 + Codex | DONE | Nhánh `pr/be1-acceptance-fixes-20261025` đã push; [PR #10](https://github.com/Truong102006/recruitment-management-system/pull/10) OPEN vào main; CI đang chạy, chưa gộp main. DONE chỉ phạm vi Git. |
+| SHIP-BE1-FIX-01 | Xuất bản bản sửa BE1 / Truong102006 + Codex | DONE (phạm vi Git) | [PR #10](https://github.com/Truong102006/recruitment-management-system/pull/10) đã merge vào main tại `66f0686`; lịch sử “OPEN/CI đang chạy” giữ ở nhật ký cũ. |
 | SHIP-BE2      | Push BE2 lên main / BE2 + Codex                                                   | DONE        | Bảy commit riêng đã fast-forward và push main tại `1299cd7`; CI nhánh 39905484135 và CI main 39905843323 backend/quality-gate đạt. DONE chỉ cho Git publishing.                                                   |
-| WORKER-01     | Outbox/email/worker / BE3; idempotency/transaction do BE2 phối hợp                | TODO        | Chưa triển khai                                                                                                                                                                                                   |
-| VIDEO-01      | Jitsi và thu hồi quyền phòng / BE3                                                | TODO        | Chưa tích hợp/kiểm provider thật                                                                                                                                                                                  |
-| QA-01         | Unit/integration/API/concurrency/FE/E2E / từng owner                              | IN_PROGRESS | Local25/10:43suites/368unit,16suites/126integration (gồm25contract),124web; coverage BE cấu hình91,61%/77,56%, evidence8/DBguard3 đạt. Probe6/8, F01 còn mở. Chưa gộp main; E2E/provider/ops thiếu; hosted cũ xem nhật ký. [Bằng chứng mới](../plans/261022-1711-be1-complete-implementation/reports/261025-be1-fixes-verification.md). |
+| WORKER-01 | Outbox/email/worker / BE3; idempotency/transaction do BE2 phối hợp | IN_PROGRESS | PR #12 đưa worker entry, outbox dispatcher, email delivery, expire proposals, reconciliation và consumer registry lên main. Chưa kiểm worker chạy với DB/SMTP thật, retry và tích hợp E2E. |
+| VIDEO-01 | Jitsi và thu hồi quyền phòng / BE3 | IN_PROGRESS | Jitsi adapter và access rules có trên main PR #12; chưa có interview HTTP/join-token flow và chưa kiểm provider Jitsi thật. |
+| QA-01 | Unit/integration/API/concurrency/FE/E2E / từng owner | IN_PROGRESS | QA local base `4fba158` + sửa working tree: 50 suites/406 unit, 17 suites/134 integration (gồm contract), 42 suites/204 FE, 119 API quyền và 27 E2E auth/role đạt. Coverage BE 82,45%/71,23%, FE 84,66%/74,74%; chưa nghiệm thu tuyển dụng đầy đủ/provider/ops. [Báo cáo cuối](../plans/reports/261025-2329-auth-roles-verification.md). |
 | CI-01         | Pipeline và evidence gate / BE1 điều phối                                         | IN_PROGRESS | Main PR #1: CI push39893005258 và PR39893010843 đạt backend+quality-gate, gồm fixed inventory/XML/coverage/migration/evidence. Còn full negative-controls hosted, FE-E2E và required branch check.                |
 | SHIP-CLOUD-01 | Publish cloud/test setup and remaining local formatting / Truong102006 + Codex    | DONE        | PR #3 merged main at `80cd120`; push run 39897893529 and PR run 39897927225 pass; main pulled.                                                                                                                    |
 | SHIP-BE1      | Chia commit, push và merge PR / Truong102006 + Codex                              | DONE        | PR #1 đã merge main tại ae869e7; 12 commit được push từng đợt, bảo toàn source/model/lịch sử BE2. DONE chỉ cho Git publishing.                                                                                    |
 | OPS-01        | Hiệu năng, backup/restore và vận hành / BE3 điều phối, cả nhóm kiểm chứng         | TODO        | Chưa đo/chưa diễn tập                                                                                                                                                                                             |
 
-### Phối hợp sau audit BE1 25/10/2026
+### Phối hợp hiện hành sau đối chiếu source 25/10/2026
+
+- Công việc tích hợp 26/10: SHIP-INTEGRATION-20261026 đang IN_REVIEW trên `pr/integrate-local-qa-20261026`; 413 unit, 135 integration, 25 contract và 241 FE test đạt, typecheck/lint/build đạt. Chờ PR/CI/merge; sau merge cần cập nhật riêng trạng thái tích hợp main. Blocker hiện tại: không có cho PR; E2E/provider và nghiệm thu UC toàn hệ thống vẫn mở. Bước tiếp theo: push PR và theo dõi quality gate.
+- Công việc cloud 26/10: CLOUD-ROLE-ACCOUNTS-01 và CLOUD-PROFILE-REPAIR-01 DONE đúng phạm vi; cloud đủ 6 migration, 8 profile và API/browser profile đã kiểm thật. Migration backfill/test/tài liệu chưa commit/merge; bước tiếp theo là review/đồng bộ lịch sử schema vào Git theo yêu cầu riêng và hoàn thiện các API/provider còn thiếu. Có schema không thay nghiệm thu toàn BE2/BE3.
+- Công việc QA auth hiện tại: QA-AUTH-ROLES-01 DONE cho source/fixture local; đã sửa BE3 binding và thêm GET `/api/companies`, cập nhật public DTO/OpenAPI/đặc tả/contract. 7 tài khoản và test/browser có bằng chứng; dùng DB local, bản sửa chưa commit/merge.
+- Công việc đang làm: BE1/BE2/BE3 và FE1/FE2 tiếp tục nghiệm thu trên `main` `4fba158`; riêng DOC-PROGRESS-AUDIT-01 đối chiếu source và cập nhật sổ. Các PR #9/#10/#11/#12 đã merge; không còn blocker chờ merge những PR này.
+- Blocker/giới hạn: `npm run dev:api` lỗi dependency injection khi chạy `tsx watch` (bản JS build từng khởi động và trả HTTP 200); chưa có interview/evaluation/reporting HTTP, API CV thật, provider Jitsi/SMTP/S3/scanner và E2E. Trạng thái migration trên DB dùng chung chưa được xác nhận. Điều kiện gỡ: sửa runtime dev, hoàn thiện endpoint/provider rồi chạy migration có kiểm soát và nghiệm thu liên thông trên môi trường phù hợp.
+- Bước tiếp theo: BE1/BE2/BE3 kiểm lại register/Outbox/InterviewLifecycle và các hợp đồng HTTP trên source đã merge; FE1/FE2 thay fallback bằng tích hợp API được nghiệm thu; QA chạy test toàn repo, E2E, coverage và lưu bằng chứng theo commit. Người phụ trách migration xác nhận DB target trước khi triển khai; không tự áp SQL lên DB chung từ bản audit tài liệu này.
+
+### Phối hợp sau audit BE1 25/10/2026 (lịch sử trước PR #10/#12)
 
 - Công việc xuất bản: SHIP-BE1-FIX-01 DONE phạm vi nhánh/push/PR #10; main mới `ca4ff6c` đã tích hợp vào nhánh, giữ tiến độ BE1/FE1/FE2.
 - Blocker xuất bản: không có; CI và review còn chờ, chưa gộp main.
@@ -157,6 +221,439 @@ Mỗi người tách thêm dòng theo mã UI khi bắt đầu một màn hình; 
 - Bước tiếp theo: BE3 cung cấp transactional providers/worker/mail/security; BE1/BE2 phối hợp runtime/barrier/rollback; owner dependency xử lý audit. Review/migrate theo thứ tự dừng writer cũ→migrate→start API mới; chưa áp DB chung, chưa publish Git trong lượt này.
 
 ## Nhật ký báo cáo
+
+### 2026-10-26 09:04 (Asia/Saigon) — Codex — Kiểm tra nhánh tích hợp trước PR
+
+- Mã báo cáo: 20261026-0904-AI-ship-integration-review
+- Người thực hiện / AI hỗ trợ: Codex (AI), vai trò tích hợp.
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: SHIP-INTEGRATION-20261026; UC10/UI27, UI01, DB-01, QA-01 và toàn bộ working tree được người dùng yêu cầu đưa vào PR.
+- Trạng thái: IN_REVIEW; chờ PR/CI/merge, các UC tổng thể không đổi trạng thái nghiệm thu.
+- Nhánh / commit / PR / tích hợp main: `pr/integrate-local-qa-20261026` từ `main` `4fba158`; commit chứa báo cáo này chưa có; chưa tạo PR/chưa gộp main.
+- Đã hoàn thành: Rà soát 83 file staged; sửa phản hồi `GET /admin/jobs` để trả tên doanh nghiệp/địa điểm/hình thức làm việc đúng UI27, thêm test và cập nhật DTO/OpenAPI/đặc tả; sửa điều khiển bộ lọc bằng bàn phím. Giữ nguyên báo cáo của các thành viên/agent khác.
+- File / bằng chứng: `apps/api/src/modules/admin/admin.service.ts`, `apps/api/src/modules/admin/tests/admin-workflows.spec.ts`, `apps/web/src/features/admin/api/admin.api.ts`, `apps/web/src/features/admin/pages/admin-jobs-page.tsx`, `apps/web/src/features/jobs/components/`, `apps/web/src/features/jobs/__tests__/location-filter-and-custom-select.test.tsx`, `libs/contracts/public/index.ts`, `contracts/openapi/be1.yaml`, `Docs/project-specification.md`, `progress/README.md`; JUnit tại `reports/backend/*/junit.xml` và `reports/frontend/junit.xml` (report local bị Git bỏ qua).
+- Kiểm tra đã chạy: `npm run test:unit:ci` 51 suite/413 test đạt, coverage backend 82,21% dòng/70,22% nhánh; `npm run test:integration:ci -- --testTimeout=30000` 18 suite/135 test đạt; `npm run test:contract:ci` 2 suite/25 test đạt; `npm run test:ci --workspace @rms/web -- --maxWorkers=2` 48 suite/241 test đạt, coverage FE 86,41% dòng/75,88% nhánh; `npm run test:evidence` 8/8 đạt. `npm run typecheck`, `npm run lint`, build API/web, `npm run db:validate`, `git diff --cached --check`, Prettier file sửa đạt. Kiểm 89 liên kết Markdown local: 5 ảnh trong đặc tả đã thiếu từ trước. Staged diff không khớp mẫu credential phổ biến.
+- Kiểm tra chưa chạy / coverage: Chưa chạy E2E trong lượt tích hợp vì cần fixture DB local riêng; coverage unit/FE đã đo như trên. Lượt test đầu chạy đồng thời bị timeout/cạnh tranh thư mục coverage; đã chạy lại tuần tự đạt. CI hosted chưa chạy vì chưa tạo PR.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Nhánh chứa migration backfill profile và DTO/API từ working tree; bổ sung ba trường cho item `GET /admin/jobs` trong OpenAPI/DTO/đặc tả. Cloud đã có sáu migration theo báo cáo trước; lượt tích hợp này không áp migration cloud mới. FE UI27 dùng response mới; người gọi endpoint cần cập nhật kiểu danh sách.
+- Phần còn thiếu / blocker: Chờ commit, push, PR, CI và merge; E2E tuyển dụng/provider vẫn là hạng mục nghiệm thu riêng. Không có blocker đối với tạo PR.
+- Bước tiếp theo: Commit nhánh, push, mở PR; theo dõi CI/review và merge vào main khi đạt.
+
+### 2026-10-26 08:51 (Asia/Saigon) — Codex — Bắt đầu tích hợp working tree vào main
+
+- Mã báo cáo: 20261026-0851-AI-ship-integration
+- Người thực hiện / AI hỗ trợ: Codex (AI), vai trò tích hợp.
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: SHIP-INTEGRATION-20261026; các thay đổi BE1/BE2/FE1/FE2, QA, DB-01 và tài liệu đang có trong working tree.
+- Trạng thái: IN_PROGRESS.
+- Nhánh / commit / PR / tích hợp main: `pr/integrate-local-qa-20261026` từ `main` `4fba158`; commit chứa báo cáo này chưa có; chưa tạo PR/chưa gộp main.
+- Đã hoàn thành: Tạo nhánh, `git fetch origin main` và xác nhận local main đồng bộ origin/main (0/0); đang rà soát file, secret và kiểm tra.
+- File / bằng chứng: `progress/README.md`; bằng chứng kiểm tra sẽ bổ sung trong nhật ký kết thúc.
+- Kiểm tra đã chạy: `git diff --check` phát hiện một dòng trắng thừa ở `apps/web/src/features/companies/context/company-context.tsx:119`; đang xử lý. Các lệnh test đang chạy, chưa có kết luận.
+- Kiểm tra chưa chạy / coverage: Chưa có kết quả cuối; coverage chưa đo xong.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Nhánh chứa migration backfill profile, DTO/API BE1 và FE client từ working tree; cần review trước khi merge. Chưa áp migration mới trong lượt tích hợp này.
+- Phần còn thiếu / blocker: Chờ test/review, commit, push, PR và merge; chưa có blocker xác nhận.
+- Bước tiếp theo: Hoàn tất kiểm tra, sửa lỗi được phát hiện, cập nhật báo cáo cuối và tạo PR vào main.
+
+### 2026-10-26 07:55 (Asia/Saigon) — Antigravity — Làm lại khung bọc các tab trạng thái: Xóa bỏ khung viền xám vuông
+
+- Mã báo cáo: 20261026-0755-AI-talento-tabs-style-fix-done
+- Người thực hiện / AI hỗ trợ: Antigravity (AI hỗ trợ phát triển theo yêu cầu người dùng).
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: TALENTO-TABS-STYLE-FIX-01, UI17, RecruiterJobsListPage; sửa lỗi các tab lọc trạng thái bị bọc trong khung màu xám vuông vức do style mặc định của trình duyệt.
+- Trạng thái: DONE (phạm vi styling tab lọc trạng thái tin tuyển dụng); các UC tổng thể tiếp tục IN_PROGRESS.
+- Nhánh / commit / PR / tích hợp main: `main` base `4fba158` + sửa working tree; chưa commit/chưa gộp main.
+- Đã hoàn thành:
+  1. Xác định nguyên nhân: Các nút `<button>` trong cụm `.tabs` không được định nghĩa `background: transparent; border: none;`, khiến trình duyệt tự động áp dụng User Agent Stylesheet mặc định (`background-color: buttonface`, `border: 2px outset`, `border-radius: 0px`), dẫn đến việc cả 4 tab ("Tất cả", "Bản nháp", "Đang công bố", "Đã đóng") bị bọc thành một khối màu xám vuông thô kệch.
+  2. Thiết kế lại toàn bộ cụm tab:
+     - Xóa bỏ triệt để nền và viền màu xám: Container `.tabs` và các `<button>` chuyển sang `background: transparent; border: none; padding: 0;`.
+     - Phân định tab active tinh tế: Tab đang chọn hiển thị chữ màu xanh nổi bật (`var(--blue)`), nền highlight dịu mắt (`var(--over-bg)`), bo góc mềm mại 8px (`border-radius: 8px`), `font-weight: 600`.
+     - Tab chưa chọn: Chữ màu xám thanh lịch (`var(--muted)`), khi hover đổi sang nền nhẹ (`var(--soft2)`) và chữ đậm hơn (`var(--ink)`).
+  3. Bổ sung style dùng chung trong `global.css` cho `.tabs` và `.tabs button`, đồng thời thêm inline style trong `recruiter-jobs-list-page.tsx`.
+- File / bằng chứng:
+  - `apps/web/src/styles/global.css`
+  - `apps/web/src/features/jobs/recruiter/pages/recruiter-jobs-list-page.tsx`
+- Kiểm tra đã chạy:
+  - `npx vitest run src/features/jobs/recruiter/pages/recruiter-jobs-list-page.test.tsx`: 5/5 tests PASS 100%.
+  - `npm run typecheck --workspace @rms/web`: `tsc --noEmit` đạt 100% không có lỗi.
+  - `npm run lint`: ESLint kiểm tra toàn repo đạt 0 error, 0 warning.
+  - `npm run build --workspace @rms/web`: Vite production build thành công trong 7.63s.
+- Kiểm tra chưa chạy / coverage: Không phát sinh thêm test nghiệp vụ mới; coverage hiện có được bảo toàn.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Chỉ thay đổi CSS/UI frontend, không đổi DB hay backend API.
+- Phần còn thiếu / blocker: Không có.
+- Bước tiếp theo: Sẵn sàng phục vụ các yêu cầu tiếp theo từ người dùng.
+
+### 2026-10-26 05:05 (Asia/Saigon) — Antigravity — Hoàn thành nâng cấp header navigation: Xóa Tính năng/Giải pháp, thêm dropdown Công cụ và Cẩm nang nghề nghiệp
+
+- Mã báo cáo: 20261026-0505-AI-talento-header-nav-dropdown-done
+- Người thực hiện / AI hỗ trợ: Antigravity (AI hỗ trợ phát triển theo yêu cầu người dùng).
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: TALENTO-HEADER-NAV-DROPDOWN-01, UI header navigation, PublicLayout, Career Handbook/Blog & Tools features.
+- Trạng thái: DONE (phạm vi header dropdown navigation, blog cẩm nang nghề nghiệp và các trang công cụ); các UC tổng thể tiếp tục IN_PROGRESS.
+- Nhánh / commit / PR / tích hợp main: `main` base `4fba158` + sửa working tree; chưa commit/chưa gộp main.
+- Đã hoàn thành:
+  1. Header Navigation:
+     - Xóa bỏ 2 tab cũ "Tính năng" và "Giải pháp" khỏi `PublicLayout` theo đúng yêu cầu người dùng.
+     - Bổ sung tab dropdown "Công cụ" với menu xổ xuống bo góc tròn, bóng mượt, hiển thị 3 mục con theo Hình 1:
+       + *Bộ câu hỏi phỏng vấn* (có badge xanh lá "Mới") -> chuyển hướng đến `/tools/interview-questions`.
+       + *Trắc nghiệm MBTI* (khám phá tính cách và thế mạnh) -> chuyển hướng đến `/tools/mbti-test`.
+       + *Talento Skills* (Skill) (bản đồ kỹ năng & lộ trình phát triển) -> chuyển hướng đến `/tools/skills`.
+     - Bổ sung tab mega-dropdown "Cẩm nang nghề nghiệp" với layout 2 cột theo Hình 2:
+       + *Cột trái*: 6 chuyên mục cẩm nang với icon SVG sắc nét: Định hướng nghề nghiệp (`/blog/huong-nghiep`), Bí kíp tìm việc (`/blog/bi-kip-tim-viec`), Chế độ lương thưởng (`/blog/che-do-luong-thuong`), Kiến thức chuyên ngành (`/blog/kien-thuc-chuyen-nganh`), Hành trang nghề nghiệp (`/blog/hanh-trang-nghe-nghiep`), Thị trường & xu hướng tuyển dụng (`/blog/thi-truong-tuyen-dung`).
+       + *Cột phải*: Khối "Bài viết nổi bật" với 2 bài viết preview ("Nhân viên bán hàng là gì? Bảng mô tả công việc nhân viên bán hàng", "Khám phá mức lương Kế toán mới nhất") có thumbnail ảnh, tiêu đề, tóm tắt và link "Xem thêm bài viết nổi bật →".
+     - Hỗ trợ cả 2 tương tác: Hover (có timeout chống giật lag khi di chuột) và Click chuột, tự động đóng khi bấm chuyển trang hoặc click ra ngoài.
+  2. Trang Cẩm nang nghề nghiệp (Hình 3):
+     - Xây dựng component `CareerHandbookPage` tại `apps/web/src/features/blog/career-handbook-page.tsx`.
+     - Hero banner với nền gradient xanh lá dịu mát, tiêu đề danh mục, phụ đề, và linh vật robot đọc sách ngồi trên chồng sách chuẩn xác theo Hình 3.
+     - Hàng nút filter pills danh mục bo tròn: [Bí kíp tìm việc], [Chế độ lương thưởng], [Kiến thức chuyên ngành], [Hành trang nghề nghiệp], [Thị trường và xu hướng tuyển dụng]. Bấm vào pill nào chuyển đổi danh mục ngay lập tức.
+     - Thanh Breadcrumbs: `Trang chủ > Cẩm nang nghề nghiệp > [Tên chuyên mục]`.
+     - Section "Bài viết nổi bật": Hero article card lớn với ảnh bìa, badge danh mục, số phút đọc, tiêu đề, tóm tắt; cùng lưới các bài viết liên quan.
+     - Modal đọc bài viết chi tiết tích hợp sẵn: bấm vào bất kỳ bài viết nào sẽ mở dialog đọc toàn bộ nội dung bài viết với giao diện sạch sẽ, đẹp mắt.
+  3. Xây dựng 3 trang Công cụ:
+     - `/tools/interview-questions`: Bộ câu hỏi phỏng vấn theo vị trí IT (Frontend, Backend, DevOps, Tester) và cấp bậc (Junior, Middle, Senior), có ô tìm kiếm và accordion xem gợi ý câu trả lời mẫu cùng tiêu chí đánh giá.
+     - `/tools/mbti-test`: Trắc nghiệm tính cách nghề nghiệp MBTI với bài kiểm tra tương tác và gợi ý nghề nghiệp tương ứng.
+     - `/tools/skills`: Khung năng lực Talento Skills với lộ trình công nghệ theo từng vị trí chuyên môn.
+  4. i18n & Router:
+     - Bổ sung `tools` và `careerHandbook` vào `translations.ts` song ngữ VI / EN.
+     - Đăng ký toàn bộ routes mới trong `router.tsx` dưới `PublicLayout`.
+- File / bằng chứng:
+  - `apps/web/src/lib/i18n/translations.ts`
+  - `apps/web/src/lib/i18n/language-context.tsx`
+  - `apps/web/src/features/blog/career-handbook-data.ts`
+  - `apps/web/src/features/blog/career-handbook-page.tsx`
+  - `apps/web/src/features/blog/career-handbook-page.test.tsx`
+  - `apps/web/src/features/tools/interview-questions-page.tsx`
+  - `apps/web/src/features/tools/mbti-test-page.tsx`
+  - `apps/web/src/features/tools/skills-page.tsx`
+  - `apps/web/src/features/tools/tools-pages.test.tsx`
+  - `apps/web/src/app/layouts/components/header-nav-dropdowns.tsx`
+  - `apps/web/src/app/layouts/public-layout.tsx`
+  - `apps/web/src/app/router.tsx`
+  - `apps/web/src/app/layouts/public-layout.test.tsx`
+- Kiểm tra đã chạy:
+  - `npx vitest run src/app/layouts/public-layout.test.tsx src/features/blog/career-handbook-page.test.tsx src/features/tools/tools-pages.test.tsx`: 3 suites / 12 tests PASS 100%.
+  - `npx vitest run`: 48 suites / 239 tests PASS 100% trên toàn bộ frontend.
+  - `npm run lint`: ESLint kiểm tra toàn project đạt 0 error, 0 warning.
+  - `npm run typecheck --workspace @rms/web`: TypeScript `tsc --noEmit` đạt 100% không có lỗi.
+  - `npm run build --workspace @rms/web`: Vite build production bundle thành công trong 7.03s.
+- Kiểm tra chưa chạy / coverage: Coverage frontend đạt: `features/blog` 97%, `features/tools` 98.21%, `lib/i18n` 99.46%.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không thay đổi CSDL hay backend API; toàn bộ tương thích ngược 100%.
+- Phần còn thiếu / blocker: Không có trong phạm vi yêu cầu navigation.
+- Bước tiếp theo: Sẵn sàng phục vụ các yêu cầu tiếp theo từ người dùng.
+
+### 2026-10-26 04:52 (Asia/Saigon) — Antigravity — Bắt đầu nâng cấp header navigation: Xóa Tính năng/Giải pháp, thêm dropdown Công cụ và Cẩm nang nghề nghiệp
+
+- Mã báo cáo: 20261026-0452-AI-talento-header-nav-dropdown-start
+- Người thực hiện / AI hỗ trợ: Antigravity (AI hỗ trợ phát triển theo yêu cầu người dùng).
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: TALENTO-HEADER-NAV-DROPDOWN-01, UI header navigation, PublicLayout, Career Handbook/Blog & Tools features.
+- Trạng thái: IN_PROGRESS
+- Nhánh / commit / PR / tích hợp main: `main` base `4fba158` + sửa working tree; chưa commit/chưa gộp main.
+- Đã hoàn thành: Khởi động công việc theo yêu cầu người dùng:
+  1. Xóa 2 tab cũ: "Tính năng" và "Giải pháp" trên thanh header.
+  2. Thêm tab dropdown "Công cụ" với menu xổ xuống gồm 3 mục: Bộ câu hỏi phỏng vấn, Trắc nghiệm MBTI, Talento Skills (như hình 1).
+  3. Thêm tab dropdown "Cẩm nang nghề nghiệp" với mega-menu xổ xuống gồm 6 chủ đề nghề nghiệp và khối bài viết nổi bật (như hình 2).
+  4. Tạo các trang web đích tương ứng (hình 3): `/blog/:categorySlug` và các trang `/tools/*` với giao diện chuyên nghiệp, responsive.
+  5. Cập nhật unit test và typecheck.
+- File / bằng chứng: Sẽ cập nhật `public-layout.tsx`, `translations.ts`, tạo component `HeaderNavDropdown`, trang `blog-category-page.tsx`, `career-handbook-data.ts` và route trong `router.tsx`.
+- Kiểm tra đã chạy: Chưa chạy — bắt đầu triển khai.
+- Kiểm tra chưa chạy / coverage: Sẽ chạy toàn bộ test layout, jobs và build sau khi hoàn tất.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không ảnh hưởng DB / API backend.
+- Phần còn thiếu / blocker: Đang tiến hành cài đặt code.
+- Bước tiếp theo: Tạo module dữ liệu và component dropdown cho Công cụ và Cẩm nang nghề nghiệp, cập nhật PublicLayout và Router.
+
+### 2026-10-26 03:15 (Asia/Saigon) — Antigravity — Hoàn thành hệ thống đa ngôn ngữ song ngữ VI / EN
+
+- Mã báo cáo: 20261026-0315-AI-talento-i18n-done
+- Người thực hiện / AI hỗ trợ: Antigravity (AI hỗ trợ phát triển theo yêu cầu người dùng).
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: TALENTO-I18N-01, toàn bộ UI Layouts (Public, Candidate, Recruiter, Admin), Header, Footer, JobListPage, LocationFilterPopover, PublicHomePage; khắc phục triệt để lỗi bấm chuyển sang EN nhưng ngôn ngữ vẫn là tiếng Việt.
+- Trạng thái: DONE (phạm vi đa ngôn ngữ i18n frontend); các UC tổng thể tiếp tục IN_PROGRESS.
+- Nhánh / commit / PR / tích hợp main: `main` base `4fba158` + sửa working tree; chưa commit/chưa gộp main.
+- Đã hoàn thành:
+  1. Kiến trúc Đa ngôn ngữ (i18n):
+     - Xây dựng module `apps/web/src/lib/i18n/` thuần React, type-safe, không cài đặt dependencies nặng.
+     - `LanguageContext` & `LanguageProvider`: Lưu trạng thái lựa chọn ngôn ngữ bền vững vào `localStorage` (`talento_language`), tự động cập nhật thuộc tính `document.documentElement.lang` phục vụ khả năng tiếp cận (Accessibility - a11y) và SEO.
+     - Cung cấp hook `useLanguage` và `useTranslation` với hàm `t(keyPath, params)` hỗ trợ tra cứu từ điển lồng nhau (`nav.findJobs`, `jobs.salaryRange`) và thay thế tham số template dạng `{count}`, `{min}`, `{max}`, `{date}` linh hoạt. Có cơ chế fallback tự động về tiếng Việt nếu key tiếng Anh chưa định nghĩa, và fallback an toàn khi render bên ngoài `LanguageProvider` giúp component không bao giờ bị crash.
+     - Bộ từ điển hoàn chỉnh `translations.ts` chuẩn song ngữ Anh - Việt cho các phân hệ: `nav`, `jobs`, `locationPopover`, `home`, `footer`, `common`, `candidateNav`, `recruiterNav`, `adminNav`.
+  2. Tích hợp đồng bộ toàn bộ Layouts:
+     - Bọc `LanguageProvider` tại gốc của cây component trong `apps/web/src/app/providers.tsx`.
+     - `PublicLayout`: Nút chuyển đổi ngôn ngữ pill `VI | EN` kết nối `toggleLanguage()`, class `.on` active chính xác theo `language`. Dịch toàn bộ thanh điều hướng, các nút đăng nhập / đăng ký, menu phân quyền và footer.
+     - `CandidateLayout`: Kết nối `useLanguage()`, toggle `VI | EN`, dịch các tab ứng viên, avatar profile, nút đăng xuất và footer.
+     - `RecruiterLayout`: Kết nối `useLanguage()`, toggle `VI | EN`, dịch toàn bộ sidebar (Tin tuyển dụng, Hồ sơ ứng viên, Lịch phỏng vấn, Thành viên & Công ty, Thống kê tuyển dụng), topbar (ô tìm kiếm nhanh, nút đổi giao diện, profile), và nút đăng xuất.
+     - `AdminLayout`: Kết nối `useLanguage()`, toggle `VI | EN`, dịch toàn bộ sidebar quản trị hệ thống (Duyệt doanh nghiệp, Quản trị tài khoản, Kiểm duyệt tin, Nhật ký Audit, Sự kiện Outbox lỗi), topbar và footer.
+  3. Dịch thuật các trang giao diện cốt lõi:
+     - `JobListPage`: Tiêu đề trang, phụ đề, nhãn ô tìm kiếm, placeholder, options động cho hình thức công việc (Full-time, Part-time, Contract, Internship) và môi trường làm việc (On-site, Hybrid, Remote), nút "Tìm kiếm" / "Search", nút "Xóa bộ lọc" / "Clear Filters", thông báo trạng thái "Đang tải...", "Không tìm thấy việc làm phù hợp", hiển thị số lượng "Tìm thấy X cơ hội việc làm" / "Found X job opportunities", định dạng mức lương, hạn nộp theo chuẩn locale (`vi-VN` / `en-US`), nút "Xem chi tiết & Ứng tuyển" / "View Details & Apply", nút phân trang "Trang trước" / "Trang sau".
+     - `LocationFilterPopover`: Placeholder ô nhập nhanh tỉnh/thành phố, thông báo không tìm thấy kết quả, nút "Bỏ chọn tất cả" / "Clear all", nút "Áp dụng" / "Apply".
+     - `PublicHomePage`: Hero headline, subtitle, các nút CTA "Dùng thử miễn phí" / "Start Free Trial", "Tìm việc làm" / "Find Jobs", "Khu vực Tuyển dụng" / "Recruiter Portal".
+- File / bằng chứng:
+  - `apps/web/src/lib/i18n/types.ts`
+  - `apps/web/src/lib/i18n/translations.ts`
+  - `apps/web/src/lib/i18n/language-context.tsx`
+  - `apps/web/src/lib/i18n/index.ts`
+  - `apps/web/src/lib/i18n/__tests__/language-context.test.tsx`
+  - `apps/web/src/app/providers.tsx`
+  - `apps/web/src/app/layouts/public-layout.tsx`
+  - `apps/web/src/app/layouts/candidate-layout.tsx`
+  - `apps/web/src/app/layouts/recruiter-layout.tsx`
+  - `apps/web/src/app/layouts/admin-layout.tsx`
+  - `apps/web/src/features/jobs/job-list-page.tsx`
+  - `apps/web/src/features/jobs/components/location-filter-popover.tsx`
+  - `apps/web/src/features/home/public-home-page.tsx`
+- Kiểm tra đã chạy:
+  - `npx vitest run src/lib/i18n/__tests__/language-context.test.tsx`: 6/6 tests PASS 100% (kiểm tra mặc định 'vi', chuyển đổi 'en', toggle qua lại, template param substitution, lưu và phục hồi từ localStorage, fallback an toàn ngoài provider).
+  - `npx vitest run src/app/layouts/public-layout.test.tsx src/app/layouts/__tests__/logo-home-navigation.test.tsx src/app/layouts/recruiter-layout.test.tsx src/app/layouts/admin-layout.test.tsx`: 4 suites / 13 tests PASS 100%.
+  - `npx vitest run src/features/jobs/__tests__/ src/lib/i18n/__tests__/`: 3 suites / 25 tests PASS 100% (bảo toàn toàn bộ chức năng lọc địa điểm, alias matching và custom select).
+  - `npm run typecheck --workspace @rms/web`: `tsc --noEmit` đạt 100% không có lỗi.
+  - `npm run build --workspace @rms/web`: Vite build production bundle thành công trong 7.15s (`dist/index.html`, `dist/assets/index.css`, `dist/assets/index.js`).
+- Kiểm tra chưa chạy / coverage: Chưa đo coverage toàn workspace; coverage i18n đạt kiểm chứng chức năng.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không thay đổi CSDL hay backend API; toàn bộ tương thích ngược 100%.
+- Phần còn thiếu / blocker: Không có trong phạm vi yêu cầu đa ngôn ngữ.
+- Bước tiếp theo: Tiếp tục hỗ trợ các yêu cầu tiếp theo của người dùng.
+
+### 2026-10-26 02:55 (Asia/Saigon) — Antigravity — Bắt đầu triển khai đa ngôn ngữ VI/EN cho hệ thống
+
+- Mã báo cáo: 20261026-0255-AI-talento-i18n-start
+- Người thực hiện / AI hỗ trợ: Antigravity (AI hỗ trợ phát triển theo yêu cầu người dùng).
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: TALENTO-I18N-01, toàn bộ UI Layouts & Pages; giải quyết lỗi bấm chuyển sang EN nhưng ngôn ngữ vẫn là tiếng Việt.
+- Trạng thái: IN_PROGRESS
+- Nhánh / commit / PR / tích hợp main: `main` base `4fba158` + sửa working tree; chưa commit/chưa gộp main.
+- Đã hoàn thành: Ghi nhận yêu cầu người dùng: Nút bấm `VI | EN` trên header khi bấm sang EN phải chuyển toàn bộ giao diện sang tiếng Anh, bấm VI thì trở về tiếng Việt. Bắt đầu thiết kế kiến trúc `LanguageContext`, từ điển `translations.ts` và hook `useTranslation`.
+- File / bằng chứng: Sẽ triển khai `apps/web/src/lib/i18n/`, cập nhật `App.tsx`, các Layouts và các trang chính.
+- Kiểm tra đã chạy: Chưa chạy — bắt đầu triển khai.
+- Kiểm tra chưa chạy / coverage: Sẽ bổ sung unit test cho context và các màn hình sau khi code.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không thay đổi DB / API backend.
+- Phần còn thiếu / blocker: Đang triển khai LanguageProvider và tích hợp vào các Layouts.
+- Bước tiếp theo: Tạo module `i18n`, `LanguageContext`, bọc Provider tại `App.tsx` hoặc `router.tsx`, cập nhật nút chuyển đổi ở 4 layout và dịch các cụm từ UI.
+
+### 2026-10-26 02:48 (Asia/Saigon) — Antigravity — Sửa lỗi lọc địa điểm Hồ Chí Minh không ra công việc Ho Chi Minh City
+
+- Mã báo cáo: 20261026-0248-AI-talento-location-filter-debug
+- Người thực hiện / AI hỗ trợ: Antigravity (AI hỗ trợ phát triển theo yêu cầu người dùng).
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: TALENTO-LOCATION-FILTER-DEBUG-01, UI01, UC05; sửa lỗi lọc địa điểm "Hồ Chí Minh" nhưng không hiển thị công việc tại "Ho Chi Minh City" (Hình 1 vs Hình 2).
+- Trạng thái: DONE (phạm vi bộ lọc địa điểm và backend matching query); các UC tổng thể tiếp tục IN_PROGRESS.
+- Nhánh / commit / PR / tích hợp main: `main` base `4fba158` + sửa working tree; chưa commit/chưa gộp main.
+- Đã hoàn thành:
+  1. Xác định nguyên nhân gốc rễ (Root cause):
+     - Dữ liệu trong CSDL: Công việc "Senior Backend Engineer (NestJS / PostgreSQL)" lưu cột `location` là `"Ho Chi Minh City"`.
+     - Tiến trình backend NestJS API đang chạy trên port 3000 từ file `dist/api/apps/api/src/main.js` của bản build cũ. Trong bản build cũ, `JobQueryRepository` chỉ gán `where.location = { contains: normalizeText(query.location), mode: 'insensitive' }`, tạo ra câu lệnh SQL PostgreSQL `ILIKE '%Hồ Chí Minh%'`. Vì chuỗi `"Ho Chi Minh City"` không chứa ký tự tiếng Việt có dấu `"Hồ Chí Minh"` nên truy vấn trả về 0 kết quả (rỗng).
+  2. Bổ sung từ điển alias 2 chiều hoàn chỉnh:
+     - Bổ sung `'tp. hồ chí minh'`, `'tp hồ chí minh'`, `'tp. ho chi minh'`, `'tp ho chi minh'` vào `LOCATION_ALIASES['Hồ Chí Minh']` ở cả backend (`apps/api/src/modules/job/utils/location-filter.util.ts`) và frontend (`apps/web/src/features/jobs/utils/vietnam-locations.ts`).
+     - Đảm bảo cơ chế mở rộng biến thể `expandLocationVariants` tạo ra tập hợp OR trong Prisma gồm cả tiếng Việt có dấu, không dấu và tên tiếng Anh (`'hồ chí minh'`, `'ho chi minh'`, `'ho chi minh city'`, `'tp.hcm'`, `'saigon'`, v.v.).
+  3. Biên dịch lại backend và khởi động lại API daemon:
+     - Chạy `npm run build --workspace @rms/api` để compile mã nguồn mới sang `dist/api`.
+     - Tắt tiến trình API cũ và khởi động lại API daemon port 3000 với bản build mới.
+  4. Kiểm chứng kết quả thực tế qua HTTP request:
+     - Gọi `http://127.0.0.1:3000/api/jobs?location=H%E1%BB%93+Ch%C3%AD+Minh&page=1` => Trả về 1 job `"Senior Backend Engineer (NestJS / PostgreSQL)"` tại `"Ho Chi Minh City"`.
+     - Gọi qua Vite proxy `http://127.0.0.1:5173/api/jobs?location=H%E1%BB%93+Ch%C3%AD+Minh&page=1` => Trả về 1 job đúng như trên UI.
+     - Đã kiểm tra đa biến thể: `location=Ho+Chi+Minh` (1 job), `location=TP.HCM` (1 job), `location=saigon` (1 job), `location=Hà+Nội,+Hồ+Chí+Minh` (1 job), `location=Ha+Noi` (0 job do không có job ở Hà Nội).
+- File / bằng chứng:
+  - `apps/api/src/modules/job/utils/location-filter.util.ts`
+  - `apps/web/src/features/jobs/utils/vietnam-locations.ts`
+  - `apps/api/src/modules/job/repositories/job-query.repository.ts`
+  - `dist/api/` (rebuilt)
+  - `progress/README.md`
+- Kiểm tra đã chạy:
+  - `npx jest apps/api/src/modules/job/tests/location-filter.spec.ts` (7/7 tests PASS 100%)
+  - `npx vitest run src/features/jobs/__tests__/location-filter-and-custom-select.test.tsx` (11/11 tests PASS 100%)
+  - `npm run typecheck` (tsc backend và web PASS 100% không lỗi)
+  - `npm run lint` (ESLint 0 errors, 0 warnings trên toàn workspace)
+  - `npm run build --workspace @rms/web` (Vite build production thành công 100% trong 8.10s)
+  - HTTP fetch verification trực tiếp trên 127.0.0.1:3000 và 127.0.0.1:5173 đạt kết quả chính xác 100%.
+- Kiểm tra chưa chạy / coverage: Chưa chạy lại toàn bộ integration suites không liên quan đến job; chưa đo coverage toàn repo.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không thay đổi DB schema, không ảnh hưởng API contract.
+- Phần còn thiếu / blocker: Không có trong phạm vi báo cáo.
+- Bước tiếp theo: Báo cáo kết quả và giải thích nguyên nhân rõ ràng cho người dùng.
+
+### 2026-10-26 02:35 (Asia/Saigon) — Antigravity — Sửa lỗi tạo và công bố tin tuyển dụng mới và cải thiện UX Validation
+
+- Mã báo cáo: 20261026-0225-AI-talento-job-create-fix
+- Người thực hiện / AI hỗ trợ: Antigravity (AI hỗ trợ phát triển FE/BE/UI/UX theo yêu cầu người dùng).
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: TALENTO-JOB-CREATE-FIX-01, UI18, UC01, BR02, BR03, BR18, FE28, FE29; sửa lỗi bấm "Công bố ngay" không tạo tin tuyển dụng mới tại `/recruiter/jobs/new`.
+- Trạng thái: DONE (phạm vi form tạo/sửa tin tuyển dụng và payload DTO); các UC tổng thể tiếp tục IN_PROGRESS.
+- Nhánh / commit / PR / tích hợp main: `main` base `4fba158` + sửa working tree; chưa commit/chưa gộp main.
+- Đã hoàn thành:
+  1. Xác định nguyên nhân gốc rễ (root cause) khiến người dùng bấm "Công bố ngay" mà tin tuyển dụng không được tạo:
+     - Lỗi UX Validation: Ở Hình 1 người dùng nhập ô mô tả "123" (3 ký tự), trong khi quy tắc công bố tin (BR03, FE28, FE29) yêu cầu mô tả phải từ 100 đến 10.000 ký tự. Hàm `handlePublish` kiểm tra thấy lỗi nên gán `fieldErrors` và `return` dừng lại ngay mà không set `formError`, không có banner thông báo trực quan ở khu vực mắt người dùng đang nhìn (cạnh các nút bấm ở cuối trang), và không tự động cuộn (scroll) màn hình lên trường bị lỗi. Người dùng bấm nút không thấy phản ứng gì nên tưởng là đã tạo xong hoặc nút bị liệt, sau đó click sang menu "Tin tuyển dụng" (`/recruiter/jobs`) thì thấy danh sách trống (Hình 2).
+     - Lỗi Payload Mismatch (Backend 400 Bad Request): Frontend `recruiterJobsApi.createJob` và `updateJob` gửi payload có trường `salary: parsedSalary`, trong khi backend NestJS dùng `ValidationPipe` với `forbidNonWhitelisted: true` và `CreateJobDto`/`UpdateJobDto` chỉ khai báo các trường phẳng `salaryMin`, `salaryMax`, `currency`. Khi gửi `salary`, backend sẽ trả lỗi 400 Bad Request `property salary should not exist`.
+  2. Bổ sung phản hồi UX Validation trực quan & sinh động:
+     - Thêm banner cảnh báo `bottom-form-error-alert` ngay phía trên các nút bấm ở cuối form, hiển thị thông điệp rõ ràng hướng dẫn người dùng hoàn thiện các trường còn thiếu hoặc chưa đạt (kèm gợi ý: *"Nếu chưa đủ 100 ký tự, bạn có thể bấm 'Lưu bản nháp' để hoàn thiện sau"*).
+     - Thêm hàm `scrollToFirstError` tự động cuộn màn hình mượt mà (`smooth scroll`) và `focus()` vào trường bị lỗi đầu tiên.
+     - Thêm bộ đếm ký tự trực quan thời gian thực (Character counter) cho ô Tiêu đề (`{length} / 150 ký tự (tối thiểu 10)`) và ô Mô tả công việc (`{length} / 100 ký tự tối thiểu`), tự động đổi màu xanh "✓ Đủ điều kiện công bố" khi >= 100 ký tự và màu đỏ kèm số ký tự còn thiếu khi < 100 ký tự.
+     - Tự động xóa lỗi của từng trường khi người dùng bắt đầu gõ hoặc thay đổi giá trị (Title, Description, Headcount, Location, Deadline).
+     - Bổ sung `isMountedRef` để ngăn chặn unhandled rejection khi component unmount trong quá trình tải dữ liệu.
+  3. Đồng bộ tương thích DTO 2 chiều (Backward & Forward Compatibility):
+     - Tại frontend `apps/web/src/features/jobs/recruiter/pages/job-form-page.tsx`: Gửi đồng thời cả `salaryMin`, `salaryMax`, `currency` lẫn `salary` (`parsedSalary`).
+     - Tại contract `libs/contracts/public/index.ts`: Bổ sung tùy chọn `salaryMin`, `salaryMax`, `currency` vào `CreateJobRequest` và `UpdateJobRequest`.
+     - Tại backend `apps/api/src/modules/job/dto/job.dto.ts`: Bổ sung `SalaryRangeDto` và trường `@IsOptional() @ValidateNested() salary?: SalaryRangeDto | null` vào `CreateJobDto` và `UpdateJobDto`.
+     - Tại backend `CreateJobService` và `UpdateJobService`: Tự động map từ `dto.salary` sang `salaryMin`, `salaryMax`, `currency` nếu các trường phẳng chưa được chỉ định.
+  4. Viết bổ sung các bài kiểm thử tự động kiểm chứng:
+     - `apps/web/src/features/jobs/recruiter/pages/job-form-page.test.tsx`: Bổ sung 2 test case mới kiểm tra trường hợp người dùng nhập "123" hiển thị bộ đếm ký tự và banner cảnh báo lỗi, cùng test case công bố tin thành công khi mô tả >= 100 ký tự gửi đúng payload phẳng và chuyển trang an toàn (toàn bộ 7/7 tests PASS 100%).
+- File / bằng chứng:
+  - `apps/web/src/features/jobs/recruiter/pages/job-form-page.tsx`
+  - `apps/web/src/features/jobs/recruiter/pages/job-form-page.test.tsx`
+  - `libs/contracts/public/index.ts`
+  - `apps/api/src/modules/job/dto/job.dto.ts`
+  - `apps/api/src/modules/job/services/create-job.service.ts`
+  - `apps/api/src/modules/job/services/update-job.service.ts`
+  - `progress/README.md`
+- Kiểm tra đã chạy:
+  - `npx vitest run src/features/jobs/recruiter/pages/job-form-page.test.tsx` (7/7 tests PASS 100%)
+  - `npx jest apps/api/src/modules/job/tests/services.spec.ts` (13/13 tests PASS 100%)
+  - `npx vitest run src/app/router.test.tsx src/features/jobs/recruiter/pages/job-form-page.test.tsx` (15/15 tests PASS 100%, 0 unhandled errors)
+  - `npm run typecheck` (tsc backend và web PASS 100% không lỗi)
+  - `npm run lint` (ESLint 0 errors, 0 warnings trên toàn workspace)
+  - `npm run build --workspace @rms/web` (Vite build production thành công 100% trong 8.25s)
+- Kiểm tra chưa chạy / coverage: Chưa chạy lại Playwright E2E browser tests trên cloud; chưa đo lại coverage toàn bộ backend suite ngoài module job.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không thay đổi DB schema hay migration. Mở rộng DTO backend để hỗ trợ cả nested salary lẫn flat salaryMin/salaryMax không phá vỡ bất kỳ contract cũ nào.
+- Phần còn thiếu / blocker: Không có blocker trong phạm vi này.
+- Bước tiếp theo: Bàn giao để người dùng thử nghiệm tạo và công bố tin tuyển dụng trên trình duyệt.
+
+### 2026-10-26 02:12 (Asia/Saigon) — Antigravity — Bấm Logo hoặc chữ Talento chuyển về trang chủ (/)
+
+- Mã báo cáo: 20261026-0212-AI-talento-logo-home-navigation
+- Người thực hiện / AI hỗ trợ: Antigravity (AI hỗ trợ phát triển FE/UI/UX theo yêu cầu người dùng).
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: TALENTO-LOGO-NAV-01, UI01, UI13, UI16, UI25; liên kết điều hướng Logo và thương hiệu Talento trên các thanh header/sidebar layout về trang chủ (`/`).
+- Trạng thái: DONE (phạm vi liên kết logo về trang chủ); các UC liên quan và toàn hệ thống tiếp tục IN_PROGRESS.
+- Nhánh / commit / PR / tích hợp main: `main` base `4fba158` + sửa working tree; chưa commit/chưa gộp main.
+- Đã hoàn thành:
+  1. Cập nhật `RecruiterLayout` (`apps/web/src/app/layouts/recruiter-layout.tsx`): Chuyển thẻ `div.logo` thành `<Link to="/" className="logo">` có aria-label "Về trang chủ Talento" để khi người dùng đang ở khu vực nhà tuyển dụng (như ở Hình 1) bấm vào icon 4 chấm hoặc chữ "Talento" thì điều hướng ngay về trang chủ (Landing Page tại Hình 2).
+  2. Cập nhật `CandidateLayout` (`apps/web/src/app/layouts/candidate-layout.tsx`): Đổi liên kết logo từ `/jobs` thành `/` (trang chủ).
+  3. Cập nhật `AdminLayout` (`apps/web/src/app/layouts/admin-layout.tsx`): Chuyển thẻ `div.logo` thành `<Link to="/" className="logo">` về trang chủ (`/`).
+  4. Cập nhật `PublicLayout` (`apps/web/src/app/layouts/public-layout.tsx`): Bổ sung thuộc tính `aria-label` cho liên kết logo về `/`.
+  5. Cập nhật CSS `.logo` trong `apps/web/src/styles/global.css`: Đảm bảo `cursor: pointer; text-decoration: none; color: var(--ink);` để hiển thị con trỏ tay, không bị gạch chân link và giữ trọn vẹn hiệu ứng animation nảy mầm các chấm tròn khi hover.
+  6. Tạo test suite `apps/web/src/app/layouts/__tests__/logo-home-navigation.test.tsx` kiểm chứng cả 4 layout chuyển đúng về `/` (4/4 tests PASS 100%).
+- File / bằng chứng:
+  - `apps/web/src/styles/global.css`
+  - `apps/web/src/app/layouts/recruiter-layout.tsx`
+  - `apps/web/src/app/layouts/candidate-layout.tsx`
+  - `apps/web/src/app/layouts/admin-layout.tsx`
+  - `apps/web/src/app/layouts/public-layout.tsx`
+  - `apps/web/src/app/layouts/__tests__/logo-home-navigation.test.tsx`
+  - `progress/README.md`
+- Kiểm tra đã chạy:
+  - `npx vitest run src/app/layouts/__tests__/logo-home-navigation.test.tsx` (4/4 tests PASS 100%)
+  - `npx vitest run src/app/layouts/` (13/13 tests PASS 100%)
+  - `npm run typecheck` (tsc backend và web PASS 100% không lỗi)
+  - `npm run lint` (ESLint 0 warnings, 0 errors)
+  - `npm run build --workspace @rms/web` (Vite build production thành công 100%)
+- Kiểm tra chưa chạy / coverage: Không chạy lại toàn bộ test suite lớn của dự án; chưa đo lại coverage toàn repo.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không thay đổi DB schema, migration hay API contract.
+- Phần còn thiếu / blocker: Không có blocker trong phạm vi này.
+- Bước tiếp theo: Bàn giao tính năng cho người dùng trải nghiệm trên trình duyệt.
+
+### 2026-10-26 02:05 (Asia/Saigon) — Antigravity — Bộ lọc địa điểm TopCV multi-select và Custom Select dropdown bo góc tròn
+
+- Mã báo cáo: 20261026-0205-AI-talento-location-filter-and-custom-select
+- Người thực hiện / AI hỗ trợ: Antigravity (AI hỗ trợ phát triển FE/BE/UI/UX theo yêu cầu người dùng).
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: TALENTO-LOCATION-FILTER-01, UI01, FR03, BR18; nâng cấp giao diện bộ lọc tìm kiếm việc làm tại `JobListPage`, matching địa điểm đa dạng và Custom Select bo góc tròn.
+- Trạng thái: DONE (phạm vi bộ lọc địa điểm TopCV multi-select và Custom Select dropdown bo góc tròn); các UC liên quan và toàn hệ thống tiếp tục IN_PROGRESS.
+- Nhánh / commit / PR / tích hợp main: `main` base `4fba158` + sửa working tree; chưa commit/chưa gộp main.
+- Đã hoàn thành:
+  1. Tạo tiện ích `apps/web/src/features/jobs/utils/vietnam-locations.ts` chứa danh mục 63 tỉnh/thành phố chuẩn tiếng Việt có dấu, hàm loại bỏ dấu `removeVietnameseDiacritics`, từ điển ánh xạ alias (Hồ Chí Minh -> Ho Chi Minh City, TP.HCM, Saigon; Hà Nội -> Ha Noi, Hanoi, Ha Noi City; Đà Nẵng -> Da Nang; Bà Rịa - Vũng Tàu; v.v.), hàm `expandLocationSearchTerms` và `isLocationMatch`.
+  2. Tạo component `LocationFilterPopover` (`apps/web/src/features/jobs/components/location-filter-popover.tsx`) chuẩn theo giao diện TopCV (Hình 2):
+     - Ô tìm kiếm "Nhập Tỉnh/Thành phố" lọc nhanh danh sách địa phương bên dưới (hỗ trợ gõ có dấu và không dấu).
+     - Buộc phải tích chọn vào checkbox mới tính là đã chọn tỉnh/thành phố đó, ngăn không cho gõ chữ tự do trực tiếp làm địa điểm.
+     - Cho phép chọn nhiều tỉnh/thành phố trong 1 lượt lọc (multi-select), hiển thị phân tách bằng dấu phẩy.
+     - Nút "Bỏ chọn tất cả" và nút "Áp dụng" (màu xanh lá bo góc tròn).
+  3. Tạo component `CustomSelect` (`apps/web/src/features/jobs/components/custom-select.tsx`) thay thế thẻ `<select>` native mặc định của browser (Hình 3):
+     - Trigger button bo góc tròn mượt mà (border-radius: 14px), theme card tối/sáng, icon chevron xoay khi mở/đóng.
+     - Khung popover dropdown xổ xuống có CSS bo góc tròn (border-radius: 14px), background `var(--card)`, viền mờ `var(--hair)`, đổ bóng sâu `box-shadow: 0 12px 32px rgba(0,0,0,0.35)`, các item bo góc tròn (border-radius: 10px) với hover state và checkmark, đồng bộ chuẩn mực với ô ở Hình 4.
+     - Vẫn duy trì `<select>` ẩn và event listeners để đảm bảo accessibility và tương thích 100% với React Testing Library.
+  4. Cập nhật Backend `apps/api/src/modules/job/repositories/job-query.repository.ts` và tiện ích `apps/api/src/modules/job/utils/location-filter.util.ts`:
+     - Xử lý mở rộng `query.location` thành tất cả các biến thể có dấu, không dấu và alias tiếng Anh.
+     - Đưa vào `where.AND = [ ...(where.AND || []), { OR: variants.map(v => ({ location: { contains: v, mode: 'insensitive' } })) } ]`.
+     - Đảm bảo khi người dùng lọc "Hồ Chí Minh", backend vẫn tìm ra các công việc ghi "Ho Chi Minh City" trong cơ sở dữ liệu.
+  5. Tích hợp các component mới vào `apps/web/src/features/jobs/job-list-page.tsx`.
+- File / bằng chứng:
+  - `apps/web/src/features/jobs/utils/vietnam-locations.ts`
+  - `apps/web/src/features/jobs/components/location-filter-popover.tsx`
+  - `apps/web/src/features/jobs/components/custom-select.tsx`
+  - `apps/web/src/features/jobs/job-list-page.tsx`
+  - `apps/web/src/features/jobs/__tests__/location-filter-and-custom-select.test.tsx`
+  - `apps/api/src/modules/job/utils/location-filter.util.ts`
+  - `apps/api/src/modules/job/repositories/job-query.repository.ts`
+  - `apps/api/src/modules/job/tests/location-filter.spec.ts`
+  - `progress/README.md`
+- Kiểm tra đã chạy:
+  - `npx vitest run src/features/jobs/__tests__/public-jobs.test.tsx` (8/8 tests PASS 100%)
+  - `npx vitest run src/features/jobs/__tests__/location-filter-and-custom-select.test.tsx` (11/11 tests PASS 100%)
+  - `npx jest apps/api/src/modules/job/tests/location-filter.spec.ts` (7/7 tests PASS 100%)
+  - `npm run typecheck` (tsc backend và web PASS 100% không lỗi)
+  - `npm run lint` (ESLint 0 warnings, 0 errors)
+  - `npm run build --workspace @rms/web` (Vite build production thành công 100%)
+- Kiểm tra chưa chạy / coverage: Chưa chạy lại toàn bộ test suite lớn của dự án; chưa đo lại coverage toàn repo.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không thay đổi schema DB hay migration; nâng cấp nội bộ logic matching địa điểm trong JobQueryRepository để hỗ trợ đa địa phương và alias matching (không làm phá vỡ contract cũ).
+- Phần còn thiếu / blocker: Không có blocker trong phạm vi này.
+- Bước tiếp theo: Bàn giao giao diện cho người dùng trải nghiệm trên trình duyệt.
+
+### 2026-10-26 01:48 (Asia/Saigon) — Antigravity — Phân quyền hiển thị tab Nhà tuyển dụng trên thanh header
+
+- Mã báo cáo: 20261026-0148-AI-talento-nav-recruiter-tab-permission
+- Người thực hiện / AI hỗ trợ: Antigravity (AI hỗ trợ phát triển FE/UI/UX theo yêu cầu người dùng).
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: TALENTO-NAV-01, UI01, FR01/02, BR15; phân quyền hiển thị thanh điều hướng PublicLayout theo vai trò CANDIDATE, RECRUITER, OWNER và khách.
+- Trạng thái: DONE (phạm vi phân quyền tab Nhà tuyển dụng trên header); các UC liên quan và toàn hệ thống tiếp tục IN_PROGRESS.
+- Nhánh / commit / PR / tích hợp main: `main` base `4fba158` + sửa working tree; chưa commit/chưa gộp main.
+- Đã hoàn thành: Điều chỉnh `apps/web/src/app/layouts/public-layout.tsx` để ẩn tab "Nhà tuyển dụng" (/recruiter/jobs) đối với tài khoản ứng viên (CANDIDATE) và khách chưa đăng nhập. Tab chỉ xuất hiện khi tài khoản đăng nhập có vai trò OWNER hoặc RECRUITER (thông qua vai trò toàn cục `hasRole('RECRUITER')` hoặc `actor.roles`, hoặc vai trò thành viên doanh nghiệp `OWNER`/`RECRUITER` từ `CompanyContext`). Bổ sung hook an toàn `useOptionalCompany` trong `apps/web/src/features/companies/context/company-context.tsx` để tránh crash khi render ngoài CompanyProvider. Điều chỉnh nút truy cập khu vực cá nhân theo đúng vai trò (CANDIDATE -> Khu vực ứng viên, RECRUITER/OWNER -> Khu vực tuyển dụng, ADMIN -> Khu vực quản trị).
+- File / bằng chứng: `apps/web/src/app/layouts/public-layout.tsx`, `apps/web/src/features/companies/context/company-context.tsx`, `apps/web/src/app/layouts/public-layout.test.tsx`, `progress/README.md`.
+- Kiểm tra đã chạy: `npx vitest run src/app/layouts/public-layout.test.tsx` (5/5 tests PASS), `npx vitest run src/app/router.test.tsx src/app/router-authorization.test.tsx` (19/19 tests PASS), `npm run typecheck` (tsc backend và web PASS), `npm run lint` (0 error, 0 warning), `npm run build --workspace @rms/web` (Vite build thành công).
+- Kiểm tra chưa chạy / coverage: Chưa chạy lại toàn bộ test suite lớn có async flake; chưa đo lại coverage toàn dự án vì chỉ sửa điều kiện hiển thị navigation và thêm test mới.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không thay đổi DB schema, migration hay API contract. Xuất thêm `CompanyContext` và `useOptionalCompany` tại frontend module.
+- Phần còn thiếu / blocker: Không có blocker trong phạm vi này.
+- Bước tiếp theo: Bàn giao giao diện cho người dùng kiểm tra trên trình duyệt; tiếp tục hoàn thiện các UC còn lại theo sổ chung.
+
+### 2026-10-26 01:15 (Asia/Saigon) — Codex — Sửa thiếu schema và profile ứng viên trên cloud
+
+- Mã báo cáo: 20261026-0115-AI-cloud-profile-repair
+- Người thực hiện / AI hỗ trợ: Codex (AI hỗ trợ DB/BE2/QA theo yêu cầu sửa lỗi cloud).
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: CLOUD-PROFILE-REPAIR-01, DB-01, UC12/FR05/UI07; schema/profile còn thiếu, Outbox phụ thuộc PATCH và xác minh runtime cloud.
+- Trạng thái: DONE (lỗi schema/profile cloud); UC12 và hệ thống tổng thể giữ IN_PROGRESS.
+- Nhánh / commit / PR / tích hợp main: `main` base `4fba158` + sửa working tree; migration backfill/test/tài liệu chưa commit/chưa gộp main. Schema cloud đã deploy theo yêu cầu người dùng; không deploy source lên hosting.
+- Đã hoàn thành: Checksum 2 migration cũ khớp; xác định cloud thiếu BE2 và Outbox BE3. Thêm backfill candidate_profile có idempotency/giữ profile cũ, deploy 4 migration còn thiếu (cloud đủ 6). Có 8 profile/8 CANDIDATE, thiếu 0; 13 account/5 company/3 job giữ nguyên và fingerprint credentials/role/business state khớp sau migration. Khởi động FE 5173/API 3000 dùng `.env` cloud, kiểm UI lưu thật.
+- File / bằng chứng: [Báo cáo](../plans/reports/261026-0100-cloud-profile-repair.md); `prisma/migrations/20261026010000_backfill_candidate_profiles/migration.sql`, `tests/integration/be2/profile-backfill-migration.spec.ts`, `scripts/qa/cloud-profile-smoke.mjs`, inventory evidence, đặc tả/contract, hướng dẫn cloud/tài khoản và sổ này. Artifacts local `reports/auth-roles/cloud-profile-*.json`, `*.log`, `cloud-profile-browser.png`; migration smoke ở `reports/backend/migrations/result.json`.
+- Kiểm tra đã chạy: Regression migration 1 test local/schema UUID đạt (CANDIDATE/multi-role, loại ADMIN, preserve/idempotency); `npm run verify:migrations` local chuỗi 6/rỗng/lặp đạt; Prisma migrate deploy cloud và status up to date đạt; fingerprint trước/sau đạt; API cloud 33/33 và browser read/save/persist/restore/logout đạt, page errors 0. Typecheck, ESLint test mới, Node syntax, diff và liên kết tài liệu đạt. Thử ghi chỉ vào fixture candidate.demo, đã phục hồi trường gốc qua API.
+- Kiểm tra chưa chạy / coverage: Không chạy full unit/FE/integration suite lại hoặc đo coverage mới vì không đổi source ứng dụng; không chạy Jest vào cloud. Chưa nghiệm thu toàn tuyển dụng, worker/mail/Jitsi/storage/scanner, HTTPS, tải hoặc restore.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Áp chuỗi migration BE2/BE3/normalize đã có; thêm data migration profile theo role hiện có, không thay schema/API/DTO/quyền hoặc trạng thái verified/locked. Cập nhật đặc tả/contract để ghi rõ upgrade/backfill; nhóm cần đưa file migration mới vào Git trước các lượt triển khai kế tiếp, không sửa checksum migration cloud đã áp.
+- Phần còn thiếu / blocker: Không còn blocker cho thiếu bảng/profile cloud. API CV/video/evaluation/reporting và provider chưa đầy đủ như các bản ghi trước; lệnh tsx dev API còn metadata, runtime hiện dùng JS build. Source mới chưa commit/merge.
+- Bước tiếp theo: Người dùng đăng nhập lại và sửa `/candidate/profile`; nhóm review/integrate migration/test/tài liệu khi được yêu cầu, tiếp tục nghiệm thu module còn thiếu theo sổ chung.
+
+### 2026-10-26 00:51 (Asia/Saigon) — Codex — Lưu bộ tài khoản role demo vào DB cloud
+
+- Mã báo cáo: 20261026-0051-AI-cloud-role-accounts
+- Người thực hiện / AI hỗ trợ: Codex (AI hỗ trợ dữ liệu phát triển theo yêu cầu người dùng).
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: CLOUD-ROLE-ACCOUNTS-01; UC04/10/11, FR01/02; account, global role và company membership demo trên Neon.
+- Trạng thái: DONE (tạo account/role/membership và kiểm auth cloud); không đánh DONE toàn UC.
+- Nhánh / commit / PR / tích hợp main: Source working tree `main` base `4fba158`; dữ liệu được ghi trực tiếp vào cloud theo yêu cầu, tài liệu chưa commit/chưa gộp main; không có PR/deployment source trong lượt này.
+- Đã hoàn thành: Kiểm không có email trùng; sao chép 7 account fixture với hash mật khẩu hiện có/role, ACTIVE verified hoặc LOCKED đúng trạng thái; tạo Cloud Demo Recruitment và Cloud Other Company, gắn OWNER/RECRUITER/INTERVIEWER đúng phạm vi. Ghi account/company/membership trong một transaction; không ghi đè account cũ. Giữ guard seed local, không sao chép CV hoặc hồ sơ thật.
+- File / bằng chứng: [Báo cáo cloud](../plans/reports/261026-0051-cloud-role-accounts.md), [hướng dẫn](../Docs/local-role-testing.md); artifact local `reports/auth-roles/cloud-accounts-verification.json`, `reports/auth-roles/cloud-login-api.log`; cập nhật sổ này.
+- Kiểm tra đã chạy: Đọc information_schema và email hiện có bằng Prisma trên cloud; so khớp BCrypt với mật khẩu demo local trước ghi; transaction tạo 7 account/2 company/4 membership thành công. Khởi chạy API build với `.env` cloud trên cổng tạm 3001, kiểm 6 login HTTP200/session200/membership200/logout204, LOCKED login401; 7/7 account checks đạt. Dừng API tạm sau kiểm tra. Kiểm diff/liên kết tài liệu cuối lượt.
+- Kiểm tra chưa chạy / coverage: Không chạy unit/integration suite vào cloud; không đo coverage mới vì chỉ tạo dữ liệu và sửa tài liệu. Không kiểm luồng candidate profile/BE2/BE3 trên cloud vì thiếu bảng liên quan; không áp migration.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Chỉ thêm dữ liệu account/user_role/company/company_membership; không đổi schema, constraint, API hoặc contract. Mật khẩu giữ ở file ignored và phản hồi bàn giao trước; không ghi vào sổ. Các fixture có quyền ADMIN/OWNER thật trong DB phát triển cloud.
+- Phần còn thiếu / blocker: Cloud không có `candidate_profile`; các account đã đăng nhập được nhưng nghiệp vụ hồ sơ ứng viên cần migration/triển khai riêng. Đây không chặn phạm vi lưu tài khoản. API tạm đã dừng; cấu hình `.env`/`.env.local-demo` không đổi.
+- Bước tiếp theo: Người dùng dùng cùng email/mật khẩu khi ứng dụng trỏ DB cloud; owner DB kiểm kế hoạch migration trước khi nghiệm thu module ứng viên/phỏng vấn trên cloud.
+
+### 2026-10-25 23:59 (Asia/Saigon) — Codex — Kiểm auth, phân quyền và bàn giao tài khoản role local
+
+- Mã báo cáo: 20261025-2359-AI-auth-role-local-verification
+- Người thực hiện / AI hỗ trợ: Codex (AI hỗ trợ BE/FE/QA; không ký thay người phụ trách).
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: QA-AUTH-ROLES-01, LOCAL-DEV-01, QA-01, DB-01; UC04/10/11, FR01/02, quyền actor/membership/tenant theo mục 2.1; UI auth và các menu theo role, guard INTERVIEWER tin nội bộ.
+- Trạng thái: DONE (kiểm triển khai hiện có và tài khoản demo local); UC01–UC16 và nghiệm thu toàn hệ thống vẫn IN_PROGRESS.
+- Nhánh / commit / PR / tích hợp main: `main` base `4fba158`, sửa working tree chưa commit/chưa gộp main; chưa có PR hoặc SHA chứa đợt sửa này.
+- Đã hoàn thành: Tái hiện register 503/FE envelope/guard/membership OWNER giả và sửa root cause; nối BE3 ports, thêm GET companies theo actor, giới hạn tin nội bộ, sửa admin response adapter và không che lỗi quyền bằng mock. Tạo 7 fixture gồm ADMIN/OWNER/RECRUITER/INTERVIEWER/CANDIDATE, khác công ty và LOCKED, xác nhận role/status qua DB và login thật. FE/BE còn chạy để dùng thử; mật khẩu chỉ giữ ở `.env.local-demo` ignored và phản hồi riêng cho người dùng.
+- File / bằng chứng: [Báo cáo](../plans/reports/261025-2329-auth-roles-verification.md), [hướng dẫn role](../Docs/local-role-testing.md); API modules/Company DTO/OpenAPI, FE router/client/CompanyContext/admin/CV/notifications; `tests/api/be1/runtime-auth-roles.spec.ts`, test outage admin/helper, test FE auth/contract, `tests/e2e/auth-roles.spec.ts`, `scripts/database/seed-role-demo.mjs`, `scripts/qa/auth-role-matrix.mjs`, inventory evidence, đặc tả/contract và sổ này. Artifacts local ở `reports/auth-*.log`, `reports/auth-roles/api-matrix.json`, JUnit/coverage và `reports/e2e/artifacts/`.
+- Kiểm tra đã chạy: Windows/Node24/npm11, DB test/demo loopback; `migrate deploy` đạt; full unit 406/50 suites, integration 134/17 suites, FE 204/42 suites, API quyền 119/119, Playwright 27/27 desktop/tablet/mobile đạt; typecheck/lint/build và diff đạt. Coverage tập cấu hình BE 82,45% dòng/71,23% nhánh, FE 84,66%/74,74%. Lần đầu FE 2 timeout khi nhiều worker, lượt cuối giới hạn 2 worker đạt; test outage sửa fixture để provider thực sự vắng, không bỏ assert fail-closed.
+- Kiểm tra chưa chạy / coverage: Chưa kiểm full tuyển dụng qua CV/interview/evaluation/reporting, giao mail worker/Jitsi/S3/scanner thật, HTTPS/production, tải/restore. Coverage đã đo như trên, không phủ toàn bộ provider/controller/repository hoặc thay thế nghiệm thu UC.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không đổi schema/migration. Thêm read endpoint `/api/companies` + `MyCompanyMembershipDto`, đổi guard FE và sửa phạm vi đọc tin nội bộ về OWNER/RECRUITER theo đặc tả; cập nhật đặc tả/OpenAPI/contract tích hợp. Port registration dùng implementation thật; test cần chủ động override khi mô phỏng provider outage. Cloud env/DB không bị seed/migrate.
+- Phần còn thiếu / blocker: 3 probe interview/CV/statistics trả 404 do endpoint chưa có; evaluation/join-token/provider và full nghiệp vụ còn thiếu. Lệnh dev API dùng tsx còn lỗi metadata, đang chạy JS đã build. Các sửa và báo cáo chưa vào main.
+- Bước tiếp theo: Người dùng thử tài khoản theo hướng dẫn; nhóm review/integrate sửa local theo yêu cầu riêng, hoàn thiện API/provider còn thiếu và nghiệm thu tuyển dụng đầy đủ trước đánh dấu UC DONE. Không tự commit/push/deploy trong lượt này.
+
+### 2026-10-25 23:04 (Asia/Saigon) — Codex — Đối chiếu và đính chính tiến độ theo source main
+
+- Mã báo cáo: 20261025-2304-AI-doi-chieu-tien-do-main
+- Người thực hiện / AI hỗ trợ: Codex (AI hỗ trợ rà soát tài liệu; không ký thay BE1/BE2/BE3/FE1/FE2).
+- Phạm vi / mã UC, UI, FR, BR, TC, EC hoặc hạ tầng: DOC-PROGRESS-AUDIT-01; UC01–UC16, FE1/FE2 UI01–UI29, DB-01, WORKER-01, VIDEO-01, QA-01, LOCAL-DEV-01; chỉ đối chiếu tiến độ với source `main`.
+- Trạng thái: DONE (phạm vi đối chiếu tài liệu); các UC và nghiệm thu FE–BE vẫn IN_PROGRESS.
+- Nhánh / commit / PR / tích hợp main: Đối chiếu local `main` = `origin/main` tại `4fba158`; PR #9/#10/#11/#12 đã merge theo lịch sử Git. Bản cập nhật sổ này chưa commit/chưa gộp main; commit chứa báo cáo này: chưa có; PR: chưa có.
+- Đã hoàn thành: Đính chính các trạng thái “chưa gộp” của BE1/FE1/Talento/BE3; ghi nhận 5 migration, source UI/worker/ports trên main và các phần chưa đủ: interview/evaluation/reporting HTTP, CV API/storage/scanner, provider thật và E2E. Giữ nguyên các bản ghi cũ trong mục lịch sử để bảo toàn báo cáo của nhóm.
+- File / bằng chứng: `progress/README.md`; `apps/api/src/app.module.ts`, `apps/api/src/modules/interview/interview.module.ts`, `apps/api/src/modules/evaluation/evaluation.module.ts`, `apps/api/src/modules/reporting/reporting.module.ts`, `apps/api/src/modules/notification/notification.module.ts`, `apps/worker/src/main.ts`, `apps/web/src/app/router.tsx`, `apps/web/src/features/interviews/api/interviews.api.ts`, `apps/web/src/features/cv/candidate-cv.api.ts`, `prisma/migrations/`; Git HEAD `4fba158`.
+- Kiểm tra đã chạy: `git status --short --branch`, `git log`, `git merge-base --is-ancestor` cho FE1/FE2/BE1 fix/BE3/Talento, `rg`/`Get-Content` kiểm module/route/SQL và fallback FE; `git diff --check` đạt; kiểm 29 liên kết tương đối trong sổ, 0 liên kết thiếu. Môi trường: PowerShell tại working tree `main` Windows; chỉ kiểm file/Git, không truy cập DB chung.
+- Kiểm tra chưa chạy / coverage: Chưa chạy lại unit/integration/E2E/build và chưa đo coverage trên commit `4fba158` vì lượt này chỉ sửa tài liệu; các con số test cũ được gắn rõ với nhánh/thời điểm báo cáo. Chưa kiểm migration thực tế trên DB dùng chung.
+- Thay đổi DB / API / contract và ảnh hưởng đến người khác: Không sửa schema, migration, API, DTO, quyền hoặc contract; chỉ đính chính cách báo cáo. Owner cần xác nhận kết quả trên source tích hợp trước khi đánh dấu UC DONE.
+- Phần còn thiếu / blocker: `npm run dev:api` còn lỗi Nest DI khi dùng `tsx watch` theo lần chạy local trước; interview/evaluation/reporting chưa có HTTP controller, CV API/provider thật và E2E chưa đủ. Gỡ bằng sửa runtime, hoàn thiện endpoint/provider và chạy nghiệm thu có bằng chứng. Sổ chưa được commit/merge.
+- Bước tiếp theo: Owner BE1/BE2/BE3/FE1/FE2 đối chiếu hạng mục mình trên `4fba158`, chạy test tích hợp và cập nhật sổ khi có bằng chứng mới; người phụ trách Git đưa bản đính chính lên main theo quy trình nhóm nếu cần.
 
 ### 2026-10-25 18:50 (Asia/Saigon) — Fullstack / Antigravity — Khởi chạy thành công Localhost Frontend & Backend API
 

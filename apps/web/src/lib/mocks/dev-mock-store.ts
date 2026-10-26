@@ -20,7 +20,11 @@ import type {
 } from '@rms/contracts/public';
 
 export const isDevBrowser = (): boolean => {
-  return Boolean(import.meta.env.DEV && import.meta.env.MODE !== 'test');
+  return Boolean(
+    import.meta.env.DEV &&
+    import.meta.env.MODE !== 'test' &&
+    import.meta.env.VITE_ENABLE_DEMO_MOCKS === 'true',
+  );
 };
 
 export const devCompany: CompanyDto = {
@@ -989,11 +993,11 @@ export interface AdminUserDto {
   userId: string;
   email: string;
   fullName: string;
-  role: 'ADMIN' | 'RECRUITER' | 'INTERVIEWER' | 'CANDIDATE' | 'OWNER';
+  role: string;
   status: 'ACTIVE' | 'LOCKED';
   version: number;
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface AuditLogItem {

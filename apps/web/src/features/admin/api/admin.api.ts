@@ -9,6 +9,7 @@ import {
 import type {
   CompanyDto,
   JobDetailDto,
+  AdminJobListItemDto,
   ReviewCompanyRequest,
   SuspendCompanyRequest,
   UnsuspendCompanyRequest,
@@ -25,18 +26,28 @@ export interface AdminListParams {
   q?: string;
 }
 
+async function readAdminPage<T>(endpoint: string, params?: AdminListParams) {
+  const page = await apiClient.get<{ items: T[]; total: number; page: number; limit: number }>(
+    endpoint,
+    {
+      params: params as Record<string, string | number | boolean | undefined>,
+    },
+  );
+  return { data: page.items, meta: { total: page.total } };
+}
+
+type AdminUserRecord = Pick<AdminUserDto, 'email' | 'fullName' | 'status' | 'version'> & {
+  id: string;
+  roles: { role: string }[];
+};
+
 export const adminApi = {
   // Companies Management (UI26)
   getCompanies: async (
     params?: AdminListParams,
   ): Promise<{ data: CompanyDto[]; meta: { total: number } }> => {
     try {
-      return await apiClient.get<{ data: CompanyDto[]; meta: { total: number } }>(
-        '/admin/companies',
-        {
-          params: params as Record<string, string | number | boolean | undefined>,
-        },
-      );
+      return await readAdminPage<CompanyDto>('/admin/companies', params);
     } catch (err) {
       if (isDevBrowser()) {
         return devMockStore.getAdminCompanies(params);
@@ -116,12 +127,21 @@ export const adminApi = {
     params?: AdminListParams,
   ): Promise<{ data: AdminUserDto[]; meta: { total: number } }> => {
     try {
-      return await apiClient.get<{ data: AdminUserDto[]; meta: { total: number } }>(
-        '/admin/users',
-        {
-          params: params as Record<string, string | number | boolean | undefined>,
-        },
-      );
+      const page = await readAdminPage<AdminUserRecord>('/admin/users', params);
+      return {
+        ...page,
+        data: page.data.map((user) => ({
+          userId: user.id,
+          email: user.email,
+          fullName: user.fullName,
+          status: user.status,
+          version: user.version,
+          role:
+            ['ADMIN', 'RECRUITER', 'INTERVIEWER', 'CANDIDATE'].find((role) =>
+              user.roles.some((r) => r.role === role),
+            ) ?? '',
+        })),
+      };
     } catch (err) {
       if (isDevBrowser()) {
         return devMockStore.getAdminUsers(params);
@@ -147,11 +167,9 @@ export const adminApi = {
   // Jobs Moderation (UI27)
   getJobs: async (
     params?: AdminListParams,
-  ): Promise<{ data: JobDetailDto[]; meta: { total: number } }> => {
+  ): Promise<{ data: AdminJobListItemDto[]; meta: { total: number } }> => {
     try {
-      return await apiClient.get<{ data: JobDetailDto[]; meta: { total: number } }>('/admin/jobs', {
-        params: params as Record<string, string | number | boolean | undefined>,
-      });
+      return await readAdminPage<AdminJobListItemDto>('/admin/jobs', params);
     } catch (err) {
       if (isDevBrowser()) {
         return devMockStore.getAdminJobs(params);

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { burst } from '../../lib/talento-effects';
+import { useLanguage } from '../../lib/i18n';
 
 interface TodoItem {
   id: string;
@@ -55,6 +56,7 @@ const STAGES = [
 
 export const PublicHomePage: React.FC = () => {
   const navigate = useNavigate();
+  const { language, t } = useLanguage();
   const [activeTab, setActiveTab] = useState<'dash' | 'jobs' | 'cands' | 'ints'>('dash');
   const [todoList, setTodoList] = useState<TodoItem[]>([
     { id: 't1', text: 'Rà soát CV Frontend trước 11:00', done: false },
@@ -526,20 +528,29 @@ export const PublicHomePage: React.FC = () => {
               textWrap: 'balance',
             }}
           >
-            <span style={{ display: 'inline' }}>
-              <span className="vb vb-hire" tabIndex={0}>
-                Tuyển
+            {language === 'en' ? (
+              <span>
+                Hire, review, and track
+                <span style={{ color: 'var(--faint)', display: 'block' }}>all candidates in one place</span>
               </span>
-              ,{' '}
-              <span className="vb vb-review" tabIndex={0}>
-                duyệt
-              </span>{' '}
-              <span style={{ margin: '0 0.28em' }}>và</span>{' '}
-              <span className="vb vb-track" tabIndex={0}>
-                theo dõi
+            ) : (
+              <span>
+                <span style={{ display: 'inline' }}>
+                  <span className="vb vb-hire" tabIndex={0}>
+                    Tuyển
+                  </span>
+                  ,{' '}
+                  <span className="vb vb-review" tabIndex={0}>
+                    duyệt
+                  </span>{' '}
+                  <span style={{ margin: '0 0.28em' }}>và</span>{' '}
+                  <span className="vb vb-track" tabIndex={0}>
+                    theo dõi
+                  </span>
+                </span>
+                <span style={{ color: 'var(--faint)', display: 'block' }}>mọi ứng viên ở một nơi</span>
               </span>
-            </span>
-            <span style={{ color: 'var(--faint)', display: 'block' }}>mọi ứng viên ở một nơi</span>
+            )}
           </h1>
 
           <p
@@ -551,18 +562,20 @@ export const PublicHomePage: React.FC = () => {
               lineHeight: 1.5,
             }}
           >
-            Quản lý vị trí, hồ sơ và lịch phỏng vấn gọn gàng để cả nhóm chốt người nhanh hơn.
+            {language === 'en'
+              ? 'Streamline job openings, applicant pipelines, and interview schedules to help your team hire faster.'
+              : 'Quản lý vị trí, hồ sơ và lịch phỏng vấn gọn gàng để cả nhóm chốt người nhanh hơn.'}
           </p>
 
           <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', justifyContent: 'center' }}>
             <Link to="/register" className="btn primary lg">
-              Dùng thử miễn phí
+              {language === 'en' ? 'Start Free Trial' : 'Dùng thử miễn phí'}
             </Link>
             <Link to="/jobs" className="btn lg">
-              Tìm việc làm
+              {t('nav.findJobs')}
             </Link>
             <Link to="/recruiter/jobs" className="btn lg">
-              Khu vực Tuyển dụng
+              {t('nav.recruiterArea')}
             </Link>
           </div>
         </div>

@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
-import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import { Outlet, NavLink, useNavigate, Link } from 'react-router-dom';
 import { useCompanyContext } from '../../features/companies/context/company-context';
 import { useAuthContext } from '../../features/auth/context/auth-context';
 import { toggleTheme, getTheme } from '../../lib/talento-effects';
+import { useLanguage } from '../../lib/i18n';
 
 export const RecruiterLayout: React.FC = () => {
   const navigate = useNavigate();
   const { currentCompany, currentRole, memberships, switchCompany } = useCompanyContext();
   const { session, logout } = useAuthContext();
   const [currentTheme, setCurrentTheme] = useState<'light' | 'dark'>(() => getTheme());
-  const [lang, setLang] = useState<'vi' | 'en'>('vi');
+  const { language, toggleLanguage, t } = useLanguage();
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -39,7 +40,7 @@ export const RecruiterLayout: React.FC = () => {
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '2px 8px 12px' }}>
-          <div className="logo" style={{ fontSize: '20px' }}>
+          <Link to="/" className="logo" style={{ fontSize: '20px' }} aria-label="Về trang chủ Talento">
             <span className="dots">
               <i />
               <i />
@@ -47,7 +48,7 @@ export const RecruiterLayout: React.FC = () => {
               <i />
             </span>
             <span>Talento</span>
-          </div>
+          </Link>
           <span
             style={{
               fontSize: '11px',
@@ -72,10 +73,10 @@ export const RecruiterLayout: React.FC = () => {
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
             <path d="M12 5v14M5 12h14" />
           </svg>
-          Tạo mới
+          {t('recruiterNav.postJob')}
         </button>
 
-        <div className="side-label">CHUNG</div>
+        <div className="side-label">{t('common.all').toUpperCase()}</div>
 
         <nav style={{ display: 'flex', flexDirection: 'column', gap: '2px', flex: 1 }}>
           <NavLink
@@ -85,7 +86,7 @@ export const RecruiterLayout: React.FC = () => {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
               <path d="M3 8h18v12H3zM9 8V5h6v3" />
             </svg>
-            <span className="t">Tin tuyển dụng</span>
+            <span className="t">{t('recruiterNav.jobs')}</span>
           </NavLink>
           <NavLink
             to="/recruiter/applications"
@@ -95,7 +96,7 @@ export const RecruiterLayout: React.FC = () => {
               <circle cx="9" cy="8" r="3.2" />
               <path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M16 5.2a3.2 3.2 0 010 6M18 14.3c1.8.8 3 2.6 3 4.7" />
             </svg>
-            <span className="t">Hồ sơ ứng viên</span>
+            <span className="t">{t('recruiterNav.applications')}</span>
           </NavLink>
           <NavLink
             to="/interviews"
@@ -104,7 +105,7 @@ export const RecruiterLayout: React.FC = () => {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
               <path d="M4 6h16v14H4zM4 10h16M8 3v4M16 3v4" />
             </svg>
-            <span className="t">Lịch phỏng vấn</span>
+            <span className="t">{t('recruiterNav.interviews')}</span>
           </NavLink>
           <NavLink
             to="/recruiter/members"
@@ -114,7 +115,7 @@ export const RecruiterLayout: React.FC = () => {
               <circle cx="12" cy="12" r="3" />
               <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
             </svg>
-            <span className="t">Thành viên & Công ty</span>
+            <span className="t">{t('recruiterNav.company')}</span>
           </NavLink>
           <NavLink
             to="/recruiter/statistics"
@@ -123,7 +124,7 @@ export const RecruiterLayout: React.FC = () => {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
               <path d="M18 20V10M12 20V4M6 20v-6" />
             </svg>
-            <span className="t">Thống kê tuyển dụng</span>
+            <span className="t">{t('recruiterNav.statistics')}</span>
           </NavLink>
         </nav>
 
@@ -185,7 +186,7 @@ export const RecruiterLayout: React.FC = () => {
             className="btn sm danger"
             style={{ width: '100%' }}
           >
-            Đăng xuất
+            {t('nav.logout')}
           </button>
         </div>
       </aside>
@@ -222,7 +223,7 @@ export const RecruiterLayout: React.FC = () => {
               </svg>
               <input
                 type="search"
-                placeholder="Tìm kiếm nhanh..."
+                placeholder={t('nav.quickSearch')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -232,11 +233,11 @@ export const RecruiterLayout: React.FC = () => {
             <button
               type="button"
               className="lang"
-              onClick={() => setLang((prev) => (prev === 'vi' ? 'en' : 'vi'))}
-              aria-label="Đổi ngôn ngữ"
+              onClick={toggleLanguage}
+              aria-label={t('nav.switchLanguage')}
             >
-              <span className={lang === 'vi' ? 'on' : ''}>VI</span>
-              <span className={lang === 'en' ? 'on' : ''}>EN</span>
+              <span className={language === 'vi' ? 'on' : ''}>VI</span>
+              <span className={language === 'en' ? 'on' : ''}>EN</span>
             </button>
 
             {/* Theme button */}
@@ -244,7 +245,7 @@ export const RecruiterLayout: React.FC = () => {
               type="button"
               className="thm"
               onClick={handleToggleTheme}
-              aria-label="Đổi giao diện sáng hoặc tối"
+              aria-label={t('nav.toggleTheme')}
             >
               {currentTheme === 'dark' ? (
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">

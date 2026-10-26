@@ -5,8 +5,10 @@ import { AuditWriterService } from './services/audit-writer.service';
 import { AuditQueryService } from './services/audit-query.service';
 import { AuditReadPolicy } from './policies/audit-read.policy';
 import { AuditQueryController } from './controllers/audit-query.controller';
+import { IdentityModule } from '../identity/identity.module';
 
 @Module({
+  imports: [IdentityModule],
   controllers: [AuditQueryController],
   providers: [
     PrismaAuditRepository,
@@ -18,11 +20,6 @@ import { AuditQueryController } from './controllers/audit-query.controller';
       useExisting: AuditWriterService,
     },
   ],
-  exports: [
-    AuditWriterService,
-    AuditQueryService,
-    PrismaAuditRepository,
-    PORTS.audit,
-  ],
+  exports: [AuditWriterService, AuditQueryService, PrismaAuditRepository, PORTS.audit],
 })
 export class AuditModule {}

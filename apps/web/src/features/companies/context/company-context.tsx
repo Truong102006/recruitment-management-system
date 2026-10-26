@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { CompanyDto, MembershipRole } from '@rms/contracts/public';
-import { isDevBrowser, devCompany } from '../../../lib/mocks/dev-mock-store';
+import { AuthContext } from '../../auth/context/auth-context';
+import { apiClient } from '../../../lib/http/api-client';
 
 export interface CompanyMembershipInfo {
   company: CompanyDto;
@@ -17,7 +18,7 @@ export interface CompanyContextValue {
   switchCompany: (companyId: string) => void;
 }
 
-const CompanyContext = createContext<CompanyContextValue | null>(null);
+export const CompanyContext = createContext<CompanyContextValue | null>(null);
 
 export interface CompanyProviderProps {
   children: React.ReactNode;
@@ -31,18 +32,23 @@ export const CompanyProvider: React.FC<CompanyProviderProps> = ({
   initialCompanyId,
 }) => {
   const queryClient = useQueryClient();
-  const defaultMemberships = useMemo(() => {
-    if (initialMemberships !== undefined) return initialMemberships;
-    if (isDevBrowser()) {
-      return [{ company: devCompany, role: 'OWNER' as MembershipRole }];
-    }
-    return [];
-  }, [initialMemberships]);
-
-  const [memberships, setMemberships] = useState<CompanyMembershipInfo[]>(defaultMemberships);
-  const [currentCompanyId, setCurrentCompanyId] = useState<string | null>(
-    initialCompanyId ?? defaultMemberships[0]?.company.id ?? null,
+  const auth = useContext(AuthContext);
+  const [manualMemberships, setMemberships] = useState<CompanyMembershipInfo[] | undefined>(
+    initialMemberships,
   );
+  const { data } = useQuery({
+    queryKey: ['my-companies', auth?.session?.userId],
+    queryFn: () => apiClient.get<CompanyMembershipInfo[]>('/api/companies'),
+    enabled: manualMemberships === undefined && !!auth?.session,
+    retry: false,
+  });
+  const memberships = useMemo(() => manualMemberships ?? data ?? [], [manualMemberships, data]);
+  const [selectedCompanyId, setCurrentCompanyId] = useState<string | null>(
+    initialCompanyId ?? null,
+  );
+  const currentCompanyId = memberships.some((m) => m.company.id === selectedCompanyId)
+    ? selectedCompanyId
+    : (memberships[0]?.company.id ?? null);
 
   const currentMembership = useMemo(
     () => memberships.find((m) => m.company.id === currentCompanyId) ?? null,
@@ -51,7 +57,11 @@ export const CompanyProvider: React.FC<CompanyProviderProps> = ({
 
   const switchCompany = useCallback(
     (newCompanyId: string) => {
-      if (newCompanyId === currentCompanyId) return;
+      if (
+        newCompanyId === currentCompanyId ||
+        !memberships.some((m) => m.company.id === newCompanyId)
+      )
+        return;
 
       // 1. Cancel in-flight queries
       void queryClient.cancelQueries();
@@ -77,7 +87,7 @@ export const CompanyProvider: React.FC<CompanyProviderProps> = ({
       // 3. Set new active company
       setCurrentCompanyId(newCompanyId);
     },
-    [currentCompanyId, queryClient],
+    [currentCompanyId, memberships, queryClient],
   );
 
   const value = useMemo<CompanyContextValue>(
@@ -101,4 +111,8 @@ export function useCompanyContext(): CompanyContextValue {
     throw new Error('useCompanyContext must be used within a CompanyProvider');
   }
   return context;
+}
+
+export function useOptionalCompany(): CompanyContextValue | null {
+  return useContext(CompanyContext);
 }

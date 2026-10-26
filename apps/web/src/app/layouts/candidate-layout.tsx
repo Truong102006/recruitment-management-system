@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../features/auth/context/auth-context';
 import { toggleTheme, getTheme } from '../../lib/talento-effects';
+import { useLanguage } from '../../lib/i18n';
 
 export function CandidateLayout() {
   const { actor, logout } = useAuth();
   const navigate = useNavigate();
   const [currentTheme, setCurrentTheme] = useState<'light' | 'dark'>(() => getTheme());
-  const [lang, setLang] = useState<'vi' | 'en'>('vi');
+  const { language, toggleLanguage, t } = useLanguage();
 
   const handleLogout = async () => {
     await logout();
@@ -24,7 +25,7 @@ export function CandidateLayout() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: 'var(--bg)' }}>
       <a href="#candidate-main" className="skip-link">
-        Chuyển đến nội dung chính
+        {t('nav.skipToContent')}
       </a>
 
       {/* Top Header */}
@@ -49,7 +50,7 @@ export function CandidateLayout() {
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-            <Link to="/jobs" className="logo">
+            <Link to="/" className="logo" aria-label="Về trang chủ Talento">
               <span className="dots">
                 <i />
                 <i />
@@ -78,11 +79,11 @@ export function CandidateLayout() {
             <button
               type="button"
               className="lang"
-              onClick={() => setLang((prev) => (prev === 'vi' ? 'en' : 'vi'))}
-              aria-label="Đổi ngôn ngữ"
+              onClick={toggleLanguage}
+              aria-label={t('nav.switchLanguage')}
             >
-              <span className={lang === 'vi' ? 'on' : ''}>VI</span>
-              <span className={lang === 'en' ? 'on' : ''}>EN</span>
+              <span className={language === 'vi' ? 'on' : ''}>VI</span>
+              <span className={language === 'en' ? 'on' : ''}>EN</span>
             </button>
 
             {/* Theme toggle */}
@@ -90,7 +91,7 @@ export function CandidateLayout() {
               type="button"
               className="thm"
               onClick={handleToggleTheme}
-              aria-label="Đổi giao diện sáng hoặc tối"
+              aria-label={t('nav.toggleTheme')}
             >
               {currentTheme === 'dark' ? (
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -128,7 +129,7 @@ export function CandidateLayout() {
               className="btn sm danger"
               onClick={() => void handleLogout()}
             >
-              Đăng xuất
+              {t('nav.logout')}
             </button>
           </div>
         </div>
@@ -155,42 +156,42 @@ export function CandidateLayout() {
               className={({ isActive }) => `nv ${isActive ? 'on' : ''}`}
               style={{ width: 'auto', padding: '6px 14px', borderRadius: '8px', fontSize: '13.5px' }}
             >
-              Tìm việc
+              {t('candidateNav.jobs')}
             </NavLink>
             <NavLink
               to="/candidate/applications"
               className={({ isActive }) => `nv ${isActive ? 'on' : ''}`}
               style={{ width: 'auto', padding: '6px 14px', borderRadius: '8px', fontSize: '13.5px' }}
             >
-              Hồ sơ của tôi
+              {t('candidateNav.applications')}
             </NavLink>
             <NavLink
               to="/candidate/profile"
               className={({ isActive }) => `nv ${isActive ? 'on' : ''}`}
               style={{ width: 'auto', padding: '6px 14px', borderRadius: '8px', fontSize: '13.5px' }}
             >
-              Hồ sơ cá nhân
+              {t('candidateNav.profile')}
             </NavLink>
             <NavLink
               to="/candidate/cvs"
               className={({ isActive }) => `nv ${isActive ? 'on' : ''}`}
               style={{ width: 'auto', padding: '6px 14px', borderRadius: '8px', fontSize: '13.5px' }}
             >
-              Kho CV
+              {t('candidateNav.cvs')}
             </NavLink>
             <NavLink
               to="/candidate/saved-jobs"
               className={({ isActive }) => `nv ${isActive ? 'on' : ''}`}
               style={{ width: 'auto', padding: '6px 14px', borderRadius: '8px', fontSize: '13.5px' }}
             >
-              Tin đã lưu
+              {t('candidateNav.savedJobs')}
             </NavLink>
             <NavLink
               to="/notifications"
               className={({ isActive }) => `nv ${isActive ? 'on' : ''}`}
               style={{ width: 'auto', padding: '6px 14px', borderRadius: '8px', fontSize: '13.5px' }}
             >
-              Thông báo
+              {t('candidateNav.notifications')}
             </NavLink>
           </div>
         </div>
@@ -214,7 +215,7 @@ export function CandidateLayout() {
           textAlign: 'center',
         }}
       >
-        <div className="container">Talento — Cổng thông tin ứng viên và quản lý tuyển dụng</div>
+        <div className="container">{t('candidateNav.footer')}</div>
       </footer>
     </div>
   );
