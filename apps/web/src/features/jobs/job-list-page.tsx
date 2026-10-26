@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import type { JobSummaryDto, JobType, WorkplaceMode } from '@rms/contracts/public';
 import { searchPublicJobs } from './public-jobs.api';
@@ -6,9 +6,34 @@ import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { StatusBadge } from '../../components/ui/status-badge';
 import { Alert } from '../../components/ui/alert';
+import { LocationFilterPopover } from './components/location-filter-popover';
+import { CustomSelect } from './components/custom-select';
+import { useLanguage } from '../../lib/i18n';
 
 export function JobListPage() {
+  const { language, t } = useLanguage();
   const [searchParams, setSearchParams] = useSearchParams();
+
+  const jobTypeOptions = useMemo(
+    () => [
+      { value: '', label: t('jobs.allJobTypes') },
+      { value: 'FULL_TIME', label: t('jobs.fullTime') },
+      { value: 'PART_TIME', label: t('jobs.partTime') },
+      { value: 'CONTRACT', label: t('jobs.contract') },
+      { value: 'INTERNSHIP', label: t('jobs.internship') },
+    ],
+    [t]
+  );
+
+  const workplaceModeOptions = useMemo(
+    () => [
+      { value: '', label: t('jobs.allWorkplaceModes') },
+      { value: 'ON_SITE', label: t('jobs.onSite') },
+      { value: 'HYBRID', label: t('jobs.hybrid') },
+      { value: 'REMOTE', label: t('jobs.remote') },
+    ],
+    [t]
+  );
 
   // Extract filters from URL query
   const q = searchParams.get('q') || '';
@@ -111,7 +136,7 @@ export function JobListPage() {
             color: 'var(--ink)',
           }}
         >
-          Cơ hội việc làm công nghệ
+          {t('jobs.pageTitle')}
         </h1>
         <p
           style={{
@@ -120,7 +145,7 @@ export function JobListPage() {
             marginTop: '6px',
           }}
         >
-          Tìm kiếm công việc lý tưởng phù hợp năng lực và định hướng tương lai của bạn
+          {t('jobs.pageSubtitle')}
         </p>
       </div>
 
@@ -143,99 +168,53 @@ export function JobListPage() {
       >
         <Input
           id="search-keyword"
-          label="Từ khóa tìm kiếm"
-          placeholder="Tên công việc, vị trí, kỹ năng..."
+          label={t('jobs.keywordLabel')}
+          placeholder={t('jobs.keywordPlaceholder')}
           value={keywordInput}
           onChange={(e) => setKeywordInput(e.target.value)}
+          style={{ borderRadius: '14px', minHeight: '44px', padding: '10px 16px' }}
         />
 
-        <Input
+        <LocationFilterPopover
           id="search-location"
-          label="Địa điểm"
-          placeholder="Hà Nội, TP.HCM, Đà Nẵng..."
+          label={t('jobs.locationLabel')}
+          placeholder={t('jobs.locationPlaceholder')}
           value={locationInput}
-          onChange={(e) => setLocationInput(e.target.value)}
+          onChange={setLocationInput}
         />
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
-          <label
-            htmlFor="search-jobType"
-            style={{
-              fontSize: 'var(--font-size-sm)',
-              fontWeight: 'var(--font-weight-medium)',
-              color: 'var(--color-foreground)',
-            }}
-          >
-            Hình thức công việc
-          </label>
-          <select
-            id="search-jobType"
-            value={jobTypeInput}
-            onChange={(e) => setJobTypeInput(e.target.value as JobType)}
-            style={{
-              padding: 'var(--space-2) var(--space-3)',
-              borderRadius: 'var(--radius-md)',
-              border: '1px solid var(--color-border)',
-              backgroundColor: 'var(--color-surface)',
-              color: 'var(--color-foreground)',
-              fontSize: 'var(--font-size-base)',
-              minHeight: '40px',
-              outline: 'none',
-            }}
-          >
-            <option value="">Tất cả hình thức</option>
-            <option value="FULL_TIME">Toàn thời gian (Full-time)</option>
-            <option value="PART_TIME">Bán thời gian (Part-time)</option>
-            <option value="CONTRACT">Hợp đồng (Contract)</option>
-            <option value="INTERNSHIP">Thực tập (Internship)</option>
-          </select>
-        </div>
+        <CustomSelect
+          id="search-jobType"
+          label={t('jobs.jobTypeLabel')}
+          value={jobTypeInput}
+          onChange={(val) => setJobTypeInput(val as JobType)}
+          options={jobTypeOptions}
+        />
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
-          <label
-            htmlFor="search-workplaceMode"
-            style={{
-              fontSize: 'var(--font-size-sm)',
-              fontWeight: 'var(--font-weight-medium)',
-              color: 'var(--color-foreground)',
-            }}
-          >
-            Môi trường làm việc
-          </label>
-          <select
-            id="search-workplaceMode"
-            value={workplaceModeInput}
-            onChange={(e) => setWorkplaceModeInput(e.target.value as WorkplaceMode)}
-            style={{
-              padding: 'var(--space-2) var(--space-3)',
-              borderRadius: 'var(--radius-md)',
-              border: '1px solid var(--color-border)',
-              backgroundColor: 'var(--color-surface)',
-              color: 'var(--color-foreground)',
-              fontSize: 'var(--font-size-base)',
-              minHeight: '40px',
-              outline: 'none',
-            }}
-          >
-            <option value="">Tất cả môi trường</option>
-            <option value="ON_SITE">Tại văn phòng (On-site)</option>
-            <option value="HYBRID">Linh hoạt (Hybrid)</option>
-            <option value="REMOTE">Từ xa (Remote)</option>
-          </select>
-        </div>
+        <CustomSelect
+          id="search-workplaceMode"
+          label={t('jobs.workplaceModeLabel')}
+          value={workplaceModeInput}
+          onChange={(val) => setWorkplaceModeInput(val as WorkplaceMode)}
+          options={workplaceModeOptions}
+        />
 
         <div style={{ display: 'flex', alignItems: 'flex-end', gap: 'var(--space-2)' }}>
-          <Button type="submit" variant="primary" style={{ flex: 1, minHeight: '40px' }}>
-            Tìm kiếm
+          <Button
+            type="submit"
+            variant="primary"
+            style={{ flex: 1, minHeight: '44px', borderRadius: '14px', fontWeight: 600 }}
+          >
+            {t('jobs.searchBtn')}
           </Button>
           {(q || location || jobType || workplaceMode) && (
             <Button
               type="button"
               variant="outline"
               onClick={handleResetFilters}
-              style={{ minHeight: '40px' }}
+              style={{ minHeight: '44px', borderRadius: '14px' }}
             >
-              Xóa bộ lọc
+              {t('jobs.clearFiltersBtn')}
             </Button>
           )}
         </div>
@@ -247,7 +226,7 @@ export function JobListPage() {
           <Alert variant="error">{error}</Alert>
           <div style={{ marginTop: 'var(--space-3)', textAlign: 'center' }}>
             <Button variant="secondary" onClick={() => void fetchJobs()}>
-              Thử lại
+              {language === 'en' ? 'Retry' : 'Thử lại'}
             </Button>
           </div>
         </div>
@@ -258,7 +237,7 @@ export function JobListPage() {
         <div
           style={{ textAlign: 'center', padding: 'var(--space-12) 0', color: 'var(--color-muted)' }}
         >
-          Đang tải danh sách việc làm...
+          {t('jobs.loading')}
         </div>
       )}
 
@@ -280,13 +259,13 @@ export function JobListPage() {
               marginBottom: 'var(--space-2)',
             }}
           >
-            Không tìm thấy việc làm phù hợp
+            {t('jobs.notFoundTitle')}
           </h2>
           <p style={{ color: 'var(--color-muted)', marginBottom: 'var(--space-4)' }}>
-            Hãy thử thay đổi từ khóa hoặc điều chỉnh các tiêu chí bộ lọc để có thêm kết quả.
+            {t('jobs.notFoundDesc')}
           </p>
           <Button variant="primary" onClick={handleResetFilters}>
-            Xóa bộ lọc
+            {t('jobs.clearFiltersBtn')}
           </Button>
         </div>
       )}
@@ -301,7 +280,7 @@ export function JobListPage() {
               marginBottom: 'var(--space-2)',
             }}
           >
-            Tìm thấy <strong>{total}</strong> cơ hội việc làm
+            {t('jobs.foundCount', { count: total })}
           </div>
 
           {jobs.map((job) => (
@@ -374,20 +353,21 @@ export function JobListPage() {
                   color: 'var(--color-foreground)',
                 }}
               >
-                {job.salary ? (
-                  <div>
-                    <strong>Mức lương: </strong>
-                    {job.salary.min.toLocaleString()} - {job.salary.max.toLocaleString()}{' '}
-                    {job.salary.currency}
-                  </div>
-                ) : (
-                  <div>
-                    <strong>Mức lương: </strong> Thỏa thuận
-                  </div>
-                )}
                 <div>
-                  <strong>Hạn nộp: </strong>
-                  {new Date(job.deadline).toLocaleDateString('vi-VN')}
+                  {job.salary
+                    ? t('jobs.salaryRange', {
+                        min: job.salary.min.toLocaleString(),
+                        max: job.salary.max.toLocaleString(),
+                        currency: job.salary.currency,
+                      })
+                    : t('jobs.salaryNegotiable')}
+                </div>
+                <div>
+                  {t('jobs.deadline', {
+                    date: new Date(job.deadline).toLocaleDateString(
+                      language === 'en' ? 'en-US' : 'vi-VN'
+                    ),
+                  })}
                 </div>
               </div>
 
@@ -422,7 +402,7 @@ export function JobListPage() {
               >
                 <Link to={`/jobs/${job.id}`}>
                   <Button variant="outline" size="sm">
-                    Xem chi tiết & Ứng tuyển
+                    {t('jobs.viewDetails')}
                   </Button>
                 </Link>
               </div>
@@ -446,7 +426,7 @@ export function JobListPage() {
                 disabled={page <= 1}
                 onClick={() => handlePageChange(page - 1)}
               >
-                Trang trước
+                {t('jobs.prevPage')}
               </Button>
               <span
                 style={{
@@ -455,7 +435,7 @@ export function JobListPage() {
                   margin: '0 var(--space-2)',
                 }}
               >
-                Trang {page} / {totalPages}
+                {t('jobs.pageInfo', { page, totalPages })}
               </span>
               <Button
                 variant="outline"
@@ -463,7 +443,7 @@ export function JobListPage() {
                 disabled={page >= totalPages}
                 onClick={() => handlePageChange(page + 1)}
               >
-                Trang sau
+                {t('jobs.nextPage')}
               </Button>
             </div>
           )}

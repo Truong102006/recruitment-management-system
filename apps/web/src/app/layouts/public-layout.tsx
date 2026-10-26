@@ -1,13 +1,32 @@
 import React, { useState } from 'react';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../features/auth/context/auth-context';
+import { useOptionalCompany } from '../../features/companies/context/company-context';
 import { toggleTheme, getTheme } from '../../lib/talento-effects';
+import { useLanguage } from '../../lib/i18n';
+import { ToolsDropdown, CareerHandbookDropdown } from './components/header-nav-dropdowns';
 
 export function PublicLayout() {
-  const { isAuthenticated, actor, logout } = useAuth();
+  const { isAuthenticated, actor, logout, hasRole } = useAuth();
+  const companyContext = useOptionalCompany();
   const navigate = useNavigate();
   const [currentTheme, setCurrentTheme] = useState<'light' | 'dark'>(() => getTheme());
-  const [lang, setLang] = useState<'vi' | 'en'>('vi');
+  const { language, toggleLanguage, t } = useLanguage();
+
+  const isRecruiterOrOwner = Boolean(
+    isAuthenticated &&
+      (hasRole('RECRUITER') ||
+        actor?.roles?.some((r) => {
+          const upper = String(r).toUpperCase();
+          return upper === 'RECRUITER' || upper === 'OWNER';
+        }) ||
+        (companyContext?.currentRole &&
+          ['OWNER', 'RECRUITER'].includes(companyContext.currentRole.toUpperCase())) ||
+        companyContext?.memberships?.some((m) => {
+          const upper = String(m.role).toUpperCase();
+          return upper === 'OWNER' || upper === 'RECRUITER';
+        })),
+  );
 
   const handleLogout = async () => {
     await logout();
@@ -22,7 +41,7 @@ export function PublicLayout() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: 'var(--bg)' }}>
       <a href="#main-content" className="skip-link">
-        Chuyển đến nội dung chính
+        {t('nav.skipToContent')}
       </a>
 
       {/* Talento Top Navigation */}
@@ -68,41 +87,23 @@ export function PublicLayout() {
                   transition: 'color 0.15s',
                 }}
               >
-                Tìm việc làm
+                {t('nav.findJobs')}
               </Link>
-              <Link
-                to="/#features"
-                style={{
-                  fontSize: '14px',
-                  fontWeight: 500,
-                  color: 'var(--ink2)',
-                  transition: 'color 0.15s',
-                }}
-              >
-                Tính năng
-              </Link>
-              <Link
-                to="/#solutions"
-                style={{
-                  fontSize: '14px',
-                  fontWeight: 500,
-                  color: 'var(--ink2)',
-                  transition: 'color 0.15s',
-                }}
-              >
-                Giải pháp
-              </Link>
-              <Link
-                to="/recruiter/jobs"
-                style={{
-                  fontSize: '14px',
-                  fontWeight: 500,
-                  color: 'var(--ink2)',
-                  transition: 'color 0.15s',
-                }}
-              >
-                Nhà tuyển dụng
-              </Link>
+              <ToolsDropdown />
+              <CareerHandbookDropdown />
+              {isRecruiterOrOwner && (
+                <Link
+                  to="/recruiter/jobs"
+                  style={{
+                    fontSize: '14px',
+                    fontWeight: 500,
+                    color: 'var(--ink2)',
+                    transition: 'color 0.15s',
+                  }}
+                >
+                  {t('nav.forEmployers')}
+                </Link>
+              )}
             </nav>
           </div>
 
@@ -112,11 +113,11 @@ export function PublicLayout() {
             <button
               type="button"
               className="lang"
-              onClick={() => setLang((prev) => (prev === 'vi' ? 'en' : 'vi'))}
-              aria-label="Đổi ngôn ngữ"
+              onClick={toggleLanguage}
+              aria-label={t('nav.switchLanguage')}
             >
-              <span className={lang === 'vi' ? 'on' : ''}>VI</span>
-              <span className={lang === 'en' ? 'on' : ''}>EN</span>
+              <span className={language === 'vi' ? 'on' : ''}>VI</span>
+              <span className={language === 'en' ? 'on' : ''}>EN</span>
             </button>
 
             {/* Theme button */}
@@ -124,7 +125,7 @@ export function PublicLayout() {
               type="button"
               className="thm"
               onClick={handleToggleTheme}
-              aria-label="Đổi giao diện sáng hoặc tối"
+              aria-label={t('nav.toggleTheme')}
             >
               {currentTheme === 'dark' ? (
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -140,13 +141,31 @@ export function PublicLayout() {
 
             {isAuthenticated && actor ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <Link
-                  to="/candidate/applications"
-                  className="btn sm"
-                  style={{ background: 'var(--soft2)' }}
-                >
-                  Khu vực ứng viên
-                </Link>
+                {hasRole('CANDIDATE') ? (
+                  <Link
+                    to="/candidate/applications"
+                    className="btn sm"
+                    style={{ background: 'var(--soft2)' }}
+                  >
+                    {t('nav.candidateArea')}
+                  </Link>
+                ) : isRecruiterOrOwner ? (
+                  <Link
+                    to="/recruiter/jobs"
+                    className="btn sm"
+                    style={{ background: 'var(--soft2)' }}
+                  >
+                    {t('nav.recruiterArea')}
+                  </Link>
+                ) : hasRole('ADMIN') ? (
+                  <Link
+                    to="/admin/companies"
+                    className="btn sm"
+                    style={{ background: 'var(--soft2)' }}
+                  >
+                    {t('nav.adminArea')}
+                  </Link>
+                ) : null}
                 <div className="me">
                   <span className="av p0" style={{ width: '30px', height: '30px' }}>
                     {(actor.fullName || actor.email || 'U').slice(0, 2).toUpperCase()}
@@ -154,16 +173,16 @@ export function PublicLayout() {
                   <span style={{ fontWeight: 500, fontSize: '13.5px' }}>{actor.fullName || actor.email}</span>
                 </div>
                 <button type="button" className="btn sm danger" onClick={() => void handleLogout()}>
-                  Đăng xuất
+                  {t('nav.logout')}
                 </button>
               </div>
             ) : (
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <Link to="/login" className="btn sm">
-                  Đăng nhập
+                  {t('nav.login')}
                 </Link>
                 <Link to="/register" className="btn sm primary">
-                  Đăng ký
+                  {t('nav.register')}
                 </Link>
               </div>
             )}
@@ -203,12 +222,12 @@ export function PublicLayout() {
               <i />
               <i />
             </span>
-            <span>© 2026 Talento Recruitment Management System. Chuẩn hóa quy trình tuyển dụng doanh nghiệp.</span>
+            <span>© 2026 Talento Recruitment Management System. {t('footer.tagline')}</span>
           </div>
           <div style={{ display: 'flex', gap: '18px' }}>
-            <Link to="/jobs">Việc làm</Link>
-            <Link to="/recruiter/jobs">Dành cho Nhà tuyển dụng</Link>
-            <Link to="/admin/companies">Quản trị hệ thống</Link>
+            <Link to="/jobs">{t('footer.jobs')}</Link>
+            <Link to="/recruiter/jobs">{t('footer.forEmployers')}</Link>
+            <Link to="/admin/companies">{t('footer.adminArea')}</Link>
           </div>
         </div>
       </footer>

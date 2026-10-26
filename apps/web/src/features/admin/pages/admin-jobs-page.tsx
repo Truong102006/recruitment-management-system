@@ -4,10 +4,10 @@ import { DataTable, type ColumnDef } from '../../../components/data-table/data-t
 import { StatusBadge } from '../../../components/ui/status-badge';
 import { Dialog } from '../../../components/ui/dialog';
 import { ApiException } from '../../../lib/http/api-client';
-import type { JobDetailDto } from '@rms/contracts/public';
+import type { AdminJobListItemDto } from '@rms/contracts/public';
 
 export const AdminJobsPage: React.FC = () => {
-  const [jobs, setJobs] = useState<JobDetailDto[]>([]);
+  const [jobs, setJobs] = useState<AdminJobListItemDto[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -17,7 +17,7 @@ export const AdminJobsPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   // Close job dialog state
-  const [closingJob, setClosingJob] = useState<JobDetailDto | null>(null);
+  const [closingJob, setClosingJob] = useState<AdminJobListItemDto | null>(null);
   const [closeReason, setCloseReason] = useState<string>('');
   const [closeError, setCloseError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState<boolean>(false);
@@ -77,7 +77,7 @@ export const AdminJobsPage: React.FC = () => {
     }
   };
 
-  const columns = useMemo<ColumnDef<JobDetailDto>[]>(
+  const columns = useMemo<ColumnDef<AdminJobListItemDto>[]>(
     () => [
       {
         key: 'title',

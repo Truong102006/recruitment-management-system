@@ -4,6 +4,7 @@ import { PrismaService } from '../../../common/prisma/prisma.service';
 import { JobSearchQueryDto, JobSummaryDto, JobDetailDto, SkillDto } from '../dto/job.dto';
 import { JobMapper } from '../mappers/job.mapper';
 import { normalizeText } from '../../../common/validation/text';
+import { expandLocationVariants } from '../utils/location-filter.util';
 
 @Injectable()
 export class JobQueryRepository {
@@ -63,19 +64,30 @@ export class JobQueryRepository {
       },
     };
 
+    const andConditions: Prisma.JobPostWhereInput[] = [];
+
     // Keyword search (q)
     if (query.q && query.q.trim().length > 0) {
       const q = normalizeText(query.q);
-      where.OR = [
-        { title: { contains: q, mode: 'insensitive' } },
-        { description: { contains: q, mode: 'insensitive' } },
-        { company: { name: { contains: q, mode: 'insensitive' } } },
-      ];
+      andConditions.push({
+        OR: [
+          { title: { contains: q, mode: 'insensitive' } },
+          { description: { contains: q, mode: 'insensitive' } },
+          { company: { name: { contains: q, mode: 'insensitive' } } },
+        ],
+      });
     }
 
-    // Location filter
+    // Location filter with accent-insensitivity and alias expansion
     if (query.location && query.location.trim().length > 0) {
-      where.location = { contains: normalizeText(query.location), mode: 'insensitive' };
+      const variants = expandLocationVariants(query.location);
+      if (variants.length > 0) {
+        andConditions.push({
+          OR: variants.map((variant) => ({
+            location: { contains: variant, mode: 'insensitive' },
+          })),
+        });
+      }
     }
 
     // JobType filter
@@ -106,11 +118,13 @@ export class JobQueryRepository {
     if (skillIds.length > 0) {
       if (skillMatchMode === 'ALL') {
         // Must contain all skills
-        where.AND = skillIds.map((skillId) => ({
-          skills: {
-            some: { skillId },
-          },
-        }));
+        skillIds.forEach((skillId) => {
+          andConditions.push({
+            skills: {
+              some: { skillId },
+            },
+          });
+        });
       } else {
         // Must contain at least one skill
         where.skills = {
@@ -119,6 +133,10 @@ export class JobQueryRepository {
           },
         };
       }
+    }
+
+    if (andConditions.length > 0) {
+      where.AND = andConditions;
     }
 
     // Order by

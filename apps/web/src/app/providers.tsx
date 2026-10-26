@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from '../features/auth/context/auth-context';
 import { CompanyProvider } from '../features/companies/context/company-context';
 import { ErrorBoundary } from '../components/errors/error-boundary';
+import { LanguageProvider } from '../lib/i18n';
 
 export interface AppProvidersProps {
   children: React.ReactNode;
@@ -29,12 +30,14 @@ export const AppProviders: React.FC<AppProvidersProps> = ({
   );
 
   return (
-    <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <CompanyProvider>{children}</CompanyProvider>
-        </AuthProvider>
-      </QueryClientProvider>
-    </ErrorBoundary>
+    <LanguageProvider>
+      <ErrorBoundary>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <CompanyProvider>{children}</CompanyProvider>
+          </AuthProvider>
+        </QueryClientProvider>
+      </ErrorBoundary>
+    </LanguageProvider>
   );
 };

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { apiClient } from '../../lib/http/api-client';
 import { Button } from '../../components/ui/button';
 import { Alert } from '../../components/ui/alert';
+import type { NotificationsPageResponse } from '@rms/contracts/public';
 
 export interface NotificationDto {
   id: string;
@@ -23,33 +24,28 @@ export function NotificationsPage() {
     setIsLoading(true);
     setError(null);
     try {
-      const data = await apiClient.get<NotificationDto[]>('/api/notifications').catch(() => [
-        {
-          id: 'notif-1',
-          title: 'Hồ sơ đã được tiếp nhận',
-          message:
-            'Nhà tuyển dụng đã xem hồ sơ ứng tuyển của bạn cho vị trí Senior Frontend Developer.',
-          targetUrl: '/candidate/applications/app-1',
-          read: false,
-          createdAt: new Date(Date.now() - 3600000).toISOString(),
-        },
-        {
-          id: 'notif-2',
-          title: 'Lịch phỏng vấn mới',
-          message: 'Bạn có một lịch phỏng vấn trực tuyến mới được sắp xếp vào ngày mai.',
-          targetUrl: '/interviews/iv-1',
-          read: true,
-          createdAt: new Date(Date.now() - 86400000).toISOString(),
-        },
-        {
-          id: 'notif-3',
-          title: 'Thông báo quyền hạn cũ',
-          message: 'Thông báo về tài nguyên công ty cũ.',
-          targetUrl: '/recruiter/company/revoked-resource',
-          read: false,
-          createdAt: new Date(Date.now() - 172800000).toISOString(),
-        },
-      ]);
+      const response = await apiClient.get<NotificationsPageResponse | NotificationDto[]>(
+        '/api/notifications',
+      );
+      const targets = {
+        APPLICATION: '/candidate/applications/',
+        INTERVIEW: '/interviews/',
+        COMPANY: '/recruiter/company',
+        JOB: '/jobs/',
+      };
+      const data = Array.isArray(response)
+        ? response
+        : response.data.map((n) => ({
+            id: n.id,
+            title: n.title,
+            message: n.content,
+            read: n.readAt !== null,
+            createdAt: n.createdAt,
+            targetUrl:
+              n.targetType === 'COMPANY'
+                ? targets.COMPANY
+                : targets[n.targetType] + encodeURIComponent(n.targetId),
+          }));
       setNotifications(data);
     } catch {
       setError('Đã xảy ra lỗi khi tải danh sách thông báo.');
@@ -65,12 +61,11 @@ export function NotificationsPage() {
   const handleNotificationClick = async (notif: NotificationDto) => {
     // FE37: Mark as read
     try {
-      await apiClient
-        .patch(`/api/notifications/${encodeURIComponent(notif.id)}/read`)
-        .catch(() => {});
+      await apiClient.patch(`/api/notifications/${encodeURIComponent(notif.id)}/read`);
       setNotifications((prev) => prev.map((n) => (n.id === notif.id ? { ...n, read: true } : n)));
     } catch {
-      // ignore
+      setError('Không thể cập nhật thông báo. Vui lòng kiểm tra quyền truy cập.');
+      return;
     }
 
     // FE37: Check if target URL is accessible or revoked
@@ -86,10 +81,14 @@ export function NotificationsPage() {
 
   const handleMarkAllAsRead = async () => {
     try {
-      await apiClient.post('/api/notifications/read-all').catch(() => {});
+      await Promise.all(
+        notifications
+          .filter((n) => !n.read)
+          .map((n) => apiClient.patch(`/api/notifications/${encodeURIComponent(n.id)}/read`)),
+      );
       setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
     } catch {
-      // ignore
+      setError('Không thể đánh dấu thông báo đã đọc. Vui lòng thử lại.');
     }
   };
 

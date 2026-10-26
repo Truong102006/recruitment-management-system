@@ -96,6 +96,14 @@ export class PrismaCompanyMembershipRepository {
     });
   }
 
+  public async listActiveByUserId(userId: string) {
+    return this.prisma.companyMembership.findMany({
+      where: { userId, active: true, user: { status: 'ACTIVE', emailVerifiedAt: { not: null } } },
+      include: { company: true },
+      orderBy: [{ createdAt: 'asc' }, { companyId: 'asc' }],
+    });
+  }
+
   public async countActiveOwners(companyId: string, tx?: Tx): Promise<number> {
     const client = this.getClient(tx);
     return client.companyMembership.count({

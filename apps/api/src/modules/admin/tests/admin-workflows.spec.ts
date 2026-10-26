@@ -74,6 +74,42 @@ function fixture(
   };
 }
 describe('Admin security workflows', () => {
+  it('returns company and location fields required by the admin jobs table', async () => {
+    const f = fixture();
+    f.client.jobPost.findMany.mockResolvedValueOnce([
+      {
+        id: 'job-1',
+        companyId: 'company-1',
+        company: { name: 'Example Company' },
+        title: 'Engineer',
+        location: 'Hanoi',
+        workplaceMode: 'HYBRID',
+        status: 'PUBLISHED',
+        version: 2,
+        closeReason: null,
+      },
+    ]);
+
+    await expect(f.service.read(actor, 'jobs')).resolves.toMatchObject({
+      items: [
+        {
+          id: 'job-1',
+          companyName: 'Example Company',
+          location: 'Hanoi',
+          workplaceMode: 'HYBRID',
+        },
+      ],
+    });
+    expect(f.client.jobPost.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        select: expect.objectContaining({
+          company: { select: { name: true } },
+          location: true,
+          workplaceMode: true,
+        }),
+      }),
+    );
+  });
   it('rejects unknown actions rather than performing unlock or unsuspend', async () => {
     const f = fixture();
     await expect(

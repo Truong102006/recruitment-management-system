@@ -15,7 +15,28 @@ import {
   Max,
   Min,
   ValidateIf,
+  ValidateNested,
 } from 'class-validator';
+
+export class SalaryRangeDto {
+  @IsOptional()
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(0)
+  @Max(9999999999999.99)
+  min?: number | null;
+
+  @IsOptional()
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(0)
+  @Max(9999999999999.99)
+  max?: number | null;
+
+  @IsOptional()
+  @IsString()
+  @NormalizeText()
+  @CodePointLength(0, 10)
+  currency?: string | null;
+}
 
 export interface SkillDto {
   id: string;
@@ -57,6 +78,10 @@ export class CreateJobDto {
   @IsOptional() @IsNumber({ maxDecimalPlaces: 2 }) @Min(0) @Max(9999999999999.99) salaryMax?:
     number | null;
   @IsOptional() @IsString() @NormalizeText() @CodePointLength(0, 10) currency?: string | null;
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => SalaryRangeDto)
+  salary?: SalaryRangeDto | null;
   @ValidateIf((_, v) => v !== undefined)
   @IsISO8601({ strict: true })
   @Matches(/T.*(?:Z|[+-][0-9]{2}:[0-9]{2})$/)
@@ -97,6 +122,10 @@ export class UpdateJobDto {
   @IsOptional() @IsNumber({ maxDecimalPlaces: 2 }) @Min(0) @Max(9999999999999.99) salaryMax?:
     number | null;
   @IsOptional() @IsString() @NormalizeText() @CodePointLength(0, 10) currency?: string | null;
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => SalaryRangeDto)
+  salary?: SalaryRangeDto | null;
   @ValidateIf((_, v) => v !== undefined)
   @IsISO8601({ strict: true })
   @Matches(/T.*(?:Z|[+-][0-9]{2}:[0-9]{2})$/)

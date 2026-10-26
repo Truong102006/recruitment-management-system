@@ -93,7 +93,7 @@ describe('JobPolicy', () => {
       ).not.toThrow();
       expect(() =>
         JobPolicy.assertCanReadCompanyJobs(interviewerActor, { role: 'INTERVIEWER', active: true }),
-      ).not.toThrow();
+      ).toThrow(ForbiddenError);
     });
 
     it('conceals company from inactive member', () => {

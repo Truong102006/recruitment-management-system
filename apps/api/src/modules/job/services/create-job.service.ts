@@ -36,6 +36,17 @@ export class CreateJobService {
         typeof dto.description === 'string' ? normalizeText(dto.description) : dto.description,
       location: typeof dto.location === 'string' ? normalizeText(dto.location) : dto.location,
     };
+    if (dto.salary) {
+      if (dto.salaryMin === undefined && dto.salary.min !== undefined) {
+        dto.salaryMin = dto.salary.min;
+      }
+      if (dto.salaryMax === undefined && dto.salary.max !== undefined) {
+        dto.salaryMax = dto.salary.max;
+      }
+      if (dto.currency === undefined && dto.salary.currency !== undefined) {
+        dto.currency = dto.salary.currency;
+      }
+    }
     // Validate draft inputs if provided
     if (dto.title !== undefined && dto.title !== null) {
       PublicationRules.validateTitle(dto.title, false);

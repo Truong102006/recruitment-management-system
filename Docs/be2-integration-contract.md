@@ -5,6 +5,10 @@
 **Phạm vi:** UC02, UC06, UC07, UC12, UC14; điểm nối với UC01/04/05/10/11 của BE1 và UC08/09/13/15/16 của BE3.
 **Trạng thái (22/10/2026):** nền port/transaction, quy tắc thuần, model BE2/SQL pending, repository/idempotency nội bộ và service/contract UC12 đã lên `main` qua `62215fc`, `f7e8223`, `6de3918`, `57bcbbe`, `9ae1f4e`. Chưa có route API nghiệp vụ, migration áp dụng hoặc kiểm PostgreSQL thật. Xem [bàn giao nền](be2-step2-handoff.md), [dữ liệu](be2-data-migration-plan.md), [persistence](be2-persistence-handoff.md), [UC12](be2-profile-handoff.md) và [tiến độ chung](../progress/README.md).
 
+**Bổ sung tích hợp auth/quyền 25/10/2026:** working tree dùng `Be3PortsModule` để BE1/BE2 nhận Outbox/Audit/Interview ports thật; không đổi opaque Tx hoặc nghiệp vụ BE2. FE lấy membership theo actor từ `GET /api/companies` (type `MyCompanyMembershipDto`), không mặc định OWNER. Guard UI không thay kiểm role/membership/ownership tại BE. Mock FE2 mặc định tắt, chỉ opt-in bằng `VITE_ENABLE_DEMO_MOCKS=true`; xem [đặc tả bổ sung](project-specification.md#bổ-sung-tích-hợp-auth-và-quyền-fe--25102026) và sổ tiến độ để phân biệt source local với phần đã merge.
+
+**Bổ sung sửa profile cloud 26/10/2026:** migration `20261026010000_backfill_candidate_profiles` bổ sung profile thiếu cho account CANDIDATE đã tồn tại, giữ profile cũ bằng ON CONFLICT DO NOTHING. Chuỗi migration cloud đã có BE2 và BE3 Outbox để GET/PATCH profile dùng transaction thật; không đổi DTO/endpoint hoặc quyền UC12. Account không có CANDIDATE vẫn bị từ chối; trạng thái account/verified và version conflict giữ nguyên. Xem sổ tiến độ để biết kết quả kiểm HTTP/browser thực tế.
+
 Tài liệu này cụ thể hóa [đặc tả tổng hợp](project-specification.md), nhất là BR01–BR20, mục 3.2, 4.3–4.5, 5 và 7.1. Nếu có xung đột, quy tắc nghiệp vụ và bất biến trong đặc tả tổng hợp được ưu tiên; sửa cả hai tài liệu trong cùng PR trước khi đổi code. BE1/BE3 dùng hợp đồng dưới đây làm đầu vào triển khai, không đọc hoặc ghi trực tiếp repository của BE2.
 
 ## 1. Ranh giới sở hữu

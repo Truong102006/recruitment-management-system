@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { Outlet, NavLink } from 'react-router-dom';
+import { Outlet, NavLink, Link } from 'react-router-dom';
 import { useAuthContext } from '../../features/auth/context/auth-context';
 import { toggleTheme, getTheme } from '../../lib/talento-effects';
+import { useLanguage } from '../../lib/i18n';
 
 export const AdminLayout: React.FC = () => {
   const { session, logout } = useAuthContext();
   const [currentTheme, setCurrentTheme] = useState<'light' | 'dark'>(() => getTheme());
-  const [lang, setLang] = useState<'vi' | 'en'>('vi');
+  const { language, toggleLanguage, t } = useLanguage();
 
   const handleToggleTheme = () => {
     const next = toggleTheme();
@@ -34,7 +35,7 @@ export const AdminLayout: React.FC = () => {
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '2px 8px 12px' }}>
-          <div className="logo" style={{ fontSize: '20px' }}>
+          <Link to="/" className="logo" style={{ fontSize: '20px' }} aria-label="Về trang chủ Talento">
             <span className="dots">
               <i style={{ background: 'var(--red)' }} />
               <i />
@@ -42,7 +43,7 @@ export const AdminLayout: React.FC = () => {
               <i />
             </span>
             <span>Talento</span>
-          </div>
+          </Link>
           <span
             style={{
               fontSize: '11px',
@@ -58,7 +59,7 @@ export const AdminLayout: React.FC = () => {
           </span>
         </div>
 
-        <div className="side-label">QUẢN TRỊ HỆ THỐNG</div>
+        <div className="side-label">{t('adminNav.systemAdmin')}</div>
 
         <nav style={{ display: 'flex', flexDirection: 'column', gap: '2px', flex: 1 }}>
           <NavLink
@@ -69,7 +70,7 @@ export const AdminLayout: React.FC = () => {
               <rect x="3" y="3" width="18" height="18" rx="2" />
               <path d="M9 3v18M3 9h6M3 15h6" />
             </svg>
-            <span className="t">Duyệt doanh nghiệp</span>
+            <span className="t">{t('adminNav.companies')}</span>
           </NavLink>
           <NavLink
             to="/admin/users"
@@ -80,7 +81,7 @@ export const AdminLayout: React.FC = () => {
               <circle cx="9" cy="7" r="4" />
               <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
             </svg>
-            <span className="t">Quản trị tài khoản</span>
+            <span className="t">{t('adminNav.users')}</span>
           </NavLink>
           <NavLink
             to="/admin/jobs"
@@ -89,7 +90,7 @@ export const AdminLayout: React.FC = () => {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
               <path d="M3 8h18v12H3zM9 8V5h6v3" />
             </svg>
-            <span className="t">Kiểm duyệt tin</span>
+            <span className="t">{t('adminNav.jobs')}</span>
           </NavLink>
           <NavLink
             to="/admin/audit"
@@ -102,7 +103,7 @@ export const AdminLayout: React.FC = () => {
               <line x1="16" y1="17" x2="8" y2="17" />
               <polyline points="10 9 9 9 8 9" />
             </svg>
-            <span className="t">Nhật ký Audit</span>
+            <span className="t">{t('adminNav.audit')}</span>
           </NavLink>
           <NavLink
             to="/admin/events"
@@ -113,7 +114,7 @@ export const AdminLayout: React.FC = () => {
               <line x1="12" y1="8" x2="12" y2="12" />
               <line x1="12" y1="16" x2="12.01" y2="16" />
             </svg>
-            <span className="t">Sự kiện Outbox lỗi</span>
+            <span className="t">{t('adminNav.events')}</span>
           </NavLink>
         </nav>
 
@@ -135,7 +136,7 @@ export const AdminLayout: React.FC = () => {
                 {session?.fullName ?? 'Admin'}
               </div>
               <div style={{ color: 'var(--muted)', fontSize: '11px' }}>
-                Quản trị viên
+                {t('adminNav.adminRole')}
               </div>
             </div>
           </div>
@@ -145,7 +146,7 @@ export const AdminLayout: React.FC = () => {
             className="btn sm danger"
             style={{ width: '100%' }}
           >
-            Đăng xuất
+            {t('nav.logout')}
           </button>
         </div>
       </aside>
@@ -179,11 +180,11 @@ export const AdminLayout: React.FC = () => {
             <button
               type="button"
               className="lang"
-              onClick={() => setLang((prev) => (prev === 'vi' ? 'en' : 'vi'))}
-              aria-label="Đổi ngôn ngữ"
+              onClick={toggleLanguage}
+              aria-label={t('nav.switchLanguage')}
             >
-              <span className={lang === 'vi' ? 'on' : ''}>VI</span>
-              <span className={lang === 'en' ? 'on' : ''}>EN</span>
+              <span className={language === 'vi' ? 'on' : ''}>VI</span>
+              <span className={language === 'en' ? 'on' : ''}>EN</span>
             </button>
 
             {/* Theme button */}
@@ -191,7 +192,7 @@ export const AdminLayout: React.FC = () => {
               type="button"
               className="thm"
               onClick={handleToggleTheme}
-              aria-label="Đổi giao diện sáng hoặc tối"
+              aria-label={t('nav.toggleTheme')}
             >
               {currentTheme === 'dark' ? (
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -209,7 +210,7 @@ export const AdminLayout: React.FC = () => {
               <span className="av p3" style={{ width: '28px', height: '28px' }}>
                 {initials}
               </span>
-              <span style={{ fontWeight: 500, fontSize: '13px' }}>Hồ sơ</span>
+              <span style={{ fontWeight: 500, fontSize: '13px' }}>{t('adminNav.profile')}</span>
             </div>
           </div>
         </header>

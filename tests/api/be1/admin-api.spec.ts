@@ -11,10 +11,12 @@ describe('Admin API guards and canonical PATCH', () => {
   const prisma = new PrismaClient();
   const ids: string[] = [];
   beforeAll(async () => {
-    app = await createTestApi();
+    app = await createTestApi({ withoutBe3Providers: true });
     await prisma.$connect();
   });
   afterAll(async () => {
+    await prisma.auditLog.deleteMany({ where: { actorId: { in: ids } } });
+    await prisma.outboxEvent.deleteMany({ where: { aggregateId: { in: ids } } });
     await prisma.authSession.deleteMany({ where: { userId: { in: ids } } });
     await prisma.userRole.deleteMany({ where: { userId: { in: ids } } });
     await prisma.userAccount.deleteMany({ where: { id: { in: ids } } });

@@ -216,6 +216,8 @@ a {
   font: 600 24px/1 var(--font-d);
   letter-spacing: -0.01em;
   color: var(--ink);
+  cursor: pointer;
+  text-decoration: none;
 }
 
 .logo:hover .dots i {
@@ -364,6 +366,42 @@ a {
 
 .card.jc {
   border-top: 3px solid color-mix(in srgb, var(--blue) 55%, transparent);
+}
+
+/* Tabs & Segmented Filters */
+.tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tabs button {
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  outline: none;
+}
+
+.tabs button:hover {
+  color: var(--ink);
+  background: var(--soft2);
+}
+
+.tabs button.on,
+.tabs button[aria-selected='true'] {
+  color: var(--blue);
+  background: var(--over-bg);
+  font-weight: 600;
 }
 
 /* Tiles & Decorative Elements */

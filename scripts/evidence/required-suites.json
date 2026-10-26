@@ -111,6 +111,14 @@
   ],
   "integration": [
     {
+      "file": "tests/integration/be2/profile-backfill-migration.spec.ts",
+      "suite": "Candidate profile backfill migration preserves legacy accounts"
+    },
+    {
+      "file": "tests/api/be1/runtime-auth-roles.spec.ts",
+      "suite": "Real AppModule auth and role integration without port doubles"
+    },
+    {
       "file": "tests/integration/be1/text-normalization-migration.spec.ts",
       "suite": "BE1 legacy text normalization migration (isolated PostgreSQL schema)"
     },

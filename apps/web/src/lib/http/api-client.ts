@@ -54,7 +54,10 @@ class ApiClient {
   public async request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
     const { idempotencyKey, params, headers, ...customConfig } = options;
 
-    let url = endpoint.startsWith('http') ? endpoint : `${this.baseUrl}${endpoint}`;
+    const baseUrl = this.baseUrl.replace(/\/$/, '').replace(/\/api$/, '');
+    const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+    const apiPath = path === '/api' || path.startsWith('/api/') ? path : `/api${path}`;
+    let url = endpoint.startsWith('http') ? endpoint : `${baseUrl}${apiPath}`;
 
     if (params) {
       const searchParams = new URLSearchParams();
@@ -115,6 +118,15 @@ class ApiClient {
       throw new ApiException(response.status, errPayload);
     }
 
+    // Single resources use { data: resource }; pages already contain data + meta.
+    if (
+      typeof data === 'object' &&
+      data !== null &&
+      Object.keys(data).length === 1 &&
+      'data' in data
+    ) {
+      return (data as { data: T }).data;
+    }
     return data as T;
   }
 

@@ -1,4 +1,5 @@
 import { apiClient } from '../../lib/http/api-client';
+import { isDevBrowser } from '../../lib/mocks/dev-mock-store';
 
 export interface CvDto {
   id: string;
@@ -55,7 +56,8 @@ function saveStoredCvs(cvs: CvDto[]) {
 export async function listCandidateCvs(): Promise<CvDto[]> {
   try {
     return await apiClient.get<CvDto[]>('/api/candidate/cvs');
-  } catch {
+  } catch (error) {
+    if (!isDevBrowser()) throw error;
     return getStoredCvs();
   }
 }
@@ -82,7 +84,8 @@ export async function uploadCandidateCv(file: File): Promise<CvDto> {
     const formData = new FormData();
     formData.append('file', file);
     return await apiClient.post<CvDto>('/api/candidate/cvs', formData);
-  } catch {
+  } catch (error) {
+    if (!isDevBrowser()) throw error;
     // Fallback store
     const current = getStoredCvs();
     const newCv: CvDto = {
@@ -103,7 +106,7 @@ export async function uploadCandidateCv(file: File): Promise<CvDto> {
 
 export async function deleteCandidateCv(cvId: string): Promise<void> {
   // Check if in use
-  const current = getStoredCvs();
+  const current = isDevBrowser() ? getStoredCvs() : [];
   const target = current.find((c) => c.id === cvId);
   if (target && target.applicationCount > 0) {
     throw new Error(
@@ -113,7 +116,8 @@ export async function deleteCandidateCv(cvId: string): Promise<void> {
 
   try {
     await apiClient.delete(`/api/candidate/cvs/${encodeURIComponent(cvId)}`);
-  } catch {
+  } catch (error) {
+    if (!isDevBrowser()) throw error;
     const filtered = current.filter((c) => c.id !== cvId);
     saveStoredCvs(filtered);
   }
@@ -122,7 +126,8 @@ export async function deleteCandidateCv(cvId: string): Promise<void> {
 export async function setDefaultCandidateCv(cvId: string): Promise<void> {
   try {
     await apiClient.post(`/api/candidate/cvs/${encodeURIComponent(cvId)}/default`);
-  } catch {
+  } catch (error) {
+    if (!isDevBrowser()) throw error;
     const current = getStoredCvs();
     for (const c of current) {
       c.isDefault = c.id === cvId;

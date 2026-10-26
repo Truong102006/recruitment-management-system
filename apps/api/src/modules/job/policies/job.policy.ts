@@ -34,11 +34,7 @@ export class JobPolicy {
       throw new NotFoundError('Company not found');
     }
 
-    if (
-      membership.role !== 'OWNER' &&
-      membership.role !== 'RECRUITER' &&
-      membership.role !== 'INTERVIEWER'
-    ) {
+    if (membership.role !== 'OWNER' && membership.role !== 'RECRUITER') {
       throw new ForbiddenError('You are not authorized to view internal company jobs.');
     }
   }

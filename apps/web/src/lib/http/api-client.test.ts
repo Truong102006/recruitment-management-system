@@ -104,6 +104,48 @@ describe('ApiClient', () => {
     expect(result).toBeUndefined();
   });
 
+  it('unwraps the backend session envelope so role and CSRF fields reach AuthProvider', async () => {
+    const session = { userId: 'user-1', roles: ['ADMIN'], csrfToken: 'csrf-session' };
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        headers: new Headers({ 'content-type': 'application/json' }),
+        json: async () => ({ data: session }),
+      }),
+    );
+    expect(await apiClient.get('/api/auth/session')).toEqual(session);
+  });
+
+  it('preserves paginated responses containing data and meta', async () => {
+    const page = { data: [{ id: 'job-1' }], meta: { total: 1 } };
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        headers: new Headers({ 'content-type': 'application/json' }),
+        json: async () => page,
+      }),
+    );
+    expect(await apiClient.get('/api/jobs')).toEqual(page);
+  });
+
+  it.each(['http://127.0.0.1:3000', 'http://127.0.0.1:3000/api'])(
+    'resolves FE1 and FE2 endpoints under one API prefix for base %s',
+    async (baseUrl) => {
+      apiClient.setBaseUrl(baseUrl);
+      const fetchMock = vi.fn().mockResolvedValue({ ok: true, status: 204 });
+      vi.stubGlobal('fetch', fetchMock);
+      await apiClient.get('/companies/company-1');
+      await apiClient.get('/api/companies/company-1');
+      for (const [url] of fetchMock.mock.calls) {
+        expect(url).toBe('http://127.0.0.1:3000/api/companies/company-1');
+      }
+    },
+  );
+
   it('supports PATCH and PUT methods', async () => {
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,

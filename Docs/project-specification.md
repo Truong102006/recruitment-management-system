@@ -3379,7 +3379,10 @@ Các read endpoint dưới đây bổ sung hợp đồng phục vụ thiết k�
 | GET      | /admin/companies; /admin/companies/:id | ADMIN                                       | List/detail phục vụ kiểm duyệt; không có CV                                          | UI26           |
 | GET      | /admin/companies/:id/eligible-owners   | ADMIN                                       | Thành viên ACTIVE đã xác minh có thể phục hồi OWNER; chỉ ID tên permission, không CV | UI26           |
 | GET      | /admin/users; /admin/jobs              | ADMIN                                       | Danh sách tối thiểu, filter/paging; không hash/password/token                        | UI27           |
+
 | GET      | /admin/events/:id                      | ADMIN                                       | Metadata task đã làm sạch; không trả payload auth/token                              | UI28           |
+
+Triển khai `GET /admin/jobs` cho UI27 trả thêm `companyName`, `location` và `workplaceMode` trong từng item; `companyName` lấy từ doanh nghiệp của tin, còn hai trường địa điểm/hình thức có thể `null` với tin nháp cũ. Đây là phần cụ thể hóa danh sách tối thiểu trong báo cáo gốc để bảng quản trị hiển thị đúng dữ liệu thật; không thay đổi quyền ADMIN, bộ lọc hay hành vi đóng tin.
 
 
 ## Bổ sung triển khai BE1 ngày 23/10/2026 — bảo mật và phụ thuộc
@@ -3424,3 +3427,18 @@ Migration dùng một câu lệnh PostgreSQL `DO` nguyên tử để trim theo �
 Không truncate hoặc tự sửa dữ liệu vượt giới hạn sau chuẩn hóa. Lỗi độ dài/constraint của bất kỳ UPDATE nào làm rollback toàn bộ câu lệnh DO, kể cả UPDATE trước đó; cần xác định hàng lỗi, xử lý dữ liệu có kiểm soát rồi chạy lại migration. PostgreSQL deploy đã chạy trên database local disposable; regression dữ liệu legacy/rollback và kết quả cuối được cập nhật tại [sổ tiến độ](../progress/README.md), chưa coi đây là bằng chứng đã nâng cấp DB dùng chung.
 
 Publish cũng chuẩn hóa lại title/description/location của draft legacy trong transaction trước kiểm completeness và ghi PUBLISHED; vì vậy không phát hành thêm văn bản NFD từ draft cũ. Không sửa published_at của tin đã công bố khi chỉ cập nhật văn bản.
+
+## Bổ sung tích hợp auth và quyền FE — 25/10/2026
+
+- UC04/FR01: `Be3PortsModule` xuất các port Outbox/Audit/Interview cho module BE1/BE2. Identity không được dùng provider giả để đăng ký thành công; account, profile và sự kiện xác minh phải ghi cùng transaction. Notification/Audit import Identity để guard tại controller xác thực bằng session thật. Đây là nối triển khai còn thiếu so với báo cáo gốc, không đổi quy tắc cấp role công khai (CANDIDATE bắt buộc, RECRUITER tùy chọn; không tự cấp ADMIN/INTERVIEWER).
+- UC11/FR02: bổ sung `GET /api/companies`, trả `{ data: [{ company: CompanyDto, role: OWNER|RECRUITER|INTERVIEWER }] }` cho membership ACTIVE của chính actor có account ACTIVE, email đã xác minh; không có membership trả mảng rỗng. Không nhận userId từ query, không trả membership người khác; ADMIN không mặc định là OWNER. Endpoint này bổ sung cho FE chọn đúng công ty, không thay đổi quyền mutation trong báo cáo gốc. Public type: `MyCompanyMembershipDto`; OpenAPI: `contracts/openapi/be1.yaml`.
+- UI01–UI29: FE đọc session thật từ envelope `{data: resource}`, giữ nguyên response phân trang `{data, meta}`; các client FE1/FE2 cùng dùng prefix `/api`. `/admin/*` cần ADMIN, `/recruiter/*` cần RECRUITER; route phỏng vấn cần CANDIDATE/RECRUITER/INTERVIEWER, route evaluation chỉ INTERVIEWER; `/notifications` dành cho mọi phiên hợp lệ. Khách về login có returnTo nội bộ; sai role về 403. Guard FE chỉ điều khiển màn hình; membership, assignment và ownership vẫn phải kiểm ở BE cho từng resource.
+- CompanyContext dùng membership từ API theo userId của session, không mặc định OWNER khi chạy dev. Mock FE2 chỉ bật nếu `VITE_ENABLE_DEMO_MOCKS=true` cùng chế độ dev; mặc định tắt để lỗi 401/403/404 không bị biến thành thành công demo.
+- Quyền đọc `GET /api/companies/:id/jobs` và `/:jobId` giới hạn OWNER/RECRUITER ACTIVE. INTERVIEWER không được đọc danh sách/chi tiết tin nội bộ, vẫn dùng endpoint public để xem tin đã công bố; tài nguyên phỏng vấn tiếp tục cần assignment riêng. Đây là sửa implementation trước đó cho phép INTERVIEWER đọc tin nháp, theo giới hạn vai trò tại mục 2.1 của báo cáo gốc. Client admin chuyển response `{items,total,page,limit}` thành dữ liệu bảng và dùng id/roles thật, không tự dựng quyền OWNER.
+- Fixture kiểm role chỉ chạy ở loopback DB `recruitment_demo`, từ chối production và cần `SEED_DEMO_PASSWORD` riêng; OWNER là membership, không phải role toàn cục. Không coi seed verified là bằng chứng luồng gửi thư thực tế hoạt động. Kết quả test và các endpoint/provider chưa đủ xem sổ tiến độ.
+
+## Nâng schema cloud và bổ sung profile cho tài khoản cũ — 26/10/2026
+
+Migration `20261026010000_backfill_candidate_profiles` chạy sau BE2/BE3 và normalize hiện có: thêm một `candidate_profile` rỗng cho mọi account đã có role toàn cục CANDIDATE nhưng chưa có profile. Account nhiều role có CANDIDATE cũng được bổ sung; account chỉ ADMIN/RECRUITER/INTERVIEWER không được tự tạo profile. `ON CONFLICT (user_id) DO NOTHING` giữ nguyên dữ liệu/version/updated_at của profile cũ và chạy lặp không tạo trùng. Không đổi password, role, trạng thái account/email verification, schema API hoặc quyền truy cập; đây là sửa dữ liệu thiếu để đáp ứng UC12 của báo cáo gốc, không tự xác minh hay mở khóa tài khoản.
+
+Lịch sử cloud trước sửa chỉ có 2 migration BE1 với checksum khớp source. Theo yêu cầu xử lý lỗi thiếu profile, deploy chuỗi còn thiếu bằng Prisma migrate deploy, bao gồm BE2 (profile/skills và các FK), BE3 (Outbox cần cho PATCH profile), normalize và backfill; không tạo bảng lẻ, db push/reset hoặc sửa migration đã áp. Bằng chứng thực tế và phạm vi chưa nghiệm thu được ghi trong sổ tiến độ; có bảng không đồng nghĩa API CV/video/reporting đã triển khai đầy đủ.

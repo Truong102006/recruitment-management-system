@@ -37,6 +37,10 @@ import {
 } from '../features/interviews/interview.routes';
 import { adminRoutes } from '../features/admin/admin.routes';
 import { PublicHomePage } from '../features/home/public-home-page';
+import { CareerHandbookPage } from '../features/blog/career-handbook-page';
+import { InterviewQuestionsPage } from '../features/tools/interview-questions-page';
+import { MbtiTestPage } from '../features/tools/mbti-test-page';
+import { SkillsPage } from '../features/tools/skills-page';
 
 export const routes: RouteObject[] = [
   // FE1: Public Shell & Auth Routes
@@ -54,6 +58,26 @@ export const routes: RouteObject[] = [
       {
         path: '/jobs/:id',
         element: <JobDetailPage />,
+      },
+      {
+        path: '/blog',
+        element: <CareerHandbookPage />,
+      },
+      {
+        path: '/blog/:categorySlug',
+        element: <CareerHandbookPage />,
+      },
+      {
+        path: '/tools/interview-questions',
+        element: <InterviewQuestionsPage />,
+      },
+      {
+        path: '/tools/mbti-test',
+        element: <MbtiTestPage />,
+      },
+      {
+        path: '/tools/skills',
+        element: <SkillsPage />,
       },
       {
         element: <PublicOnlyRoute />,
@@ -80,7 +104,6 @@ export const routes: RouteObject[] = [
           { path: '/candidate/profile', element: <ProfilePage /> },
           { path: '/candidate/cvs', element: <CvListPage /> },
           { path: '/candidate/saved-jobs', element: <SavedJobsPage /> },
-          { path: '/notifications', element: <NotificationsPage /> },
         ],
       },
     ],
@@ -88,7 +111,11 @@ export const routes: RouteObject[] = [
 
   // FE2: Recruiter Shell & Features (including Interviews & Evaluations)
   {
-    element: <RecruiterLayout />,
+    element: (
+      <ProtectedRoute requiredRoles={['RECRUITER']}>
+        <RecruiterLayout />
+      </ProtectedRoute>
+    ),
     children: [
       {
         path: '/recruiter',
@@ -100,18 +127,38 @@ export const routes: RouteObject[] = [
           ...recruiterStatisticsRoutes,
         ],
       },
-      ...interviewLayoutRoutes,
     ],
   },
 
   // FE2: Admin Shell & Features (/admin/*)
   {
     path: '/admin',
-    element: <AdminLayout />,
+    element: (
+      <ProtectedRoute requiredRoles={['ADMIN']}>
+        <AdminLayout />
+      </ProtectedRoute>
+    ),
     children: [
       { index: true, element: <Navigate to="/admin/companies" replace /> },
       ...adminRoutes,
     ],
+  },
+
+  {
+    element: (
+      <ProtectedRoute requiredRoles={['CANDIDATE', 'RECRUITER', 'INTERVIEWER']}>
+        <RecruiterLayout />
+      </ProtectedRoute>
+    ),
+    children: interviewLayoutRoutes,
+  },
+  {
+    element: (
+      <ProtectedRoute>
+        <CandidateLayout />
+      </ProtectedRoute>
+    ),
+    children: [{ path: '/notifications', element: <NotificationsPage /> }],
   },
 
   // FE2: Standalone Video Room (Full-screen WebRTC room, no sidebar)
